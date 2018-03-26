@@ -230,6 +230,17 @@ thread_create (const char *name, int priority,
   return tid;
 }
 
+/* Sleep the current thread for approximately TICKS timer ticks.*/
+void thread_wait(int64_t ticks)
+{
+  intr_disable();
+  struct thread *t = thread_current ();
+  t->wakeup_time = timer_ticks () + ticks;
+  list_push_back (&wait_list, &t->elem);
+  thread_block();
+  intr_enable();
+}
+
 /* Puts the current thread to sleep.  It will not be scheduled
    again until awoken by thread_unblock().
 
