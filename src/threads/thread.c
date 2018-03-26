@@ -24,6 +24,10 @@
    that are ready to run but not actually running. */
 static struct list ready_list;
 
+/* List of processes in THREAD_BLOCKED state, which are waiting
+   to be wake up by the timer interrupt.*/
+static struct list wait_list;
+
 /* List of all processes.  Processes are added to this list
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
@@ -91,7 +95,9 @@ thread_init (void)
 
   lock_init (&tid_lock);
   list_init (&ready_list);
+  list_init (&wait_list);
   list_init (&all_list);
+
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -137,6 +143,18 @@ thread_tick (void)
   /* Enforce preemption. */
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
+
+  struct list_elem *e;
+
+  for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
+    {
+      struct thread *t = list_entry (e, struct thread, elem);
+      if(t->wakeup_time >= timer_ticks())
+      {
+        thread_unblock(t);
+        list_remove(e);
+      }
+    }
 }
 
 /* Prints thread statistics. */
@@ -468,6 +486,7 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
+  t->wakeup_time = 0;
   t->magic = THREAD_MAGIC;
   list_push_back (&all_list, &t->allelem);
 }
