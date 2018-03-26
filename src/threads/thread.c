@@ -154,7 +154,7 @@ thread_tick (void)
       if(t->wakeup_time >= timer_ticks())
       {
         thread_unblock(t);
-        list_remove(e);
+        e = list_prev(list_remove(e));
       }
     }
   if(wait_size != 0) printf("Iterating done: %d\n", wait_size);
