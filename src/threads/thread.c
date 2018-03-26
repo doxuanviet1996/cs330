@@ -148,7 +148,7 @@ thread_tick (void)
   int wait_size = 0;
   for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
     {
-      if(wait_size == 0) printf("Iterating a non empty wait_list\n");
+      //if(wait_size == 0) printf("Iterating a non empty wait_list\n");
       wait_size++;
       struct thread *t = list_entry (e, struct thread, elem);
       if(t->wakeup_time >= timer_ticks())
@@ -160,7 +160,7 @@ thread_tick (void)
         e = e_prev;
       }
     }
-  if(wait_size != 0) printf("Iterating done: %d\n", wait_size);
+  //if(wait_size != 0) printf("Iterating done: %d\n", wait_size);
 }
 
 /* Prints thread statistics. */
