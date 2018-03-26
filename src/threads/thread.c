@@ -145,7 +145,7 @@ thread_tick (void)
     intr_yield_on_return ();
 
   struct list_elem *e;
-
+  printf("Start iterating wait_list\n");
   for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
     {
       struct thread *t = list_entry (e, struct thread, elem);
@@ -155,6 +155,7 @@ thread_tick (void)
         list_remove(e);
       }
     }
+  printf("Done iterating wait_list\n");
 }
 
 /* Prints thread statistics. */

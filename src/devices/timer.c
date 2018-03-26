@@ -90,7 +90,10 @@ void
 timer_sleep (int64_t ticks) 
 {
   ASSERT (intr_get_level () == INTR_ON);
+  printf("Start thread_wait()\n");
   thread_wait(ticks);
+  printf("Done thread_wait()\n");
+
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
