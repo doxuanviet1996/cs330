@@ -240,10 +240,9 @@ void thread_wait(int64_t ticks)
   struct thread *t = thread_current ();
   t->wakeup_time = ticks;
   list_push_back (&wait_list, &t->elem);
-  // Do we really need to disable interrupt?
-  // enum intr_level old_level = intr_disable ();
+  enum intr_level old_level = intr_disable ();
   thread_block();
-  // intr_set_level (old_level);
+  intr_set_level (old_level);
 }
 
 /* Puts the current thread to sleep.  It will not be scheduled
