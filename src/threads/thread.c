@@ -153,7 +153,7 @@ thread_tick (void)
       struct thread *t = list_entry (e, struct thread, elem);
       if(t->wakeup_time >= timer_ticks())
       {
-        struct list_elem e_prev = list_prev(e);
+        struct list_elem *e_prev = list_prev(e);
         thread_unblock(t);
         printf("Removing sth\n");
         e = e_prev;
