@@ -146,7 +146,7 @@ thread_tick (void)
 
   struct list_elem *e;
   int wait_size = 0;
-  int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
+  int64_t total_ticks = timer_ticks();//idle_ticks + user_ticks + kernel_ticks;
   for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
     {
       //if(wait_size == 0) printf("Iterating a non empty wait_list\n");
