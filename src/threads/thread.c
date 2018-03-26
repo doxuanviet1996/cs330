@@ -40,6 +40,7 @@ static struct thread *initial_thread;
 
 /* Lock used by allocate_tid(). */
 static struct lock tid_lock;
+static struct lock ready_list_lock;
 
 /* Stack frame for kernel_thread(). */
 struct kernel_thread_frame 
@@ -531,6 +532,7 @@ next_thread_to_run (void)
 {
   if (list_empty (&ready_list))
     return idle_thread;
+  lock_acquire(ready_list_lock);
   struct list_elem *e;
   struct thread *t = list_entry(list_begin(&ready_list), struct thread, elem);
   for(e = list_begin(&ready_list); e != list_end(&ready_list); e = list_next(e))
@@ -538,6 +540,7 @@ next_thread_to_run (void)
     struct thread *cur = list_entry(e, struct thread, elem);
     if(cur->priority > t-> priority) t = cur;
   }
+  lock_release(ready_list_lock);
   return t;
 }
 
