@@ -241,9 +241,9 @@ void thread_wait(int64_t ticks)
 {
   intr_disable();
   struct thread *t = thread_current ();
-  t->wakeup_time = ticks;
+  t->wakeup_time = timer_ticks() + ticks;
   list_push_back (&wait_list, &t->elem);
-  printf("wait_list pushed: %d %d\n",t->elem, t->wakeup_time);
+  printf("wait_list pushed: %x %lld\n",t->elem, t->wakeup_time);
   thread_block();
   intr_enable();
 }
