@@ -156,7 +156,7 @@ thread_tick (void)
         struct list_elem *e_prev = list_prev(e);
         list_remove(e);
         thread_unblock(t);
-        printf("Removing sth\n");
+        printf("wait_list removed: %d %d\n",t->elem, t->wakeup_time);
         e = e_prev;
       }
     }
@@ -243,7 +243,7 @@ void thread_wait(int64_t ticks)
   struct thread *t = thread_current ();
   t->wakeup_time = timer_ticks () + ticks;
   list_push_back (&wait_list, &t->elem);
-  printf("wait size update: %d\n",list_size(&wait_list));
+  printf("wait_list pushed: %d %d\n",t->elem, t->wakeup_time);
   thread_block();
   intr_enable();
 }
