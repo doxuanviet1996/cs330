@@ -146,7 +146,7 @@ thread_tick (void)
 
   struct list_elem *e;
   int wait_size = 0;
-  int64_t total_ticks = timer_ticks();
+  int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
   for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
     {
       //if(wait_size == 0) printf("Iterating a non empty wait_list\n");
@@ -157,8 +157,8 @@ thread_tick (void)
         struct list_elem *e_prev = list_prev(e);
         list_remove(e);
         thread_unblock(t);
-        printf("Found waitlist wakeup time %lld, at time %lld\n",t->wakeup_time, total_ticks);
-        printf("wait_list removed: %d %lld\n",t->tid, t->wakeup_time);
+        //printf("Found waitlist wakeup time %lld, at time %lld\n",t->wakeup_time, total_ticks);
+        //printf("wait_list removed: %d %lld\n",t->tid, t->wakeup_time);
         e = e_prev;
       }
     }
@@ -243,9 +243,9 @@ void thread_wait(int64_t ticks)
 {
   intr_disable();
   struct thread *t = thread_current ();
-  t->wakeup_time = timer_ticks() + ticks;
+  t->wakeup_time = ticks;
   list_push_back (&wait_list, &t->elem);
-  printf("wait_list pushed: %d %lld\n",t->tid, t->wakeup_time);
+  //printf("wait_list pushed: %d %lld\n",t->tid, t->wakeup_time);
   thread_block();
   intr_enable();
 }
