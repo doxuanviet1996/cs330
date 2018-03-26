@@ -145,11 +145,14 @@ thread_tick (void)
     intr_yield_on_return ();
 
   ;
+  
   int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
-  for (struct list_elem *e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
+
+  struct list_elem *e;
+  for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
     {
       struct thread *t = list_entry (e, struct thread, elem);
-      if(t->wakeup_time <= timer_ticks())
+      if(t->wakeup_time <= total_ticks)
       {
         struct list_elem *e_prev = list_prev(e);
         list_remove(e);
