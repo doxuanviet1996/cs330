@@ -153,7 +153,7 @@ thread_tick (void)
       struct thread *t = list_entry (e, struct thread, elem);
       if(t->wakeup_time >= timer_ticks())
       {
-        //thread_unblock(t);
+        thread_unblock(t);
         printf("Removing sth\n");
         e = list_prev(list_remove(e));
       }
@@ -275,6 +275,7 @@ thread_unblock (struct thread *t)
 {
   enum intr_level old_level;
 
+  printf("Start unblocking\n");
   ASSERT (is_thread (t));
 
   old_level = intr_disable ();
@@ -282,6 +283,7 @@ thread_unblock (struct thread *t)
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
   intr_set_level (old_level);
+  printf("Done unblocking\n");
 }
 
 /* Returns the name of the running thread. */
