@@ -151,6 +151,7 @@ thread_tick (void)
       //if(wait_size == 0) printf("Iterating a non empty wait_list\n");
       wait_size++;
       struct thread *t = list_entry (e, struct thread, elem);
+      printf("%lld\n",timer_ticks());
       if(t->wakeup_time >= timer_ticks())
       {
         struct list_elem *e_prev = list_prev(e);
