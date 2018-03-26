@@ -146,18 +146,18 @@ thread_tick (void)
 
   struct list_elem *e;
   int wait_size = 0;
+  int64_t total_ticks = timer_ticks();
   for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
     {
       //if(wait_size == 0) printf("Iterating a non empty wait_list\n");
       wait_size++;
       struct thread *t = list_entry (e, struct thread, elem);
-      printf("%lld\n",timer_ticks());
-      if(t->wakeup_time >= timer_ticks())
+      if(t->wakeup_time >= total_ticks)
       {
         struct list_elem *e_prev = list_prev(e);
         list_remove(e);
         thread_unblock(t);
-        printf("Found waitlist wakeup time %lld, at time %lld\n",t->wakeup_time, timer_ticks());
+        printf("Found waitlist wakeup time %lld, at time %lld\n",t->wakeup_time, total_ticks);
         printf("wait_list removed: %d %lld\n",t->tid, t->wakeup_time);
         e = e_prev;
       }
