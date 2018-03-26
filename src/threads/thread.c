@@ -275,7 +275,6 @@ thread_unblock (struct thread *t)
 {
   enum intr_level old_level;
 
-  printf("Start unblocking\n");
   ASSERT (is_thread (t));
 
   old_level = intr_disable ();
@@ -283,7 +282,6 @@ thread_unblock (struct thread *t)
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
   intr_set_level (old_level);
-  printf("Done unblocking\n");
 }
 
 /* Returns the name of the running thread. */
