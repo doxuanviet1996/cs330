@@ -240,6 +240,7 @@ void thread_wait(int64_t ticks)
   struct thread *t = thread_current ();
   t->wakeup_time = timer_ticks () + ticks;
   list_push_back (&wait_list, &t->elem);
+  printf("wait size update: %d\n",list_size(&wait_list));
   thread_block();
   intr_enable();
 }
