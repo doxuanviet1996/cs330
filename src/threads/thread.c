@@ -154,6 +154,7 @@ thread_tick (void)
       if(t->wakeup_time >= timer_ticks())
       {
         thread_unblock(t);
+        printf("Removing sth\n");
         e = list_prev(list_remove(e));
       }
     }
