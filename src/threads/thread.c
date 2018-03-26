@@ -155,7 +155,7 @@ thread_tick (void)
       {
         thread_unblock(t);
         printf("Removing sth\n");
-        e = list_prev(list_remove(e));
+        //e = list_prev(list_remove(e));
       }
     }
   if(wait_size != 0) printf("Iterating done: %d\n", wait_size);
