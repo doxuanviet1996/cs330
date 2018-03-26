@@ -237,10 +237,10 @@ thread_create (const char *name, int priority,
 /* Sleep the current thread until timer ticks reach TICKS.*/
 void thread_wait(int64_t ticks)
 {
-  intr_disable();
   struct thread *t = thread_current ();
   t->wakeup_time = ticks;
   list_push_back (&wait_list, &t->elem);
+  intr_disable();
   thread_block();
   intr_enable();
 }
