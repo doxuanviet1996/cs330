@@ -95,6 +95,7 @@ thread_init (void)
   ASSERT (intr_get_level () == INTR_OFF);
 
   lock_init (&tid_lock);
+  lock_init (&ready_list_lock);
   list_init (&ready_list);
   list_init (&wait_list);
   list_init (&all_list);
@@ -533,7 +534,7 @@ next_thread_to_run (void)
   if (list_empty (&ready_list))
     return idle_thread;
   return list_entry(list_pop_front(&ready_list), struct thread, elem);
-  /*lock_acquire(ready_list_lock);
+  lock_acquire(ready_list_lock);
   struct list_elem *e;
   struct thread *t = list_entry(list_begin(&ready_list), struct thread, elem);
   for(e = list_begin(&ready_list); e != list_end(&ready_list); e = list_next(e))
@@ -542,7 +543,7 @@ next_thread_to_run (void)
     if(cur->priority > t-> priority) t = cur;
   }
   lock_release(ready_list_lock);
-  return t;*/
+  return t;
 }
 
 /* Completes a thread switch by activating the new thread's page
