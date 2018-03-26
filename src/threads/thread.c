@@ -156,7 +156,7 @@ thread_tick (void)
         struct list_elem *e_prev = list_prev(e);
         list_remove(e);
         thread_unblock(t);
-        printf("wait_list removed: %d %d\n",t->elem, t->wakeup_time);
+        printf("wait_list removed: %d %lld\n",t->tid, t->wakeup_time);
         e = e_prev;
       }
     }
