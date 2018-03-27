@@ -281,8 +281,8 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
+  if(thread_current()->priority < t->priority) thread_yield();
   intr_set_level (old_level);
-  if(thread_current()->priority < t->priority) intr_yield_on_return();
 }
 
 /* Returns the name of the running thread. */
@@ -353,6 +353,7 @@ thread_yield (void)
   if (cur != idle_thread) 
     list_push_back (&ready_list, &cur->elem);
   cur->status = THREAD_READY;
+  printf("Stucked in thread_yield?\n");
   schedule ();
   intr_set_level (old_level);
 }
@@ -612,6 +613,7 @@ schedule (void)
   if (cur != next)
     prev = switch_threads (cur, next);
   thread_schedule_tail (prev);
+  printf("Stucked in Schedule?\n");
 }
 
 /* Returns a tid to use for a new thread. */
