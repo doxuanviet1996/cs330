@@ -287,6 +287,7 @@ thread_unblock (struct thread *t)
   if(p < t->priority)
   {
     printf("Priority at unblock: %d %d\n", p, t->priority);
+    printf("Of thread tid: %d %d\n",thread_current()->tid, t->tid);
     thread_yield();
   }
   intr_set_level (old_level);
