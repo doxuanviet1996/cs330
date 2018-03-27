@@ -161,6 +161,7 @@ thread_tick (void)
         e = e_prev;
       }
     }
+    
 }
 
 /* Prints thread statistics. */
