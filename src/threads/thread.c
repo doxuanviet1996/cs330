@@ -229,10 +229,8 @@ thread_create (const char *name, int priority,
 
   intr_set_level (old_level);
 
-  printf("Unblocking thread %d %d\n", t->tid, t->priority);
   /* Add to run queue. */
   thread_unblock (t);
-  printf("Done Unblocking thread %d %d\n", t->tid, t->priority);
 
   return tid;
 }
@@ -275,11 +273,13 @@ thread_block (void)
 void
 thread_unblock (struct thread *t) 
 {
+
   enum intr_level old_level;
 
   ASSERT (is_thread (t));
 
   old_level = intr_disable ();
+  printf("Unblocking thread %d %d\n", t->tid, t->priority);
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
@@ -290,6 +290,7 @@ thread_unblock (struct thread *t)
     printf("Of thread tid: %d %d\n",thread_current()->tid, t->tid);
     thread_yield();
   }
+  printf("Done Unblocking thread %d %d\n", t->tid, t->priority);
   intr_set_level (old_level);
 }
 
