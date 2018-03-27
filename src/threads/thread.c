@@ -98,7 +98,7 @@ thread_init (void)
   lock_init (&ready_list_lock);
   list_init (&ready_list);
   list_init (&wait_list);
-  list_init (&all_list);
+  list_init (&all_list); 
 
 
   /* Set up a thread structure for the running thread. */
@@ -145,8 +145,6 @@ thread_tick (void)
   /* Enforce preemption. */
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
-
-  ;
 
   int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
 
@@ -284,7 +282,7 @@ thread_unblock (struct thread *t)
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
   intr_set_level (old_level);
-  if(thread_current()->priority < t->priority) thread_yield();
+  //if(thread_current()->priority < t->priority) thread_yield();
 }
 
 /* Returns the name of the running thread. */
@@ -381,7 +379,7 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  thread_yield();
+  intr_yield_on_return();
 }
 
 /* Returns the current thread's priority. */
