@@ -353,7 +353,9 @@ thread_exit (void)
 void
 thread_yield (void) 
 {
+  printf("Stucked here?\n");
   struct thread *cur = thread_current ();
+  printf("Stucked in thread_yield?\n");
   enum intr_level old_level;
   
   ASSERT (!intr_context ());
