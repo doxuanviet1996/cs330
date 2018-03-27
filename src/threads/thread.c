@@ -534,7 +534,7 @@ next_thread_to_run (void)
   if (list_empty (&ready_list))
     return idle_thread;
   return list_entry(list_pop_front(&ready_list), struct thread, elem);
-  enum old_level = intr_disable();
+  enum intr_level old_level = intr_disable();
   lock_acquire(&ready_list_lock);
   struct list_elem *e;
   struct thread *t = list_entry(list_begin(&ready_list), struct thread, elem);
