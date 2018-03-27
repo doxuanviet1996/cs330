@@ -238,10 +238,10 @@ thread_create (const char *name, int priority,
 /* Sleep the current thread until timer ticks reach TICKS.*/
 void thread_wait(int64_t ticks)
 {
+  enum intr_level old_level = intr_disable ();
   struct thread *t = thread_current ();
   t->wakeup_time = ticks;
   list_push_back (&wait_list, &t->elem);
-  enum intr_level old_level = intr_disable ();
   thread_block();
   intr_set_level (old_level);
 }
@@ -281,7 +281,12 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
-  if(thread_current()->priority < t->priority) thread_yield();
+  int p = thread_current()->priority;
+  if(p < t->priority)
+  {
+    printf("Priority at unblock: %d %d\n", p, t->priority);
+    thread_yield();
+  }
   intr_set_level (old_level);
 }
 
