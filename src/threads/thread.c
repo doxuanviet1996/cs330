@@ -113,7 +113,6 @@ thread_init (void)
 void
 thread_start (void) 
 {
-  printf("Starting thread_start()\n");
   /* Create the idle thread. */
   struct semaphore idle_started;
   sema_init (&idle_started, 0);
@@ -230,6 +229,7 @@ thread_create (const char *name, int priority,
 
   intr_set_level (old_level);
 
+  printf("Unblocking thread %d %d\n", t->tid, t->priority);
   /* Add to run queue. */
   thread_unblock (t);
 
