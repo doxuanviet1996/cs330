@@ -277,10 +277,21 @@ thread_unblock (struct thread *t)
   ASSERT (is_thread (t));
 
   old_level = intr_disable ();
-  printf("Current thread is: %d\n",thread_current()->tid);
+  //printf("Current thread is: %d\n",thread_current()->tid);
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
+  if(thread_current()->tid != 2)
+  {
+    int p = thread_current()->priority;
+    if(p < t->priority)
+    {
+      //printf("Priority at unblock: %d %d\n", p, t->priority);
+      //printf("Of thread tid: %d %d\n",thread_current()->tid, t->tid);
+      thread_yield();
+    }
+    //printf("Done Unblocking thread %d %d\n", t->tid, t->priority);
+  }
   intr_set_level (old_level);
 }
 
