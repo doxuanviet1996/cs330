@@ -63,6 +63,9 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
 
+// If reschedule is true, then when timer interrupt called immediately yield the current thread.
+bool reschedule;
+
 static void kernel_thread (thread_func *, void *aux);
 
 static void idle (void *aux UNUSED);
@@ -97,6 +100,8 @@ thread_init (void)
   list_init (&ready_list);
   list_init (&wait_list);
   list_init (&all_list);
+
+  reschedule = false;
 
 
   /* Set up a thread structure for the running thread. */
@@ -148,6 +153,7 @@ thread_tick (void)
 
   ;
 
+  // Wake up threads in the wait_list
   int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
 
   struct list_elem *e;
@@ -161,6 +167,13 @@ thread_tick (void)
         e = e_prev;
       }
     }
+
+  // Reschedule if needed
+  if(reschedule)
+  {
+    intr_yield_on_return();
+    reschedule = false;
+  }
 }
 
 /* Prints thread statistics. */
@@ -282,12 +295,7 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
-  // Something buggy here..
-  /*if(thread_current()->tid != 1)
-  {
-    int p = thread_current()->priority;
-    if(p < t->priority) thread_yield();
-  }*/
+  if(thread_current()->priority < t->priority) reschedule = true;
   intr_set_level (old_level);
 }
 
