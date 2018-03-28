@@ -529,7 +529,7 @@ next_thread_to_run (void)
 {
   if (list_empty (&ready_list))
     return idle_thread;
-  
+
   enum intr_level old_level = intr_disable();
   struct list_elem *e;
   struct thread *t = list_entry(list_begin(&ready_list), struct thread, elem);
@@ -538,7 +538,7 @@ next_thread_to_run (void)
     struct thread *cur = list_entry(e, struct thread, elem);
     if(cur->priority > t-> priority) t = cur;
   }
-  list_remove(t->elem);
+  list_remove(&t->elem);
   intr_set_level(old_level);
   return t;
 }
