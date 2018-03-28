@@ -111,6 +111,7 @@ thread_init (void)
 void
 thread_start (void) 
 {
+  printf("Start thread_start()\n");
   /* Create the idle thread. */
   struct semaphore idle_started;
   sema_init (&idle_started, 0);
@@ -121,6 +122,7 @@ thread_start (void)
 
   /* Wait for the idle thread to initialize idle_thread. */
   sema_down (&idle_started);
+  printf("Done thread_start()\n");
 }
 
 /* Called by the timer interrupt handler at each timer tick.
