@@ -533,7 +533,7 @@ alloc_frame (struct thread *t, size_t size)
 }
 
 /* Return the thread with highest priority in the list l.*/
-struct thread *best_thread_among_list(struct list *l)
+static struct thread *best_thread_among_list(struct list *l)
 {
   if(list_empty(l)) return NULL;
 
