@@ -70,7 +70,6 @@ static void kernel_thread (thread_func *, void *aux);
 
 static void idle (void *aux UNUSED);
 static struct thread *running_thread (void);
-static struct thread *best_ready_thread(void);
 static struct thread *next_thread_to_run (void);
 static void init_thread (struct thread *, const char *name, int priority);
 static bool is_thread (struct thread *) UNUSED;
@@ -239,13 +238,9 @@ thread_create (const char *name, int priority,
   thread_unblock (t);
 
   // If this is not the idle thread, i.e. thread_start() has finished,
-  // we should reschedule.
-  //printf("Current priority: %d\n", thread_current()->priority);
+  // we should reschedule if the new thread has higher priority.
   if(t->tid != 2 && t->priority > thread_current()->priority)
-  {
-    //printf("Priority: %d %d\n", t->priority, thread_current()->priority);
     thread_yield();
-  }
   return tid;
 }
 
@@ -393,8 +388,8 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  int p = best_ready_thread()->priority;
-  if(p > new_priority) thread_yield();
+  if(!list_empty(&ready_list) &&
+    best_thread_among_list(&ready_list)->priority > new_priority) thread_yield();
 }
 
 /* Returns the current thread's priority. */
@@ -537,13 +532,11 @@ alloc_frame (struct thread *t, size_t size)
   return t->stack;
 }
 
-/* Return the thread with highest priority in the run queue.*/
-static struct thread * best_ready_thread(void)
+/* Return the thread with highest priority in the list l.*/
+static struct thread * best_thread_among_list(struct list* l)
 {
-  if (list_empty (&ready_list))
-    return idle_thread;
+  if(list_empty(l)) return NULL;
 
-  enum intr_level old_level = intr_disable();
   struct list_elem *e;
   struct thread *t = list_entry(list_begin(&ready_list), struct thread, elem);
   for(e = list_begin(&ready_list); e != list_end(&ready_list); e = list_next(e))
@@ -551,7 +544,6 @@ static struct thread * best_ready_thread(void)
     struct thread *cur = list_entry(e, struct thread, elem);
     if(cur->priority > t-> priority) t = cur;
   }
-  intr_set_level(old_level);
   return t;
 }
 
@@ -563,8 +555,11 @@ static struct thread * best_ready_thread(void)
 static struct thread *
 next_thread_to_run (void) 
 {
+  if (list_empty (&ready_list))
+    return idle_thread;
+
   enum intr_level old_level = intr_disable();
-  struct thread *t = best_ready_thread();
+  struct thread *t = best_thread_among_list(&ready_list);
   list_remove(&t->elem);
   intr_set_level(old_level);
   return t;
