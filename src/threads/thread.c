@@ -63,9 +63,6 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
 
-// If reschedule is true, then when timer interrupt called immediately yield the current thread.
-bool reschedule;
-
 static void kernel_thread (thread_func *, void *aux);
 
 static void idle (void *aux UNUSED);
@@ -100,8 +97,6 @@ thread_init (void)
   list_init (&ready_list);
   list_init (&wait_list);
   list_init (&all_list);
-
-  reschedule = false;
 
 
   /* Set up a thread structure for the running thread. */
@@ -145,6 +140,7 @@ thread_tick (void)
 
   // Wake up threads in the wait_list
   int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
+  bool reschedule = false;
 
   struct list_elem *e;
   for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
@@ -153,7 +149,7 @@ thread_tick (void)
       if(t->wakeup_time <= total_ticks)
       {
         struct list_elem *e_prev = list_prev(list_remove(e));
-        thread_unblock(t);
+        reschedule = thread_unblock(t) || reschedule;
         e = e_prev;
       }
     }
@@ -164,7 +160,6 @@ thread_tick (void)
 
   // Reschedule if needed
   if(reschedule) intr_yield_on_return();
-  reschedule = false;
 }
 
 /* Prints thread statistics. */
@@ -235,11 +230,11 @@ thread_create (const char *name, int priority,
   intr_set_level (old_level);
 
   /* Add to run queue. */
-  thread_unblock (t);
+  bool reschedule = thread_unblock (t);
 
   // If this is not the idle thread, i.e. thread_start() has finished,
   // we should reschedule if the new thread has higher priority.
-  if(t->tid != 2 && t->priority > thread_current()->priority)
+  if(t->tid != 2 && reschedule)
     thread_yield();
   return tid;
 }
@@ -278,8 +273,9 @@ thread_block (void)
    This function does not preempt the running thread.  This can
    be important: if the caller had disabled interrupts itself,
    it may expect that it can atomically unblock a thread and
-   update other data. */
-void
+   update other data. 
+   The function returns true if the unblocked thread required reschedule. */
+bool
 thread_unblock (struct thread *t) 
 {
   enum intr_level old_level;
@@ -290,8 +286,9 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
-  if(thread_current()->priority < t->priority) reschedule = true;
+  bool reschedule = thread_current()->priority < t->priority;
   intr_set_level (old_level);
+  return reschedule;
 }
 
 /* Returns the name of the running thread. */

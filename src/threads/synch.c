@@ -111,17 +111,17 @@ sema_up (struct semaphore *sema)
   enum intr_level old_level;
 
   ASSERT (sema != NULL);
-
   old_level = intr_disable ();
+  bool reschedule = false;
   if (!list_empty (&sema->waiters)) 
   {
     struct thread *t = best_thread_among_list(&sema->waiters);
     list_remove(&t->elem);
-    thread_unblock (t);  
-    //list_entry (list_pop_front (&sema->waiters), struct thread, elem));
+    reschedule = thread_unblock (t);
   }
   sema->value++;
   intr_set_level (old_level);
+  if(reschedule) thread_yield();
 }
 
 static void sema_test_helper (void *sema_);

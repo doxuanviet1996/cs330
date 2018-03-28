@@ -119,7 +119,7 @@ tid_t thread_create (const char *name, int priority, thread_func *, void *);
 
 void thread_wait(int64_t);
 void thread_block (void);
-void thread_unblock (struct thread *);
+bool thread_unblock (struct thread *);
 
 struct thread *thread_current (void);
 tid_t thread_tid (void);
