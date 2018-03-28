@@ -119,7 +119,7 @@ thread_start (void)
   printf("Done creating idle\n");
   /* Start preemptive thread scheduling. */
   intr_enable ();
-
+  printf("Turned on intr_enable\n");
   /* Wait for the idle thread to initialize idle_thread. */
   sema_down (&idle_started);
   printf("Done thread_start()\n");
