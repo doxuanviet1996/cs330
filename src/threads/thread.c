@@ -143,12 +143,6 @@ thread_tick (void)
   else
     kernel_ticks++;
 
-  /* Enforce preemption. */
-  if (++thread_ticks >= TIME_SLICE)
-    intr_yield_on_return ();
-
-  ;
-
   // Wake up threads in the wait_list
   int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
 
@@ -164,12 +158,13 @@ thread_tick (void)
       }
     }
 
+  /* Enforce preemption. */
+  if (++thread_ticks >= TIME_SLICE)
+    intr_yield_on_return ();
+
   // Reschedule if needed
-  if(reschedule)
-  {
-    intr_yield_on_return();
-    reschedule = false;
-  }
+  if(reschedule) intr_yield_on_return();
+  reschedule = false;
 }
 
 /* Prints thread statistics. */
@@ -388,8 +383,9 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
+  int old_priority = thread_current()->priority;
   thread_current ()->priority = new_priority;
-  reschedule = true;
+  if(new_priority >old_priority) thread_yield();
 }
 
 /* Returns the current thread's priority. */
