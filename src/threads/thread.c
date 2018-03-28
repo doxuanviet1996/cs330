@@ -541,8 +541,17 @@ next_thread_to_run (void)
 {
   if (list_empty (&ready_list))
     return idle_thread;
-  else
-    return list_entry (list_pop_front (&ready_list), struct thread, elem);
+  
+  enum intr_level old_level = intr_disable();
+  struct list_elem *e;
+  struct thread *t = list_entry(list_begin(&ready_list), struct thread, elem);
+  for(e = list_begin(&ready_list); e != list_end(&ready_list); e = list_next(e))
+  {
+    struct thread *cur = list_entry(e, struct thread, elem);
+    if(cur->priority > t-> priority) t = cur;
+  }
+  intr_set_level(old_level);
+  return t;
 }
 
 /* Completes a thread switch by activating the new thread's page
