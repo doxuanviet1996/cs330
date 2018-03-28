@@ -372,6 +372,7 @@ thread_yield (void)
   }
 
   printf("Stucked in thread_yield 4?\n");
+  printf("Current thread status: %d\n", cur->status);
   cur->status = THREAD_READY;
   printf("Stucked in thread_yield 5?\n");
   schedule ();
