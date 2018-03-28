@@ -538,6 +538,7 @@ next_thread_to_run (void)
     struct thread *cur = list_entry(e, struct thread, elem);
     if(cur->priority > t-> priority) t = cur;
   }
+  list_remove(t->elem);
   intr_set_level(old_level);
   return t;
 }
