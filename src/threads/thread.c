@@ -384,11 +384,9 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  enum intr_level old_level = intr_disable ();
   struct thread* best_thread = next_thread_to_run();
   int p = best_thread->priority;
   list_push_back(&ready_list, &best_thread->elem);
-  intr_set_level(old_level);
   if(p > new_priority) thread_yield();
 }
 
