@@ -384,7 +384,10 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  if(next_thread_to_run()->priority > new_priority) thread_yield();
+  struct thread* best_thread = next_thread_to_run();
+  int p = best_thread->priority;
+  list_push_back(&ready_list, &best_thread->elem);
+  if(p > new_priority) thread_yield();
 }
 
 /* Returns the current thread's priority. */
