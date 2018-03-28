@@ -392,9 +392,7 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  struct thread* best_thread = next_thread_to_run();
-  int p = best_thread->priority;
-  list_push_back(&ready_list, &best_thread->elem);
+  int p = best_ready_thread()->priority;
   if(p > new_priority) thread_yield();
 }
 
@@ -538,13 +536,8 @@ alloc_frame (struct thread *t, size_t size)
   return t->stack;
 }
 
-/* Chooses and returns the next thread to be scheduled.  Should
-   return a thread from the run queue, unless the run queue is
-   empty.  (If the running thread can continue running, then it
-   will be in the run queue.)  If the run queue is empty, return
-   idle_thread. */
-static struct thread *
-next_thread_to_run (void) 
+/* Return the thread with highest priority in the run queue.*/
+static struct thread * best_ready_thread(void)
 {
   if (list_empty (&ready_list))
     return idle_thread;
@@ -557,6 +550,20 @@ next_thread_to_run (void)
     struct thread *cur = list_entry(e, struct thread, elem);
     if(cur->priority > t-> priority) t = cur;
   }
+  intr_set_level(old_level);
+  return t;
+}
+
+/* Chooses and returns the next thread to be scheduled.  Should
+   return a thread from the run queue, unless the run queue is
+   empty.  (If the running thread can continue running, then it
+   will be in the run queue.)  If the run queue is empty, return
+   idle_thread. */
+static struct thread *
+next_thread_to_run (void) 
+{
+  enum intr_level old_level = intr_disable();
+  struct thread *t = best_ready_thread();
   list_remove(&t->elem);
   intr_set_level(old_level);
   return t;
