@@ -366,9 +366,14 @@ thread_yield (void)
 
   printf("Stucked in thread_yield 3?\n");
   if (cur != idle_thread) 
+  {
+    printf("List push error?\n");
     list_push_back (&ready_list, &cur->elem);
-  cur->status = THREAD_READY;
+  }
+
   printf("Stucked in thread_yield 4?\n");
+  cur->status = THREAD_READY;
+  printf("Stucked in thread_yield 5?\n");
   schedule ();
   intr_set_level (old_level);
 }
