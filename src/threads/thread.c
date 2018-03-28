@@ -237,6 +237,9 @@ thread_create (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
 
+  // If this is not the idle thread, i.e. thread_start() has finished,
+  // we should reschedule.
+  if(t->tid != 2) thread_yield();
   return tid;
 }
 
