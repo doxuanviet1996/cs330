@@ -239,7 +239,11 @@ thread_create (const char *name, int priority,
 
   // If this is not the idle thread, i.e. thread_start() has finished,
   // we should reschedule.
-  if(t->tid != 2) thread_yield();
+  if(t->tid != 2)
+  {
+    printf("Priority: %d %d\n", t->priority, thread_current()->priority);
+    thread_yield();
+  }
   return tid;
 }
 
