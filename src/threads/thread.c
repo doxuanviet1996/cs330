@@ -279,6 +279,7 @@ thread_unblock (struct thread *t)
   ASSERT (is_thread (t));
 
   old_level = intr_disable ();
+  printf("Running thread is: %d\n",thread_current()->tid);
   printf("Unblocking thread %d %d\n", t->tid, t->priority);
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
