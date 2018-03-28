@@ -360,11 +360,15 @@ thread_yield (void)
   
   ASSERT (!intr_context ());
 
+  printf("Stucked in thread_yield 2?\n");
+
   old_level = intr_disable ();
+
+  printf("Stucked in thread_yield 3?\n");
   if (cur != idle_thread) 
     list_push_back (&ready_list, &cur->elem);
   cur->status = THREAD_READY;
-  printf("Stucked in thread_yield 2?\n");
+  printf("Stucked in thread_yield 4?\n");
   schedule ();
   intr_set_level (old_level);
 }
