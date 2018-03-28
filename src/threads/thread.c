@@ -40,7 +40,6 @@ static struct thread *initial_thread;
 
 /* Lock used by allocate_tid(). */
 static struct lock tid_lock;
-static struct lock ready_list_lock;
 
 /* Stack frame for kernel_thread(). */
 struct kernel_thread_frame 
@@ -95,10 +94,9 @@ thread_init (void)
   ASSERT (intr_get_level () == INTR_OFF);
 
   lock_init (&tid_lock);
-  lock_init (&ready_list_lock);
   list_init (&ready_list);
   list_init (&wait_list);
-  list_init (&all_list); 
+  list_init (&all_list);
 
 
   /* Set up a thread structure for the running thread. */
@@ -146,6 +144,8 @@ thread_tick (void)
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
 
+  ;
+
   int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
 
   struct list_elem *e;
@@ -159,7 +159,6 @@ thread_tick (void)
         e = e_prev;
       }
     }
-    
 }
 
 /* Prints thread statistics. */
@@ -238,12 +237,12 @@ thread_create (const char *name, int priority,
 /* Sleep the current thread until timer ticks reach TICKS.*/
 void thread_wait(int64_t ticks)
 {
-  enum intr_level old_level = intr_disable ();
   struct thread *t = thread_current ();
   t->wakeup_time = ticks;
   list_push_back (&wait_list, &t->elem);
+  intr_disable();
   thread_block();
-  intr_set_level (old_level);
+  intr_enable();
 }
 
 /* Puts the current thread to sleep.  It will not be scheduled
@@ -273,25 +272,14 @@ thread_block (void)
 void
 thread_unblock (struct thread *t) 
 {
-
   enum intr_level old_level;
 
   ASSERT (is_thread (t));
 
   old_level = intr_disable ();
-  printf("Running thread is: %d\n",thread_current()->tid);
-  printf("Unblocking thread %d %d\n", t->tid, t->priority);
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
-  /*int p = thread_current()->priority;
-  if(p < t->priority)
-  {
-    printf("Priority at unblock: %d %d\n", p, t->priority);
-    printf("Of thread tid: %d %d\n",thread_current()->tid, t->tid);
-    thread_yield();
-  }
-  printf("Done Unblocking thread %d %d\n", t->tid, t->priority);*/
   intr_set_level (old_level);
 }
 
@@ -354,30 +342,15 @@ thread_exit (void)
 void
 thread_yield (void) 
 {
-  printf("Stucked here?\n");
   struct thread *cur = thread_current ();
-  printf("Stucked in thread_yield?\n");
   enum intr_level old_level;
   
   ASSERT (!intr_context ());
 
-  printf("Stucked in thread_yield 2?\n");
-
   old_level = intr_disable ();
-
-  printf("Stucked in thread_yield 3?\n");
   if (cur != idle_thread) 
-  {
-    printf("List push error?\n");
     list_push_back (&ready_list, &cur->elem);
-  }
-
-  printf("Stucked in thread_yield 4?\n");
-  printf("Current thread status: %d\n", cur->status);
-  cur->status = THREAD_RUNNING;
-  printf("Stucked in thread_yield 5?\n");
   cur->status = THREAD_READY;
-  printf("WHYYYY\n");
   schedule ();
   intr_set_level (old_level);
 }
@@ -404,7 +377,6 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  intr_yield_on_return();
 }
 
 /* Returns the current thread's priority. */
@@ -557,19 +529,8 @@ next_thread_to_run (void)
 {
   if (list_empty (&ready_list))
     return idle_thread;
-  return list_entry(list_pop_front(&ready_list), struct thread, elem);
-  enum intr_level old_level = intr_disable();
-  lock_acquire(&ready_list_lock);
-  struct list_elem *e;
-  struct thread *t = list_entry(list_begin(&ready_list), struct thread, elem);
-  for(e = list_begin(&ready_list); e != list_end(&ready_list); e = list_next(e))
-  {
-    struct thread *cur = list_entry(e, struct thread, elem);
-    if(cur->priority > t-> priority) t = cur;
-  }
-  lock_release(&ready_list_lock);
-  intr_set_level(old_level);
-  return t;
+  else
+    return list_entry (list_pop_front (&ready_list), struct thread, elem);
 }
 
 /* Completes a thread switch by activating the new thread's page
@@ -639,7 +600,6 @@ schedule (void)
   if (cur != next)
     prev = switch_threads (cur, next);
   thread_schedule_tail (prev);
-  printf("Stucked in Schedule?\n");
 }
 
 /* Returns a tid to use for a new thread. */
