@@ -393,6 +393,7 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
+  reschedule = true;
 }
 
 /* Returns the current thread's priority. */
