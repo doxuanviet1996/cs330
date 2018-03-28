@@ -280,8 +280,11 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
-  int p = thread_current()->priority;
-  if(p < t->priority) thread_yield();
+  if(thread_current()->tid != 1)
+  {
+    int p = thread_current()->priority;
+    if(p < t->priority) thread_yield();
+  }
   intr_set_level (old_level);
 }
 
