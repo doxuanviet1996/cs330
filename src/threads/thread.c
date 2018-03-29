@@ -234,7 +234,9 @@ thread_create (const char *name, int priority,
 
   // If this is not the idle thread, i.e. thread_start() has finished,
   // we should reschedule if the new thread has higher priority.
-  if(t->tid != 2 && reschedule)
+  if(
+    //t->tid != 2 && 
+    reschedule)
     thread_yield();
   return tid;
 }
