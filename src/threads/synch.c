@@ -335,7 +335,7 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
       }
     }
     list_remove(&best_sema_elem->elem);
-    sema_up (best_sema_elem->semaphore);
+    sema_up (&best_sema_elem->semaphore);
   }
 }
 
