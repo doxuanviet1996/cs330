@@ -114,11 +114,7 @@ sema_up (struct semaphore *sema)
   old_level = intr_disable ();
   bool reschedule = false;
   if (!list_empty (&sema->waiters)) 
-  {
-    struct thread *t = best_thread_among_list(&sema->waiters);
-    list_remove(&t->elem);
-    reschedule = thread_unblock (t);
-  }
+    reschedule = thread_unblock(list_entry(list_pop_front(&sema->waiters), struct thread, elem));
   sema->value++;
   intr_set_level (old_level);
   if(reschedule) thread_yield();
