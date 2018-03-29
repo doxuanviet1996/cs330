@@ -230,14 +230,8 @@ thread_create (const char *name, int priority,
   intr_set_level (old_level);
 
   /* Add to run queue. */
-  bool reschedule = thread_unblock (t);
+  if(thread_unblock (t)) thread_yield();
 
-  // If this is not the idle thread, i.e. thread_start() has finished,
-  // we should reschedule if the new thread has higher priority.
-  if(
-    //t->tid != 2 && 
-    reschedule)
-    thread_yield();
   return tid;
 }
 
