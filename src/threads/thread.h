@@ -141,13 +141,13 @@ int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
 /* Compare function for 2 threads base on priority. */
-static bool thread_greater (const struct list_elem *a_, const struct list_elem *b_,
+static bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
             void *aux UNUSED) 
 {
   const struct thread *a = list_entry (a_, struct thread, elem);
   const struct thread *b = list_entry (b_, struct thread, elem);
   
-  return a->priority > b->priority;
+  return a->priority < b->priority;
 }
 
 #endif /* threads/thread.h */

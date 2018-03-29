@@ -114,7 +114,12 @@ sema_up (struct semaphore *sema)
   old_level = intr_disable ();
   bool reschedule = false;
   if (!list_empty (&sema->waiters)) 
-    reschedule = thread_unblock(list_entry(list_pop_front(&sema->waiters), struct thread, elem));
+  {
+    struct list_elem *e = list_max(&sema->waiters, thread_less);
+    struct thread *t = list_entry(e, struct thread, elem);
+    list_remove(e);
+    reschedule = thread_unblock(t);
+  }
   sema->value++;
   intr_set_level (old_level);
   if(reschedule) thread_yield();
@@ -196,6 +201,13 @@ lock_acquire (struct lock *lock)
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
 
+  struct thread *lock_holder = lock->holder;
+  struct thread *cur_thread = thread_current();
+  int holder_p = lock_holder->priority, cur_p = cur_thread->priority;
+  if(holder_p < cur_p)
+  {
+    thread_
+  }
   sema_down (&lock->semaphore);
   lock->holder = thread_current ();
 }
@@ -327,7 +339,7 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
     {
       struct semaphore_elem *sema_elem = list_entry(e, struct semaphore_elem, elem);
       if(list_empty(&sema_elem->semaphore.waiters)) continue;
-      int p = list_entry(list_front(&sema_elem->semaphore.waiters), struct thread, elem)->priority;
+      int p = list_entry(list_max(&sema_elem->semaphore.waiters, thread_less), struct thread, elem)->priority;
       if(p > best_priority)
       {
         best_priority = p;
