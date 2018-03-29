@@ -205,7 +205,11 @@ lock_acquire (struct lock *lock)
   struct thread *cur_thread = thread_current();
   int holder_p = lock_holder->priority, cur_p = cur_thread->priority;
   // Priority donation, if needed.
-  if(holder_p < cur_p) lock_holder->priority = cur_p;
+  if(holder_p < cur_p)
+  {
+    lock_holder->priority = cur_p;
+    thread_yield();
+  }
   sema_down (&lock->semaphore);
   lock->holder = thread_current ();
   lock_holder->priority = holder_p;
