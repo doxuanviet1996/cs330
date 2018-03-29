@@ -320,22 +320,22 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
   {
     // iterate through the semaphores, iterate through the waiters
     // of each semaphore and choose the semaphore with the best thread.
-    struct semaphore *best_semaphore;
+    struct semaphore_elem *best_sema_elem;
     int best_priority = -1;
     struct list_elem *e;
     for(e = list_begin(&cond->waiters); e != list_end(&cond->waiters); e = list_next(e))
     {
-      struct semaphore *sema = &list_entry(e, struct semaphore_elem, elem)->semaphore;
-      if(list_empty(&sema->waiters)) continue;
-      int p = list_entry(list_front(&sema->waiters), struct thread, elem)->priority;
+      struct semaphore_elem *sema_elem = list_entry(e, struct semaphore_elem, elem);
+      if(list_empty(&sema_elem->semaphore.waiters)) continue;
+      int p = list_entry(list_front(&sema_elem->semaphore.waiters), struct thread, elem)->priority;
       if(p > best_priority)
       {
         best_priority = p;
-        best_semaphore = sema;
+        best_sema_elem = sema_elem;
       }
     }
-    list_remove(&best_semaphore->elem);
-    sema_up (best_semaphore);
+    list_remove(&best_sema_elem->elem);
+    sema_up (best_semaphore->semaphore);
   }
 }
 
