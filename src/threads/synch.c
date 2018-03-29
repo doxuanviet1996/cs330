@@ -201,13 +201,13 @@ lock_acquire (struct lock *lock)
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
 
-  struct thread *lock_holder = lock->holder;
+  /*struct thread *lock_holder = lock->holder;
   struct thread *cur_thread = thread_current();
   int holder_p = lock_holder->priority, cur_p = cur_thread->priority;
   if(holder_p < cur_p)
   {
     thread_
-  }
+  }*/
   sema_down (&lock->semaphore);
   lock->holder = thread_current ();
 }
