@@ -325,8 +325,9 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
     struct list_elem *e;
     for(e = list_begin(&cond->waiters); e != list_end(&cond->waiters); e = list_next(e))
     {
-      struct semaphore *sema = list_entry(e, struct semaphore_elem, elem)->semaphore;
-      if(list_empty(sema->waiters)) continue;
+      struct semaphore_elem *semaelem = list_entry(e, struct semaphore_elem, elem);
+      struct semaphore *sema = semaelem->semaphore;
+      if(list_empty(&sema->waiters)) continue;
       int p = list_entry(list_front(&sema->waiters), struct thread, elem)->priority;
       if(p > best_priority)
       {
