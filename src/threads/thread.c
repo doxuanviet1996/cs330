@@ -385,7 +385,7 @@ thread_set_priority (int new_priority)
 {
   thread_current ()->priority = new_priority;
   if(!list_empty(&ready_list) &&
-    list_entry(list_max(&ready_list, thread_less), struct thread, elem)->priority > new_priority) thread_yield();
+    list_entry(list_max(&ready_list, thread_less, NULL), struct thread, elem)->priority > new_priority) thread_yield();
 }
 
 /* Returns the current thread's priority. */
@@ -540,7 +540,7 @@ next_thread_to_run (void)
     return idle_thread;
   else
   {
-    struct list_elem *e = list_max(&ready_list, thread_less);
+    struct list_elem *e = list_max(&ready_list, thread_less, NULL);
     struct thread *t = list_entry(e, struct thread, elem);
     list_remove(e);
     return t;

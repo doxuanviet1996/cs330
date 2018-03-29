@@ -115,7 +115,7 @@ sema_up (struct semaphore *sema)
   bool reschedule = false;
   if (!list_empty (&sema->waiters)) 
   {
-    struct list_elem *e = list_max(&sema->waiters, thread_less);
+    struct list_elem *e = list_max(&sema->waiters, thread_less, NULL);
     struct thread *t = list_entry(e, struct thread, elem);
     list_remove(e);
     reschedule = thread_unblock(t);
@@ -339,7 +339,7 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
     {
       struct semaphore_elem *sema_elem = list_entry(e, struct semaphore_elem, elem);
       if(list_empty(&sema_elem->semaphore.waiters)) continue;
-      int p = list_entry(list_max(&sema_elem->semaphore.waiters, thread_less), struct thread, elem)->priority;
+      int p = list_entry(list_max(&sema_elem->semaphore.waiters, thread_less, NULL), struct thread, elem)->priority;
       if(p > best_priority)
       {
         best_priority = p;
