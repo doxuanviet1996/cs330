@@ -322,7 +322,7 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
     // of each semaphore and choose the semaphore with the best thread.
     struct semaphore *best_semaphore;
     int best_priority = -1;
-    struct semaphore_elem *e;
+    struct list_elem *e;
     for(e = list_begin(&cond->waiters); e != list_end(&cond->waiters); e = list_next(e))
     {
       struct semaphore *sema = list_entry(e, struct semaphore_elem, elem)->semaphore;
