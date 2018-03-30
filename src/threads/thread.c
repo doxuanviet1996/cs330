@@ -73,6 +73,7 @@ static bool is_thread (struct thread *) UNUSED;
 static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
+void debug_list(struct list *l);
 static tid_t allocate_tid (void);
 
 /* Initializes the threading system by transforming the code
