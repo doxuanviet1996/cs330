@@ -201,13 +201,11 @@ lock_acquire (struct lock *lock)
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
 
-  //if(true)
-  //{
-    printf("NULL lock_acquire called by thread %s\n",thread_current()->name);
+  if(true)
+  {
     sema_down (&lock->semaphore);
-    printf("Done sema_down\n");
     lock->holder = thread_current();
-  //}
+  }
   /*else
   {
     printf("lock_acquire called by thread %s\n",thread_current()->name);
