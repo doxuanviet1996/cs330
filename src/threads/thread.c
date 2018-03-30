@@ -230,7 +230,7 @@ thread_create (const char *name, int priority,
   intr_set_level (old_level);
 
   /* Add to run queue. */
-  if(thread_unblock (t) && tid != 2) thread_yield();
+  if(thread_unblock (t)) thread_yield();
 
   return tid;
 }
