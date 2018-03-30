@@ -209,7 +209,8 @@ lock_acquire (struct lock *lock)
   else
   {
     sema_down (&lock->semaphore);
-    lock->holder = thread_current();
+    struct thread *cur = thread_current();
+    lock->holder = cur;
   }
   /*else
   {
