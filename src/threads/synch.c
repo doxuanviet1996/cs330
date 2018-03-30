@@ -208,11 +208,11 @@ lock_acquire (struct lock *lock)
   }
   else
   {
-    enum intr_level old_level = intr_disable();
+    //enum intr_level old_level = intr_disable();
     struct thread *cur = thread_current();
     struct thread *holder = lock->holder;
     add_donator(holder, cur);
-    intr_set_level(old_level);
+    //intr_set_level(old_level);
 
     sema_down (&lock->semaphore);
     lock->holder = thread_current ();
