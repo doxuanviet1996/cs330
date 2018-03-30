@@ -152,7 +152,7 @@ static bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
 }
 
 // Update priority base on donations.
-void update_priority(struct thread *self)
+static void update_priority(struct thread *self)
 {
   struct list_elem *e;
   int p = self->priority;
@@ -166,14 +166,14 @@ void update_priority(struct thread *self)
 }
 
 // Add a donator.
-void add_donator(struct thread *self, struct thread *t)
+static void add_donator(struct thread *self, struct thread *t)
 {
   list_push_back(&self->donator, &t->elem);
   update_priority(self);
 }
 
 // Remove a donator.
-void remove_donator(struct thread *self, struct thread *t)
+static void remove_donator(struct thread *self, struct thread *t)
 {
   struct list_elem *e;
   for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
