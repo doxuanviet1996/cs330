@@ -674,10 +674,10 @@ void update_priority(struct thread *self)
 /* Add a donator t to the thread self. */
 void add_donator(struct thread *self, struct thread *t)
 {
-  enum intr_level old_level = intr_disable();
+  //enum intr_level old_level = intr_disable();
   list_push_back(&self->donator, &t->donate_elem);
   update_priority(self);
-  intr_set_level(old_level);
+  //intr_set_level(old_level);
 }
 
 /* Remove donator thread t from thread self. */
