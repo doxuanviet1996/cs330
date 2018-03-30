@@ -354,6 +354,7 @@ thread_yield (void)
   ASSERT (!intr_context ());
 
   old_level = intr_disable ();
+  debug_list(&ready_list);
   if (cur != idle_thread) 
     list_push_back(&ready_list, &cur->elem);
     // list_insert_ordered (&ready_list, &cur->elem, thread_greater, NULL);
@@ -628,6 +629,14 @@ allocate_tid (void)
   lock_release (&tid_lock);
 
   return tid;
+}
+
+void debug_list(struct list *l)
+{
+  struct list_elem *e;
+  printf("Debug list: ")
+  for(e = list_begin(l); e != list_end(l); e = list_next(e)) printf("%s ",list_entry(e, struct thread, elem)->name);
+  printf("\n");
 }
 
 /* Offset of `stack' member within `struct thread'.
