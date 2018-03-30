@@ -208,7 +208,7 @@ lock_acquire (struct lock *lock)
     lock->holder = thread_current ();
     return;
   }
-
+  printf("acquired not OK\n");
   struct thread *cur = thread_current();
   struct thread *lock_holder = lock->holder;
   add_donator(lock_holder, cur);
