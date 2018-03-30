@@ -208,7 +208,9 @@ lock_acquire (struct lock *lock)
   }
   else
   {
+    printf("Fuck\n");
     sema_down (&lock->semaphore);
+    printf("Fuck fuck fuck\n");
     lock->holder = thread_current();
   }
   /*else
