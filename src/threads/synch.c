@@ -203,6 +203,7 @@ lock_acquire (struct lock *lock)
 
   if(lock->holder == NULL)
   {
+    printf("acquired OK\n");
     sema_down (&lock->semaphore);
     lock->holder = thread_current ();
     return;
