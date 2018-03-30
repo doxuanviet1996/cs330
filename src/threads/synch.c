@@ -118,6 +118,7 @@ sema_up (struct semaphore *sema)
     struct list_elem *e = list_max(&sema->waiters, thread_less, NULL);
     struct thread *t = list_entry(e, struct thread, elem);
     list_remove(e);
+
     reschedule = thread_unblock(t);
   }
   sema->value++;
@@ -210,10 +211,10 @@ lock_acquire (struct lock *lock)
   struct thread *cur_thread = thread_current();
   int holder_p = lock_holder->priority, cur_p = cur_thread->priority;
   // Priority donation, if needed.
-  //if(holder_p < cur_p) lock_holder->priority = cur_p;
+  if(holder_p < cur_p) lock_holder->priority = cur_p;
   sema_down (&lock->semaphore);
-  lock_holder->priority = holder_p;
   lock->holder = thread_current ();
+  lock_holder->priority = holder_p;
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
