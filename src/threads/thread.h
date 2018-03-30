@@ -93,6 +93,7 @@ struct thread
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
+    struct list donator;                /* List of priority donators. */
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
@@ -101,6 +102,39 @@ struct thread
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
+
+    // Update priority base on donations.
+    void update_priority()
+    {
+      struct list_elem *e;
+      int p = this->priority;
+      if(list_empty(&donator)) return;
+      for(e = list_begin(&this->donator); e != list_end(&this->donator); e = list_next(e))
+      {
+        struct thread *d = list_entry(e, struct thread, elem);
+        if(d->priority > p) p = d->priority;
+      }
+      this->priority = p;
+    }
+
+    // Add a donator.
+    void add_donator(struct thread *t)
+    {
+      list_push_back(&donator, &t->elem);
+      this->update_priority();
+    }
+
+    // Remove a donator.
+    void remove_donator(struct thread *t)
+    {
+      struct list_elem *e;
+      for(e = list_begin(&this->donator); e != list_end(&this->donator); e = list_next(e))
+        if(e == &t->elem)
+        {
+          list_remove(e);
+          return;
+        }
+    }
   };
 
 /* If false (default), use round-robin scheduler.
