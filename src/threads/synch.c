@@ -118,7 +118,6 @@ sema_up (struct semaphore *sema)
     struct list_elem *e = list_max(&sema->waiters, thread_less, NULL);
     struct thread *t = list_entry(e, struct thread, elem);
     list_remove(e);
-    printf("Unblocking %s\n",t->name);
     reschedule = thread_unblock(t);
   }
   sema->value++;
