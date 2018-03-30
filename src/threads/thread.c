@@ -635,7 +635,7 @@ allocate_tid (void)
 void debug_list(struct list *l)
 {
   struct list_elem *e;
-  printf("Debug list: ")
+  printf("Debug list: ");
   for(e = list_begin(l); e != list_end(l); e = list_next(e)) printf("%s ",list_entry(e, struct thread, elem)->name);
   printf("\n");
 }
