@@ -520,6 +520,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->wakeup_time = 0;
   t->magic = THREAD_MAGIC;
   //t->donate_elem.prev = t->donate_elem.next = NULL;
+  list_init(&t->donator);
   list_push_back (&all_list, &t->allelem);
 }
 
