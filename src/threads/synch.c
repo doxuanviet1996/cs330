@@ -203,12 +203,12 @@ lock_acquire (struct lock *lock)
 
   if(lock->holder == NULL)
   {
-    printf("acquired OK\n");
+    printf("NULL lock_acquire called by thread %s\n",thread_current()->name);
     sema_down (&lock->semaphore);
     lock->holder = thread_current ();
     return;
   }
-  printf("acquired not OK\n");
+  printf("lock_acquire called by thread %s\n",thread_current()->name);
   struct thread *cur = thread_current();
   struct thread *lock_holder = lock->holder;
   add_donator(lock_holder, cur);
