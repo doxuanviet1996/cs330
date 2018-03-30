@@ -138,7 +138,7 @@ thread_tick (void)
   else
     kernel_ticks++;
 
-  // Wake up threads in the wait_list.
+  // Wake up threads in the wait_list
   int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
   bool reschedule = false;
 
@@ -241,9 +241,10 @@ void thread_wait(int64_t ticks)
   struct thread *t = thread_current ();
   t->wakeup_time = ticks;
   list_push_back(&wait_list, &t->elem);
-  enum intr_level old_level = intr_disable();
+  //list_insert_ordered (&wait_list, &t->elem, thread_greater, NULL);
+  intr_disable();
   thread_block();
-  intr_set_level(old_level);
+  intr_enable();
 }
 
 /* Puts the current thread to sleep.  It will not be scheduled
@@ -270,9 +271,7 @@ thread_block (void)
    be important: if the caller had disabled interrupts itself,
    it may expect that it can atomically unblock a thread and
    update other data. 
-   Update: the function now returns true if the unblocked
-   thread has higher priority than the current thread, which
-   then rescheduling is needed. */
+   The function returns true if the unblocked thread required reschedule. */
 bool
 thread_unblock (struct thread *t) 
 {
@@ -283,6 +282,7 @@ thread_unblock (struct thread *t)
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back(&ready_list, &t->elem);
+  // list_insert_ordered (&ready_list, &t->elem, thread_greater, NULL);
   t->status = THREAD_READY;
   bool reschedule = thread_current()->priority < t->priority;
   intr_set_level (old_level);
