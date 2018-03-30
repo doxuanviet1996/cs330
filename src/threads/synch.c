@@ -348,7 +348,7 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
 
   if (!list_empty (&cond->waiters)) 
   {
-    // iterate through the semaphores, iterate through the waiters
+    // Iterate through the semaphores, iterate through the waiters
     // of each semaphore and choose the semaphore with the best thread.
     struct semaphore_elem *best_sema_elem = NULL;
     int best_priority = -1;
