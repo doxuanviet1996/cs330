@@ -211,9 +211,9 @@ lock_acquire (struct lock *lock)
     struct thread *cur = thread_current();
     struct thread *holder = lock->holder;
     add_donator(holder, cur);
-    //cur->waiting_lock = lock;
+    cur->waiting_lock = lock;
     sema_down (&lock->semaphore);
-    //cur->waiting_lock = NULL;
+    cur->waiting_lock = NULL;
     lock->holder = cur;
   }
 }
@@ -258,6 +258,7 @@ lock_release (struct lock *lock)
     struct thread *waiter = list_entry(e, struct thread, elem);
     remove_donator(holder, waiter);
   }
+  update_priority(holder);
   intr_set_level(old_level);
   lock->holder = NULL;
   sema_up (&lock->semaphore);

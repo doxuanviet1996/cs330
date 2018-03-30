@@ -643,12 +643,18 @@ allocate_tid (void)
 void update_priority(struct thread *self)
 {
   struct list_elem *e;
+  int cur_p = self->priority;
   self->priority = self->true_priority;
   if(list_empty(&self->donator)) return;
   for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
   {
     struct thread *d = list_entry(e, struct thread, donate_elem);
     if(d->priority > self->priority) self->priority = d->priority;
+  }
+  if(self->priority != cur_p)
+  {
+    struct lock *l = self->waiting_lock;
+    if(l != NULL) update_priority(l->holder);
   }
 }
 
@@ -669,7 +675,6 @@ void remove_donator(struct thread *self, struct thread *t)
     if(e == &t->donate_elem)
     {
       list_remove(e);
-      update_priority(self);
       return;
     }
 }
