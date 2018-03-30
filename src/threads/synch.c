@@ -208,17 +208,11 @@ lock_acquire (struct lock *lock)
   }
   else
   {
-    printf("Fuck\n");
-    sema_down (&lock->semaphore);
-    printf("Fuck fuck fuck\n");
-    lock->holder = thread_current();
-  }
-  /*else
-  {
-    printf("lock_acquire called by thread %s\n",thread_current()->name);
+    enum intr_level old_level = intr_disable();
     struct thread *cur = thread_current();
-    struct thread *lock_holder = lock->holder;
-    add_donator(lock_holder, cur);
+    struct thread *holder = lock->holder;
+    add_donator(holder, cur);
+    intr_set_level(old_level);
 
     sema_down (&lock->semaphore);
     lock->holder = thread_current ();
