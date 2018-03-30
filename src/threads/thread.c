@@ -395,11 +395,11 @@ thread_set_priority (int new_priority)
   if(should_yield()) thread_yield();
 }
 
-/* Returns the current thread's priority. */
+/* Returns the current thread's true priority. */
 int
 thread_get_priority (void) 
 {
-  return thread_current ()->priority;
+  return thread_current ()->true_priority;
 }
 
 /* Sets the current thread's nice value to NICE. */
