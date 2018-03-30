@@ -272,7 +272,7 @@ thread_block (void)
    update other data. 
    Update: the function now returns true if the unblocked
    thread has higher priority than the current thread, which
-   then rescheduling is needed. */
+   then rescheduling is needed, otherwise false. */
 bool
 thread_unblock (struct thread *t) 
 {
@@ -354,9 +354,7 @@ thread_yield (void)
   ASSERT (!intr_context ());
 
   old_level = intr_disable ();
-  if (cur != idle_thread) 
-    list_push_back(&ready_list, &cur->elem);
-    // list_insert_ordered (&ready_list, &cur->elem, thread_greater, NULL);
+  if (cur != idle_thread) list_push_back(&ready_list, &cur->elem);
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
@@ -383,11 +381,12 @@ thread_foreach (thread_action_func *func, void *aux)
 bool should_yield()
 {
   if(list_empty(&ready_list)) return false;
-  int best_p = list_entry(list_max(&ready_list, thread_less, NULL), struct thread, elem)->priority;
+  struct list_elem *mx = list_max(&ready_list, thread_less, NULL);
+  int best_p = list_entry(mx, struct thread, elem)->priority;
   return best_p > thread_current()->priority;
 }
 
-/* Sets the current thread's priority to NEW_PRIORITY. */
+/* Sets the current thread's true priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) 
 {
