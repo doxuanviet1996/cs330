@@ -634,7 +634,7 @@ allocate_tid (void)
 
 void debug_list(struct list *l)
 {
-  enum intr old_level = intr_disable();
+  enum intr_level old_level = intr_disable();
   struct list_elem *e;
   printf("Debug list: ");
   for(e = list_begin(l); e != list_end(l); e = list_next(e)) printf("%s ",list_entry(e, struct thread, elem)->name);
