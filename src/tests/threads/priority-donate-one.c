@@ -32,7 +32,7 @@ test_priority_donate_one (void)
   msg("Begin of test\n");
   lock_init (&lock);
   lock_acquire (&lock);
-  msg("Done acquiring\n");
+  printf("Done acquiring\n");
   thread_create ("acquire1", PRI_DEFAULT + 1, acquire1_thread_func, &lock);
   msg ("This thread should have priority %d.  Actual priority: %d.",
        PRI_DEFAULT + 1, thread_get_priority ());
