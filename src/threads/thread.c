@@ -380,13 +380,20 @@ thread_foreach (thread_action_func *func, void *aux)
     }
 }
 
+/* Check if we need to call thread_yield(). */
+bool should_yield()
+{
+  if(list_empty(&ready_list)) return false;
+  int best_p = list_entry(list_max(&ready_list, thread_less, NULL), struct thread, elem)->priority;
+  return best_p > thread_current()->priority;
+}
+
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  if(!list_empty(&ready_list) &&
-    list_entry(list_max(&ready_list, thread_less, NULL), struct thread, elem)->priority > new_priority) thread_yield();
+  if(should_yield()) thread_yield();
 }
 
 /* Returns the current thread's priority. */
@@ -510,7 +517,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->status = THREAD_BLOCKED;
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
-  t->priority = priority;
+  t->priority = t->true_priority = priority;
   t->wakeup_time = 0;
   t->magic = THREAD_MAGIC;
   list_push_back (&all_list, &t->allelem);
@@ -631,14 +638,38 @@ allocate_tid (void)
   return tid;
 }
 
-void debug_list(struct list *l)
+// Update priority base on donations.
+void update_priority(struct thread *self)
 {
-  enum intr_level old_level = intr_disable();
   struct list_elem *e;
-  printf("Debug list: ");
-  for(e = list_begin(l); e != list_end(l); e = list_next(e)) printf("%s ",list_entry(e, struct thread, elem)->name);
-  printf("\n");
-  intr_set_level(old_level);
+  self->priority = self->true_priority;
+  if(list_empty(&self->donator)) return;
+  for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
+  {
+    struct thread *d = list_entry(e, struct thread, elem);
+    if(d->priority > self->priority) self->priority = d->priority;
+  }
+  if(should_yield()) thread_yield();
+}
+
+// Add a donator.
+void add_donator(struct thread *self, struct thread *t)
+{
+  list_push_back(&self->donator, &t->elem);
+  update_priority(self);
+}
+
+// Remove a donator.
+void remove_donator(struct thread *self, struct thread *t)
+{
+  struct list_elem *e;
+  for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
+    if(e == &t->elem)
+    {
+      list_remove(e);
+      update_priority(self);
+      return;
+    }
 }
 
 /* Offset of `stack' member within `struct thread'.

@@ -87,7 +87,7 @@ struct thread
     enum thread_status status;          /* Thread state. */
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
-    int priority;                       /* Priority. */
+    int priority, true_priority;        /* Priority. */
     struct list_elem allelem;           /* List element for all threads list. */
     int64_t wakeup_time;                /* Checkpoint for waking up if thread is put to sleep.*/
 
@@ -151,37 +151,8 @@ static bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
   return a->priority < b->priority;
 }
 
-// Update priority base on donations.
-static void update_priority(struct thread *self)
-{
-  struct list_elem *e;
-  int p = self->priority;
-  if(list_empty(&self->donator)) return;
-  for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
-  {
-    struct thread *d = list_entry(e, struct thread, elem);
-    if(d->priority > p) p = d->priority;
-  }
-  self->priority = p;
-}
-
-// Add a donator.
-static void add_donator(struct thread *self, struct thread *t)
-{
-  list_push_back(&self->donator, &t->elem);
-  update_priority(self);
-}
-
-// Remove a donator.
-static void remove_donator(struct thread *self, struct thread *t)
-{
-  struct list_elem *e;
-  for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
-    if(e == &t->elem)
-    {
-      list_remove(e);
-      return;
-    }
-}
+void update_priority(struct thread *self);
+void add_donator(struct thread *self, struct thread *t);
+void remove_donator(struct thread *self, struct thread *t);
 
 #endif /* threads/thread.h */
