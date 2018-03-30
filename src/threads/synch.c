@@ -123,6 +123,7 @@ sema_up (struct semaphore *sema)
   }
   sema->value++;
   intr_set_level (old_level);
+  printf("About to yield\n");
   if(reschedule) thread_yield();
 }
 
