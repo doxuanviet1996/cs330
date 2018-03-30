@@ -248,18 +248,19 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-  struct thread *lock_holder = lock->holder;
+  struct thread *holder = lock->holder;
   // Remove all donators from this semaphore's waiters.
-  /*struct list_elem *e;
+  struct list_elem *e;
+  enum intr_level old_level = intr_disable();
   for(e = list_begin(&lock->semaphore.waiters); e != list_end(&lock->semaphore.waiters); e = list_next(e))
   {
     struct thread *waiter = list_entry(e, struct thread, elem);
-    // Should remove all then check yield, or remove and check for each?
-    remove_donator(lock_holder, waiter);
-  }*/
+    remove_donator(holder, waiter);
+  }
+  intr_set_level(old_level);
   lock->holder = NULL;
   sema_up (&lock->semaphore);
-  //if(should_yield()) thread_yield();
+  if(should_yield()) thread_yield();
 }
 
 /* Returns true if the current thread holds LOCK, false
