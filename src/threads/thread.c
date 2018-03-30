@@ -395,11 +395,11 @@ thread_set_priority (int new_priority)
   if(should_yield()) thread_yield();
 }
 
-/* Returns the current thread's true priority. */
+/* Returns the current thread's priority. */
 int
 thread_get_priority (void) 
 {
-  return thread_current ()->true_priority;
+  return thread_current ()->priority;
 }
 
 /* Sets the current thread's nice value to NICE. */
@@ -638,18 +638,22 @@ allocate_tid (void)
   return tid;
 }
 
-// Update priority base on donations.
+/* Update priority base on donations. */
 void update_priority(struct thread *self)
 {
-  struct list_elem *e;
   int cur_p = self->priority;
   self->priority = self->true_priority;
-  if(list_empty(&self->donator)) return;
-  for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
+
+  if(!list_empty(&self->donator))
   {
-    struct thread *d = list_entry(e, struct thread, donate_elem);
-    if(d->priority > self->priority) self->priority = d->priority;
+    struct list_elem *e;
+    for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
+    {
+      struct thread *d = list_entry(e, struct thread, donate_elem);
+      if(d->priority > self->priority) self->priority = d->priority;
+    }
   }
+
   if(self->priority != cur_p)
   {
     struct lock *l = self->waiting_lock;
@@ -657,7 +661,7 @@ void update_priority(struct thread *self)
   }
 }
 
-// Add a donator.
+/* Add a donator t to the thread self. */
 void add_donator(struct thread *self, struct thread *t)
 {
   enum intr_level old_level = intr_disable();
@@ -666,7 +670,7 @@ void add_donator(struct thread *self, struct thread *t)
   intr_set_level(old_level);
 }
 
-// Remove a donator.
+/* Remove donator thread t from thread self. */
 void remove_donator(struct thread *self, struct thread *t)
 {
   struct list_elem *e;
