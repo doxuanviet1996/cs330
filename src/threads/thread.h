@@ -144,8 +144,15 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
-bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
-            void *aux UNUSED);
+/* Compare function for 2 threads base on priority. */
+static bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
+            void *aux UNUSED) 
+{
+  const struct thread *a = list_entry (a_, struct thread, elem);
+  const struct thread *b = list_entry (b_, struct thread, elem);
+  
+  return a->priority < b->priority;
+}
 
 void update_priority(struct thread *self);
 void add_donator(struct thread *self, struct thread *t);
