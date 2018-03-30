@@ -93,6 +93,7 @@ struct thread
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
+    struct list_elem donate_elem;       /* List element for donator list. */
     struct list donator;                /* List of priority donators. */
 
 #ifdef USERPROG

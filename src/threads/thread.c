@@ -73,7 +73,7 @@ static bool is_thread (struct thread *) UNUSED;
 static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
-void debug_list(struct list *l);
+bool should_yield();
 static tid_t allocate_tid (void);
 
 /* Initializes the threading system by transforming the code
@@ -520,6 +520,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->priority = t->true_priority = priority;
   t->wakeup_time = 0;
   t->magic = THREAD_MAGIC;
+  //t->donate_elem.prev = t->donate_elem.next = NULL;
   list_push_back (&all_list, &t->allelem);
 }
 
@@ -646,7 +647,7 @@ void update_priority(struct thread *self)
   if(list_empty(&self->donator)) return;
   for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
   {
-    struct thread *d = list_entry(e, struct thread, elem);
+    struct thread *d = list_entry(e, struct thread, donate_elem);
     if(d->priority > self->priority) self->priority = d->priority;
   }
   if(should_yield()) thread_yield();
@@ -655,7 +656,7 @@ void update_priority(struct thread *self)
 // Add a donator.
 void add_donator(struct thread *self, struct thread *t)
 {
-  list_push_back(&self->donator, &t->elem);
+  list_push_back(&self->donator, &t->donate_elem);
   update_priority(self);
 }
 
@@ -664,7 +665,7 @@ void remove_donator(struct thread *self, struct thread *t)
 {
   struct list_elem *e;
   for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
-    if(e == &t->elem)
+    if(e == &t->donate_elem)
     {
       list_remove(e);
       update_priority(self);
