@@ -208,15 +208,17 @@ lock_acquire (struct lock *lock)
     printf("Done sema_down\n");
     lock->holder = thread_current ();
     printf("Done set lock_holder %s\n",thread_current()->name);
-    return;
   }
-  printf("lock_acquire called by thread %s\n",thread_current()->name);
-  struct thread *cur = thread_current();
-  struct thread *lock_holder = lock->holder;
-  add_donator(lock_holder, cur);
+  else
+  {
+    printf("lock_acquire called by thread %s\n",thread_current()->name);
+    struct thread *cur = thread_current();
+    struct thread *lock_holder = lock->holder;
+    add_donator(lock_holder, cur);
 
-  sema_down (&lock->semaphore);
-  lock->holder = thread_current ();
+    sema_down (&lock->semaphore);
+    lock->holder = thread_current ();
+  }
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
