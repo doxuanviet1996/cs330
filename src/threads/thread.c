@@ -73,7 +73,6 @@ static bool is_thread (struct thread *) UNUSED;
 static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
-bool should_yield();
 static tid_t allocate_tid (void);
 
 /* Initializes the threading system by transforming the code
@@ -650,7 +649,6 @@ void update_priority(struct thread *self)
     struct thread *d = list_entry(e, struct thread, donate_elem);
     if(d->priority > self->priority) self->priority = d->priority;
   }
-  if(should_yield()) thread_yield();
 }
 
 // Add a donator.
