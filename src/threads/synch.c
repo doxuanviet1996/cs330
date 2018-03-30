@@ -205,6 +205,7 @@ lock_acquire (struct lock *lock)
   {
     printf("NULL lock_acquire called by thread %s\n",thread_current()->name);
     sema_down (&lock->semaphore);
+    printf("Done sema_down\n");
     lock->holder = thread_current ();
     return;
   }
