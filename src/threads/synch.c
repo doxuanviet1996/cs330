@@ -204,10 +204,11 @@ lock_acquire (struct lock *lock)
   //if(true)
   //{
   enum intr_level old_level = intr_disable();
-    printf("NULL lock_acquire called by thread %s\n",thread_current()->name);
+    struct thread *cur = thread_current();
+    printf("NULL lock_acquire called by thread %s\n",cur->name);
     sema_down (&lock->semaphore);
     printf("Done sema_down\n");
-    lock->holder = thread_current();
+    lock->holder = cur;
   intr_set_level(old_level);
   //}
   /*else
