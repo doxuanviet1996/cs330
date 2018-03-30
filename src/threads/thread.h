@@ -95,6 +95,7 @@ struct thread
     struct list_elem elem;              /* List element. */
     struct list_elem donate_elem;       /* List element for donator list. */
     struct list donator;                /* List of priority donators. */
+    struct lock *waiting_lock;           /* The lock that this thread is waiting for. */
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
