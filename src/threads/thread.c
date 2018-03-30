@@ -391,7 +391,8 @@ bool should_yield()
 void
 thread_set_priority (int new_priority) 
 {
-  thread_current ()->priority = new_priority;
+  thread_current ()->true_priority = new_priority;
+  update_priority(thread_current());
   if(should_yield()) thread_yield();
 }
 
