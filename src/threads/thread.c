@@ -157,8 +157,8 @@ thread_tick (void)
 
   while(!list_empty(&wait_list))
   {
-
-    struct thread *t = list_entry (&list_front(&wait_list), struct thread, elem);
+    struct list_elem *e = list_front(&wait_list);
+    struct thread *t = list_entry (e, struct thread, elem);
     if(t->wakeup_time <= total_ticks)
     {
       reschedule = thread_unblock(t) || reschedule;
