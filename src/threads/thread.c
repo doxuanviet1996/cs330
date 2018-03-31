@@ -162,7 +162,7 @@ thread_tick (void)
     if(t->wakeup_time <= total_ticks)
     {
       reschedule = thread_unblock(t) || reschedule;
-      list_pop_front(&wait_list);
+      list_remove(e);
     }
     else break;
   }
