@@ -74,8 +74,6 @@ static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
-//bool wakeup_time_less (const struct list_elem *a_, const struct list_elem *b_,
-//            void *aux UNUSED);
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -144,14 +142,30 @@ thread_tick (void)
   int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
   bool reschedule = false;
 
-  struct list_elem *e;
+  /*struct list_elem *e;
+  for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
+    {
+      struct thread *t = list_entry (e, struct thread, elem);
+      if(t->wakeup_time <= total_ticks)
+      {
+        struct list_elem *e_prev = list_prev(list_remove(e));
+        reschedule = thread_unblock(t) || reschedule;
+        e = e_prev;
+      }
+      else break;
+    }*/
+
   while(!list_empty(&wait_list))
   {
 
     struct thread *t = list_entry (list_front(&wait_list), struct thread, elem);
-    if(t->wakeup_time <= total_ticks) reschedule = thread_unblock(t) || reschedule;
+    if(t->wakeup_time <= total_ticks)
+    {
+      reschedule = thread_unblock(t) || reschedule;
+      list_pop_front(&wait_list);
+    }
     else break;
-    list_pop_front(&wait_list);
+    
   }
 
   /* Enforce preemption. */
