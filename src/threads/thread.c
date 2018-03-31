@@ -142,15 +142,27 @@ thread_tick (void)
   int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
   bool reschedule = false;
 
-  struct list_elem *e;
+  /*struct list_elem *e;
   for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
+    {
+      struct thread *t = list_entry (e, struct thread, elem);
+      if(t->wakeup_time <= total_ticks)
+      {
+        struct list_elem *e_prev = list_prev(list_remove(e));
+        reschedule = thread_unblock(t) || reschedule;
+        e = e_prev;
+      }
+      else break;
+    }*/
+
+  while(!list_empty(&wait_list))
   {
+    struct list_elem *e = list_begin(&wait_list);
     struct thread *t = list_entry (e, struct thread, elem);
     if(t->wakeup_time <= total_ticks)
     {
-      struct list_elem *e_prev = list_prev(list_remove(e));
       reschedule = thread_unblock(t) || reschedule;
-      e = e_prev;
+      list_pop_front(&wait_list);
     }
     else break;
   }
