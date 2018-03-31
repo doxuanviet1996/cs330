@@ -74,6 +74,8 @@ static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
+//bool wakeup_time_less (const struct list_elem *a_, const struct list_elem *b_,
+//            void *aux UNUSED);
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -237,7 +239,7 @@ thread_create (const char *name, int priority,
 }
 
 /* Compare function for 2 threads base on wakeup_time. */
-bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
+bool wakeup_time_less (const struct list_elem *a_, const struct list_elem *b_,
             void *aux UNUSED)
 {
   const struct thread *a = list_entry (a_, struct thread, elem);
@@ -252,7 +254,7 @@ void thread_wait(int64_t ticks)
   struct thread *t = thread_current ();
   t->wakeup_time = ticks;
   //list_push_back(&wait_list, &t->elem);
-  list_insert_order(&wait_list, &t->elem, wakeup_time_less, NULL);
+  list_insert_ordered(&wait_list, &t->elem, wakeup_time_less, NULL);
   enum intr_level old_level = intr_disable();
   thread_block();
   intr_set_level(old_level);
