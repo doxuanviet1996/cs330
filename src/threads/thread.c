@@ -152,6 +152,7 @@ thread_tick (void)
         reschedule = thread_unblock(t) || reschedule;
         e = e_prev;
       }
+      else break;
     }
 
   /* Enforce preemption. */
@@ -235,12 +236,23 @@ thread_create (const char *name, int priority,
   return tid;
 }
 
+/* Compare function for 2 threads base on wakeup_time. */
+bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
+            void *aux UNUSED)
+{
+  const struct thread *a = list_entry (a_, struct thread, elem);
+  const struct thread *b = list_entry (b_, struct thread, elem);
+  
+  return a->wakeup_time < b->wakeup_time;
+}
+
 /* Sleep the current thread until timer ticks reach TICKS.*/
 void thread_wait(int64_t ticks)
 {
   struct thread *t = thread_current ();
   t->wakeup_time = ticks;
-  list_push_back(&wait_list, &t->elem);
+  //list_push_back(&wait_list, &t->elem);
+  list_insert_order(&wait_list, &t->elem, wakeup_time_less, NULL);
   enum intr_level old_level = intr_disable();
   thread_block();
   intr_set_level(old_level);
@@ -390,8 +402,10 @@ bool should_yield()
 void
 thread_set_priority (int new_priority) 
 {
+  enum intr_level old_level = intr_disable();
   thread_current ()->true_priority = new_priority;
   update_priority(thread_current());
+  intr_enable();
   if(should_yield()) thread_yield();
 }
 
