@@ -157,12 +157,12 @@ thread_tick (void)
 
   while(!list_empty(&wait_list))
   {
-    struct list_elem *e = list_begin(&wait_list);
+    struct list_elem *e = list_front(&wait_list);
     struct thread *t = list_entry (e, struct thread, elem);
     if(t->wakeup_time <= total_ticks)
     {
       reschedule = thread_unblock(t) || reschedule;
-      list_remove(e);
+      e = list_pop_front(e);
     }
     else break;
   }
