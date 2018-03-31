@@ -213,8 +213,8 @@ lock_acquire (struct lock *lock)
     add_donator(holder, cur);
     cur->waiting_lock = lock;
     sema_down (&lock->semaphore);
-    cur->waiting_lock = NULL;
-    lock->holder = cur;
+    thread_current()->waiting_lock = NULL;
+    lock->holder = thread_current();
   }
 }
 
