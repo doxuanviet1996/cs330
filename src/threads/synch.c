@@ -252,14 +252,12 @@ lock_release (struct lock *lock)
   // Remove all donators from this semaphore's waiters.
   struct thread *holder = lock->holder;
   struct list_elem *e;
-  // enum intr_level old_level = intr_disable();
   for(e = list_begin(&lock->semaphore.waiters); e != list_end(&lock->semaphore.waiters); e = list_next(e))
   {
     struct thread *waiter = list_entry(e, struct thread, elem);
     remove_donator(holder, waiter);
   }
   update_priority(holder);
-  // intr_set_level(old_level);
   lock->holder = NULL;
   sema_up (&lock->semaphore);
   if(should_yield()) thread_yield();
