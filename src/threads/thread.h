@@ -87,15 +87,15 @@ struct thread
     enum thread_status status;          /* Thread state. */
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
-    int priority, true_priority;        /* Priority. */
+    int priority, true_priority;        /* Current priority and true priority. */
     struct list_elem allelem;           /* List element for all threads list. */
     int64_t wakeup_time;                /* Checkpoint for waking up if thread is put to sleep.*/
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
-    struct list_elem donate_elem;       /* List element for donator list. */
+    struct list_elem donate_elem;       /* List element showing where is this thread donating priority to. */
     struct list donator;                /* List of priority donators. */
-    struct lock *waiting_lock;           /* The lock that this thread is waiting for. */
+    struct lock *waiting_lock;          /* The lock that this thread is waiting for. */
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
@@ -135,7 +135,7 @@ void thread_yield (void);
 typedef void thread_action_func (struct thread *t, void *aux);
 void thread_foreach (thread_action_func *, void *);
 
-bool should_yield();
+bool should_yield(void);
 int thread_get_priority (void);
 void thread_set_priority (int);
 
@@ -144,15 +144,8 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
-/* Compare function for 2 threads base on priority. */
-static bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
-            void *aux UNUSED) 
-{
-  const struct thread *a = list_entry (a_, struct thread, elem);
-  const struct thread *b = list_entry (b_, struct thread, elem);
-  
-  return a->priority < b->priority;
-}
+bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
+            void *aux UNUSED);
 
 void update_priority(struct thread *self);
 void add_donator(struct thread *self, struct thread *t);

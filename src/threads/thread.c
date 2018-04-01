@@ -144,15 +144,16 @@ thread_tick (void)
 
   struct list_elem *e;
   for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
+  {
+    struct thread *t = list_entry (e, struct thread, elem);
+    if(t->wakeup_time <= total_ticks)
     {
-      struct thread *t = list_entry (e, struct thread, elem);
-      if(t->wakeup_time <= total_ticks)
-      {
-        struct list_elem *e_prev = list_prev(list_remove(e));
-        reschedule = thread_unblock(t) || reschedule;
-        e = e_prev;
-      }
+      struct list_elem *e_prev = list_prev(list_remove(e));
+      reschedule = thread_unblock(t) || reschedule;
+      e = e_prev;
     }
+    else break;
+  }
 
   /* Enforce preemption. */
   if (++thread_ticks >= TIME_SLICE)
@@ -235,12 +236,23 @@ thread_create (const char *name, int priority,
   return tid;
 }
 
+/* Compare function for 2 threads base on wakeup_time. */
+bool wakeup_time_less (const struct list_elem *a_, const struct list_elem *b_,
+            void *aux UNUSED)
+{
+  const struct thread *a = list_entry (a_, struct thread, elem);
+  const struct thread *b = list_entry (b_, struct thread, elem);
+  
+  return a->wakeup_time < b->wakeup_time;
+}
+
 /* Sleep the current thread until timer ticks reach TICKS.*/
 void thread_wait(int64_t ticks)
 {
   struct thread *t = thread_current ();
   t->wakeup_time = ticks;
-  list_push_back(&wait_list, &t->elem);
+  //list_push_back(&wait_list, &t->elem);
+  list_insert_ordered(&wait_list, &t->elem, wakeup_time_less, NULL);
   enum intr_level old_level = intr_disable();
   thread_block();
   intr_set_level(old_level);
@@ -272,7 +284,7 @@ thread_block (void)
    update other data. 
    Update: the function now returns true if the unblocked
    thread has higher priority than the current thread, which
-   then rescheduling is needed. */
+   then rescheduling is needed, otherwise false. */
 bool
 thread_unblock (struct thread *t) 
 {
@@ -354,9 +366,7 @@ thread_yield (void)
   ASSERT (!intr_context ());
 
   old_level = intr_disable ();
-  if (cur != idle_thread) 
-    list_push_back(&ready_list, &cur->elem);
-    // list_insert_ordered (&ready_list, &cur->elem, thread_greater, NULL);
+  if (cur != idle_thread) list_push_back(&ready_list, &cur->elem);
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
@@ -383,16 +393,19 @@ thread_foreach (thread_action_func *func, void *aux)
 bool should_yield()
 {
   if(list_empty(&ready_list)) return false;
-  int best_p = list_entry(list_max(&ready_list, thread_less, NULL), struct thread, elem)->priority;
+  struct list_elem *mx = list_max(&ready_list, thread_less, NULL);
+  int best_p = list_entry(mx, struct thread, elem)->priority;
   return best_p > thread_current()->priority;
 }
 
-/* Sets the current thread's priority to NEW_PRIORITY. */
+/* Sets the current thread's true priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) 
 {
+  enum intr_level old_level = intr_disable();
   thread_current ()->true_priority = new_priority;
   update_priority(thread_current());
+  intr_enable();
   if(should_yield()) thread_yield();
 }
 
@@ -639,18 +652,32 @@ allocate_tid (void)
   return tid;
 }
 
-// Update priority base on donations.
+/* Compare function for 2 threads base on priority. */
+bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
+            void *aux UNUSED)
+{
+  const struct thread *a = list_entry (a_, struct thread, elem);
+  const struct thread *b = list_entry (b_, struct thread, elem);
+  
+  return a->priority < b->priority;
+}
+
+/* Update priority base on donations. */
 void update_priority(struct thread *self)
 {
-  struct list_elem *e;
   int cur_p = self->priority;
   self->priority = self->true_priority;
-  if(list_empty(&self->donator)) return;
-  for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
+
+  if(!list_empty(&self->donator))
   {
-    struct thread *d = list_entry(e, struct thread, donate_elem);
-    if(d->priority > self->priority) self->priority = d->priority;
+    struct list_elem *e;
+    for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
+    {
+      struct thread *d = list_entry(e, struct thread, donate_elem);
+      if(d->priority > self->priority) self->priority = d->priority;
+    }
   }
+
   if(self->priority != cur_p)
   {
     struct lock *l = self->waiting_lock;
@@ -658,16 +685,14 @@ void update_priority(struct thread *self)
   }
 }
 
-// Add a donator.
+/* Add a donator t to the thread self. */
 void add_donator(struct thread *self, struct thread *t)
 {
-  enum intr_level old_level = intr_disable();
   list_push_back(&self->donator, &t->donate_elem);
   update_priority(self);
-  intr_set_level(old_level);
 }
 
-// Remove a donator.
+/* Remove donator thread t from thread self. */
 void remove_donator(struct thread *self, struct thread *t)
 {
   struct list_elem *e;

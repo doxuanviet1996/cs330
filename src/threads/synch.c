@@ -213,8 +213,8 @@ lock_acquire (struct lock *lock)
     add_donator(holder, cur);
     cur->waiting_lock = lock;
     sema_down (&lock->semaphore);
-    cur->waiting_lock = NULL;
-    lock->holder = cur;
+    thread_current()->waiting_lock = NULL;
+    lock->holder = thread_current();
   }
 }
 
@@ -249,8 +249,8 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-  struct thread *holder = lock->holder;
   // Remove all donators from this semaphore's waiters.
+  struct thread *holder = lock->holder;
   struct list_elem *e;
   enum intr_level old_level = intr_disable();
   for(e = list_begin(&lock->semaphore.waiters); e != list_end(&lock->semaphore.waiters); e = list_next(e))
@@ -259,8 +259,8 @@ lock_release (struct lock *lock)
     remove_donator(holder, waiter);
   }
   update_priority(holder);
-  intr_set_level(old_level);
   lock->holder = NULL;
+  intr_set_level(old_level);
   sema_up (&lock->semaphore);
   if(should_yield()) thread_yield();
 }
@@ -348,22 +348,24 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
 
   if (!list_empty (&cond->waiters)) 
   {
-    // iterate through the semaphores, iterate through the waiters
+    // Iterate through the semaphores, iterate through the waiters
     // of each semaphore and choose the semaphore with the best thread.
-    struct semaphore_elem *best_sema_elem;
+    struct semaphore_elem *best_sema_elem = NULL;
     int best_priority = -1;
     struct list_elem *e;
     for(e = list_begin(&cond->waiters); e != list_end(&cond->waiters); e = list_next(e))
     {
       struct semaphore_elem *sema_elem = list_entry(e, struct semaphore_elem, elem);
       if(list_empty(&sema_elem->semaphore.waiters)) continue;
-      int p = list_entry(list_max(&sema_elem->semaphore.waiters, thread_less, NULL), struct thread, elem)->priority;
+      struct list_elem *mx = list_max(&sema_elem->semaphore.waiters, thread_less, NULL);
+      int p = list_entry(mx, struct thread, elem)->priority;
       if(p > best_priority)
       {
         best_priority = p;
         best_sema_elem = sema_elem;
       }
     }
+    if(best_sema_elem == NULL) return;
     list_remove(&best_sema_elem->elem);
     sema_up (&best_sema_elem->semaphore);
   }
