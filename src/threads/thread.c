@@ -24,10 +24,6 @@
    that are ready to run but not actually running. */
 static struct list ready_list;
 
-/* List of processes in THREAD_BLOCKED state, which are waiting
-   to be wake up by the timer interrupt.*/
-static struct list wait_list;
-
 /* List of all processes.  Processes are added to this list
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
@@ -95,9 +91,7 @@ thread_init (void)
 
   lock_init (&tid_lock);
   list_init (&ready_list);
-  list_init (&wait_list);
   list_init (&all_list);
-
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -115,8 +109,10 @@ thread_start (void)
   struct semaphore idle_started;
   sema_init (&idle_started, 0);
   thread_create ("idle", PRI_MIN, idle, &idle_started);
+
   /* Start preemptive thread scheduling. */
   intr_enable ();
+
   /* Wait for the idle thread to initialize idle_thread. */
   sema_down (&idle_started);
 }
@@ -138,29 +134,9 @@ thread_tick (void)
   else
     kernel_ticks++;
 
-  // Wake up threads in the wait_list.
-  int64_t total_ticks = idle_ticks + user_ticks + kernel_ticks;
-  bool reschedule = false;
-
-  struct list_elem *e;
-  for (e = list_begin (&wait_list); e != list_end (&wait_list); e = list_next (e))
-  {
-    struct thread *t = list_entry (e, struct thread, elem);
-    if(t->wakeup_time <= total_ticks)
-    {
-      struct list_elem *e_prev = list_prev(list_remove(e));
-      reschedule = thread_unblock(t) || reschedule;
-      e = e_prev;
-    }
-    else break;
-  }
-
   /* Enforce preemption. */
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
-
-  // Reschedule if needed
-  if(reschedule) intr_yield_on_return();
 }
 
 /* Prints thread statistics. */
@@ -231,31 +207,9 @@ thread_create (const char *name, int priority,
   intr_set_level (old_level);
 
   /* Add to run queue. */
-  if(thread_unblock (t)) thread_yield();
+  thread_unblock (t);
 
   return tid;
-}
-
-/* Compare function for 2 threads base on wakeup_time. */
-bool wakeup_time_less (const struct list_elem *a_, const struct list_elem *b_,
-            void *aux UNUSED)
-{
-  const struct thread *a = list_entry (a_, struct thread, elem);
-  const struct thread *b = list_entry (b_, struct thread, elem);
-  
-  return a->wakeup_time < b->wakeup_time;
-}
-
-/* Sleep the current thread until timer ticks reach TICKS.*/
-void thread_wait(int64_t ticks)
-{
-  struct thread *t = thread_current ();
-  t->wakeup_time = ticks;
-  //list_push_back(&wait_list, &t->elem);
-  list_insert_ordered(&wait_list, &t->elem, wakeup_time_less, NULL);
-  enum intr_level old_level = intr_disable();
-  thread_block();
-  intr_set_level(old_level);
 }
 
 /* Puts the current thread to sleep.  It will not be scheduled
@@ -281,11 +235,8 @@ thread_block (void)
    This function does not preempt the running thread.  This can
    be important: if the caller had disabled interrupts itself,
    it may expect that it can atomically unblock a thread and
-   update other data. 
-   Update: the function now returns true if the unblocked
-   thread has higher priority than the current thread, which
-   then rescheduling is needed, otherwise false. */
-bool
+   update other data. */
+void
 thread_unblock (struct thread *t) 
 {
   enum intr_level old_level;
@@ -294,11 +245,9 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_push_back(&ready_list, &t->elem);
+  list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
-  bool reschedule = thread_current()->priority < t->priority;
   intr_set_level (old_level);
-  return reschedule;
 }
 
 /* Returns the name of the running thread. */
@@ -366,7 +315,8 @@ thread_yield (void)
   ASSERT (!intr_context ());
 
   old_level = intr_disable ();
-  if (cur != idle_thread) list_push_back(&ready_list, &cur->elem);
+  if (cur != idle_thread) 
+    list_push_back (&ready_list, &cur->elem);
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
@@ -389,24 +339,11 @@ thread_foreach (thread_action_func *func, void *aux)
     }
 }
 
-/* Check if we need to call thread_yield(). */
-bool should_yield()
-{
-  if(list_empty(&ready_list)) return false;
-  struct list_elem *mx = list_max(&ready_list, thread_less, NULL);
-  int best_p = list_entry(mx, struct thread, elem)->priority;
-  return best_p > thread_current()->priority;
-}
-
-/* Sets the current thread's true priority to NEW_PRIORITY. */
+/* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) 
 {
-  enum intr_level old_level = intr_disable();
-  thread_current ()->true_priority = new_priority;
-  update_priority(thread_current());
-  intr_enable();
-  if(should_yield()) thread_yield();
+  thread_current ()->priority = new_priority;
 }
 
 /* Returns the current thread's priority. */
@@ -530,10 +467,8 @@ init_thread (struct thread *t, const char *name, int priority)
   t->status = THREAD_BLOCKED;
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
-  t->priority = t->true_priority = priority;
-  t->wakeup_time = 0;
+  t->priority = priority;
   t->magic = THREAD_MAGIC;
-  list_init(&t->donator);
   list_push_back (&all_list, &t->allelem);
 }
 
@@ -561,12 +496,7 @@ next_thread_to_run (void)
   if (list_empty (&ready_list))
     return idle_thread;
   else
-  {
-    struct list_elem *e = list_max(&ready_list, thread_less, NULL);
-    struct thread *t = list_entry(e, struct thread, elem);
-    list_remove(e);
-    return t;
-  }
+    return list_entry (list_pop_front (&ready_list), struct thread, elem);
 }
 
 /* Completes a thread switch by activating the new thread's page
@@ -650,58 +580,6 @@ allocate_tid (void)
   lock_release (&tid_lock);
 
   return tid;
-}
-
-/* Compare function for 2 threads base on priority. */
-bool thread_less (const struct list_elem *a_, const struct list_elem *b_,
-            void *aux UNUSED)
-{
-  const struct thread *a = list_entry (a_, struct thread, elem);
-  const struct thread *b = list_entry (b_, struct thread, elem);
-  
-  return a->priority < b->priority;
-}
-
-/* Update priority base on donations. */
-void update_priority(struct thread *self)
-{
-  int cur_p = self->priority;
-  self->priority = self->true_priority;
-
-  if(!list_empty(&self->donator))
-  {
-    struct list_elem *e;
-    for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
-    {
-      struct thread *d = list_entry(e, struct thread, donate_elem);
-      if(d->priority > self->priority) self->priority = d->priority;
-    }
-  }
-
-  if(self->priority != cur_p)
-  {
-    struct lock *l = self->waiting_lock;
-    if(l != NULL) update_priority(l->holder);
-  }
-}
-
-/* Add a donator t to the thread self. */
-void add_donator(struct thread *self, struct thread *t)
-{
-  list_push_back(&self->donator, &t->donate_elem);
-  update_priority(self);
-}
-
-/* Remove donator thread t from thread self. */
-void remove_donator(struct thread *self, struct thread *t)
-{
-  struct list_elem *e;
-  for(e = list_begin(&self->donator); e != list_end(&self->donator); e = list_next(e))
-    if(e == &t->donate_elem)
-    {
-      list_remove(e);
-      return;
-    }
 }
 
 /* Offset of `stack' member within `struct thread'.
