@@ -449,7 +449,6 @@ setup_stack (void **esp, char *args, char *save_ptr)
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
-  char *args, *save_ptr;
   printf("ARGS: %s\n",save_ptr);
   while(args != NULL)
   {
