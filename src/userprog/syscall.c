@@ -136,6 +136,7 @@ syscall_handler (struct intr_frame *f)
   	printf("Not known (yet) syscall.\n");
   	thread_exit ();
   }
+  thread_exit();
 }
 
 void halt (void)
