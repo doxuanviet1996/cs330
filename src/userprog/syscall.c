@@ -9,7 +9,7 @@
 static void syscall_handler (struct intr_frame *);
 
 void halt (void);
-void sys_exit()(int status);
+void sys_exit(int status);
 pid_t exec(const char * cmd_line);
 int wait (pid t pid);
 bool create (const char * file , unsigned initial_size );
@@ -49,9 +49,9 @@ put_user (uint8_t *udst, uint8_t byte)
 
 int check_valid(void *ptr)
 {
-  if(ptr >= PHYS_BASE) sys_exit()(-1);
+  if(ptr >= PHYS_BASE) sys_exit(-1);
   int res = get_user(ptr);
-  if(res == -1) sys_exit()(-1);
+  if(res == -1) sys_exit(-1);
   return res;
 }
 
@@ -141,7 +141,7 @@ void halt (void)
 {
   shutdown_power_off();
 }
-void sys_exit()(int status)
+void sys_exit(int status)
 {
   struct thread *cur = thread_current();
   printf("%s: exit(%d)\n", cur->name, status);
