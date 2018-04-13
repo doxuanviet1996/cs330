@@ -74,7 +74,7 @@ syscall_handler (struct intr_frame *f)
   int a;
   //printf("SYSCALL TRACKING: \n");
   //for(a = esp; a < esp + 32; a++) printf("%x %x\n", esp+a, *(int *)get_arg(esp+a));
-  int call_num = *(int *) get_arg(esp);
+  int call_num = *(int *) esp;
   if(call_num == SYS_HALT)
   {
     printf("SYS_HALT!\n");
