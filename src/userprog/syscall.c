@@ -10,8 +10,8 @@ static void syscall_handler (struct intr_frame *);
 
 void halt (void);
 void exit(int status);
-pid_t exec(const char * cmd_line);
-int wait (pid_t pid);
+int exec(const char * cmd_line);
+int wait (int pid);
 bool create (const char * file , unsigned initial_size );
 bool remove (const char * file );
 int open (const char * file );
@@ -147,11 +147,11 @@ void exit(int status)
   printf("%s: exit(%d)\n", cur->name, status);
   thread_exit();
 }
-pid_t exec(const char * cmd_line)
+int exec(const char * cmd_line)
 {
   return 0;
 }
-int wait (pid t pid)
+int wait (int pid)
 {
   return 0;
 }
