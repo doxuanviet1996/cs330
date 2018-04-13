@@ -62,15 +62,12 @@ int get_arg(void *esp)
   check_valid(esp + 2);
   check_valid(esp + 3);
   esp+=4;
-  return *(int *)esp;
+  return *(int *)(esp - 4);
 }
 void get_args(void *esp, int *args, int cnt)
 {
   while(cnt--)
-  {
-    *args++ = get_arg(esp);
-    esp += 4;
-  }
+    *args++ = get_arg(&esp);
 }
 
 syscall_init (void) 
@@ -84,7 +81,7 @@ syscall_handler (struct intr_frame *f)
   int args[4];
   printf ("system call!\n");
   void *esp = f->esp;
-  int call_num = get_arg(esp);
+  int call_num = get_arg(&esp);
   if(call_num == SYS_HALT)
   {
     printf("SYS_HALT!\n");
