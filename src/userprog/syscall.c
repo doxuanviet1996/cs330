@@ -112,9 +112,9 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_WRITE)
   {
     printf("SYS_WRITE!\n");
-    int fd = *(int *) get_arg(esp + 1);
-    void *buffer = get_arg(esp + 2);
-    unsigned size = *(unsigned *) get_arg(esp + 3);
+    int fd = *(int *) get_arg(esp + 4);
+    void *buffer = get_arg(esp + 8);
+    unsigned size = *(unsigned *) get_arg(esp + 9);
     printf("%d %d\n",fd, size);
     write(fd, buffer, size);
   }
