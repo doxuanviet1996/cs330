@@ -450,6 +450,7 @@ setup_stack (void **esp, char *file_args)
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
   char *args, *save_ptr;
+  printf("ARGS: %s\n",file_args);
   args = strtok_r (file_args, " ", &save_ptr);
   while(args != NULL)
   {
