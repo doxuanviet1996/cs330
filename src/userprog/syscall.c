@@ -125,6 +125,7 @@ syscall_handler (struct intr_frame *f)
   {
     printf("SYS_WRITE!\n");
     get_args(esp, args, 3);
+    printf("%d %d %d\n",args[0], args[1], args[2]);
     write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
