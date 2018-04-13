@@ -446,9 +446,9 @@ setup_stack (void **esp, char *args, char *save_ptr)
     return false;
   }
   *esp = PHYS_BASE - 12;
-  int cnt;
+  char *cnt;
   printf("Stack tracing: \n");
-  for(cnt = 0; cnt<12; cnt++) printf("%x ",*(*esp + cnt));
+  for(cnt=*esp; cnt!=PHYS_BASE; cnt++) printf("%x %x\n",cnt, *cnt);
   return true;
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
