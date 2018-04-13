@@ -93,6 +93,7 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_EXIT)
   {
     printf("SYS_EXIT!\n");
+    exit(0);
   }
   else if(call_num == SYS_EXEC)
   {
