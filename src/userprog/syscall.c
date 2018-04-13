@@ -120,7 +120,7 @@ syscall_handler (struct intr_frame *f)
     char *buffer = * (int *) get_arg(esp + 8);
     unsigned size = *(unsigned *) get_arg(esp + 12);
     char *tmp = malloc(size);
-    memcpy(buffer, tmp, size);
+    memcpy(*buffer, tmp, size);
     hex_dump(0, tmp, 32, true);
     printf("%s\n",tmp);
     printf("%d %d\n",fd, size);
