@@ -456,7 +456,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
     printf("Found args: %s\n", args);
     *esp -= strlen(args) + 1;
     memcpy(*esp, args, strlen(args) + 1);
-
+    printf("Error here!\n");
     argv[argc++] = *esp;
     if(argc >= argv_size)
     {
