@@ -484,8 +484,8 @@ setup_stack (void **esp, char *args, char *save_ptr)
   *esp -= sizeof (char **);
   memcpy(*esp, &argv, sizeof (char **));
   // argc
-  *esp -= sizeof int;
-  memcpy(*esp, &argc, sizeof int);
+  *esp -= sizeof(int);
+  memcpy(*esp, &argc, sizeof(int));
   // Return address
   *esp -= sizeof (char *);
   memcpy(*esp, &argv[argc], sizeof (char *));
