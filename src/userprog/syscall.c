@@ -113,7 +113,7 @@ syscall_handler (struct intr_frame *f)
   {
     printf("SYS_WRITE!\n");
     int fd = *(int *) get_arg(esp + 4);
-    void *buffer = *(void *)get_arg(esp + 8);
+    void *buffer = (void *)get_arg(esp + 8);
     unsigned size = *(unsigned *) get_arg(esp + 12);
     printf("%d %d\n",fd, size);
     write(fd, buffer, size);
