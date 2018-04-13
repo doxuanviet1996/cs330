@@ -468,7 +468,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
   argv[argc] = 0;
 
   // Word align access
-  while(*esp % 4 != 0)
+  while((size_t) *esp % 4 != 0)
   {
     *esp--;
     memcpy(*esp, &argv[argc], 1);
