@@ -308,7 +308,7 @@ load (const char *file_n_args, void (**eip) (void), void **esp)
     }
 
   /* Set up stack. */
-  if (!setup_stack (esp))
+  if (!setup_stack (esp, &file_name, &save_ptr))
     goto done;
 
   /* Start address. */
@@ -433,22 +433,38 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
 static bool
-setup_stack (void **esp) 
+setup_stack (void **esp, char *args, char *save_ptr) 
 {
   uint8_t *kpage;
   bool success = false;
 
   kpage = palloc_get_page (PAL_USER | PAL_ZERO);
-  if (kpage != NULL) 
+  if(kpage == NULL) return false;
+  if(!install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true))
+  {
+    palloc_free_page (kpage);
+    return false;
+  }
+  *esp = PHYS_BASE;
+
+  // Push args into stack
+  int argc = 0, argv_size = 1;
+  char **argv = malloc(sizeof (char *));
+  args = strtok_r (NULL, " ", &save_ptr);
+  while(args != NULL)
+  {
+    printf("Found args: %s\n", args);
+    *esp -= strlen(args) + 1;
+    argv[argc++] = *esp;
+    if(argc >= argv_size)
     {
-      success = install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
-      if (success)
-        // *esp = PHYS_BASE;
-        *esp = PHYS_BASE - 12;
-      else
-        palloc_free_page (kpage);
+      argv_size *= 2;
+      argv = realloc(argv, argv_size * (sizeof (char *)));
     }
-  return success;
+    memcpy(*esp, args, strlen(args) + 1);
+    args = strtok_r (NULL, " ", &save_ptr);
+  }
+  return true;
 }
 
 /* Adds a mapping from user virtual address UPAGE to kernel
