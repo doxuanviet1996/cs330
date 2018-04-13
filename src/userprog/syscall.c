@@ -55,10 +55,19 @@ int check_valid(void *ptr)
   return res;
 }
 
-void *get_arg(void *esp)
+int get_arg(void *esp)
 {
   check_valid(esp);
-  return (void *)esp;
+  check_valid(esp + 1);
+  check_valid(esp + 2);
+  check_valid(esp + 3);
+  esp+=4;
+  return *(int *)esp;
+}
+void get_args(void *esp, int *args, int cnt)
+{
+  while(cnt--)
+    *args++ = get_arg(&esp);
 }
 
 syscall_init (void) 
@@ -69,12 +78,10 @@ syscall_init (void)
 static void
 syscall_handler (struct intr_frame *f) 
 {
+  int args[4];
   printf ("system call!\n");
   void *esp = f->esp;
-  int a;
-  //printf("SYSCALL TRACKING: \n");
-  //for(a = esp; a < esp + 32; a++) printf("%x %x\n", esp+a, *(int *)get_arg(esp+a));
-  int call_num = *(int *) esp;
+  int call_num = get_arg(&esp);
   if(call_num == SYS_HALT)
   {
     printf("SYS_HALT!\n");
@@ -115,18 +122,8 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_WRITE)
   {
     printf("SYS_WRITE!\n");
-    hex_dump(0, esp, 32, true);
-    int fd = *(int *) get_arg(esp + 4);
-    char *buffer = * (int *) get_arg(esp + 8);
-    unsigned size = *(unsigned *) get_arg(esp + 12);
-    char *tmp = malloc(size);
-    hex_dump(0, buffer, size, true);
-    memcpy(tmp, buffer, size);
-    hex_dump(0, buffer, size, true);
-    hex_dump(0, tmp, size, true);
-    printf("%c\n",buffer);
-    printf("%d %d\n",fd, size);
-    write(fd, buffer, size);
+    get_args(&esp, &args, 3);
+    write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
   {
