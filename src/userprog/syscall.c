@@ -124,7 +124,7 @@ syscall_handler (struct intr_frame *f)
     hex_dump(0, tmp, 32, true);
     printf("%s\n",tmp);
     printf("%d %d\n",fd, size);
-    write(fd, tmp, size);
+    write(fd, buffer, size);
   }
   else if(call_num == SYS_SEEK)
   {
