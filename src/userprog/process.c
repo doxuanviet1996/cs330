@@ -490,6 +490,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
   // argc
   *esp -= sizeof(int);
   memcpy(*esp, &argc, sizeof(int));
+  printf("argc = %d\n",*(int*)esp);
   // Return address
   *esp -= sizeof (char *);
   memcpy(*esp, &argv[argc], sizeof (char *));

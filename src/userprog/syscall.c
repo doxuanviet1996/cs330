@@ -42,7 +42,7 @@ static void
 syscall_handler (struct intr_frame *f) 
 {
   printf ("system call!\n");
-
+  void *esp = f->esp;
   thread_exit ();
 }
 
