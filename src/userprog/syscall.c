@@ -42,7 +42,64 @@ static void
 syscall_handler (struct intr_frame *f) 
 {
   printf ("system call!\n");
-  void *esp = f->esp;
-  thread_exit ();
+  int *esp = f->esp;
+  int call_num = *esp;
+  if(call_num == SYS_HALT)
+  {
+    printf("SYS_HALT!\n");
+  }
+  else if(call_num == SYS_EXIT)
+  {
+    printf("SYS_EXIT!\n");
+  }
+  else if(call_num == SYS_EXEC)
+  {
+    printf("SYS_EXEC!\n");
+  }
+  else if(call_num == SYS_WAIT)
+  {
+    printf("SYS_WAIT!\n");
+  }
+  else if(call_num == SYS_CREATE)
+  {
+    printf("SYS_CREATE!\n");
+  }
+  else if(call_num == SYS_REMOVE)
+  {
+    printf("SYS_REMOVE!\n");
+  }
+  else if(call_num == SYS_OPEN)
+  {
+    printf("SYS_OPEN!\n");
+  }
+  else if(call_num == SYS_FILESIZE)
+  {
+    printf("SYS_FILESIZE!\n");
+  }
+  else if(call_num == SYS_READ)
+  {
+    printf("SYS_READ!\n");
+  }
+  else if(call_num == SYS_WRITE)
+  {
+    printf("SYS_WRITE!\n");
+  }
+  else if(call_num == SYS_SEEK)
+  {
+    printf("SYS_SEEK!\n");
+  }
+  else if(call_num == SYS_TELL)
+  {
+    printf("SYS_TELL!\n");
+  }
+  else if(call_num == SYS_CLOSE)
+  {
+    printf("SYS_CLOSE!\n");
+  }
+  else
+  {
+  	printf("Not known (yet) syscall.\n");
+  	thread_exit ();
+  }
 }
 
