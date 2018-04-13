@@ -308,7 +308,7 @@ load (const char *file_n_args, void (**eip) (void), void **esp)
     }
 
   /* Set up stack. */
-  if (!setup_stack (esp, &file_name, &save_ptr))
+  if (!setup_stack (esp, file_name, save_ptr))
     goto done;
 
   /* Start address. */
