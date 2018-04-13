@@ -113,11 +113,12 @@ syscall_handler (struct intr_frame *f)
   {
     printf("SYS_WRITE!\n");
     int fd = *(int *) get_arg(esp + 4);
-    printf("%s\n",esp+8);
-    void *buffer = (void *)get_arg(esp + 8);
+    char *buffer = (char *) get_arg(esp + 8);
     unsigned size = *(unsigned *) get_arg(esp + 12);
+    char *tmp = malloc(size);
+    memcpy(buffer, tmp, size);
     printf("%d %d\n",fd, size);
-    write(fd, buffer, size);
+    write(fd, tmp, size);
   }
   else if(call_num == SYS_SEEK)
   {
