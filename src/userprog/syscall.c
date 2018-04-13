@@ -58,13 +58,9 @@ int check_valid(void *ptr)
 void *get_arg(void *esp)
 {
   check_valid(esp);
-  check_valid(esp + 1);
-  check_valid(esp + 2);
-  check_valid(esp + 3);
   return (void *)esp;
 }
 
-void
 syscall_init (void) 
 {
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
@@ -115,12 +111,12 @@ syscall_handler (struct intr_frame *f)
   }
   else if(call_num == SYS_WRITE)
   {
-    int fd = *(int *) get_arg(esp + 4);
-    void *buffer = get_arg(esp + 8);
-    unsigned size = *(unsigned *) get_arg(esp + 12);
+    printf("SYS_WRITE!\n");
+    int fd = *(int *) get_arg(esp + 1);
+    void *buffer = get_arg(esp + 2);
+    unsigned size = *(unsigned *) get_arg(esp + 3);
     printf("%d %d\n",fd, size);
     write(fd, buffer, size);
-    printf("SYS_WRITE!\n");
   }
   else if(call_num == SYS_SEEK)
   {
