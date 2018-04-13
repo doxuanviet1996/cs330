@@ -87,13 +87,13 @@ syscall_handler (struct intr_frame *f)
   esp += 4;
   if(call_num == SYS_HALT)
   {
-    printf("SYS_HALT!\n");
     halt();
   }
   else if(call_num == SYS_EXIT)
   {
     printf("SYS_EXIT!\n");
-    exit(0);
+    int status = get_arg(esp);
+    exit(status);
   }
   else if(call_num == SYS_EXEC)
   {
