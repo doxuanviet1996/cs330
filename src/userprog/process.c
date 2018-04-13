@@ -466,13 +466,14 @@ setup_stack (void **esp, char *args, char *save_ptr)
   }
   argv[argc] = 0;
 
-  printf("Until here!\n");
+  printf("Done argv!\n");
   // Word align access
   while((size_t) *esp % 4 != 0)
   {
     *esp--;
     memcpy(*esp, &argv[argc], 1);
   }
+  printf("Done word align!\n");
   int i;
   // Pointer to argv[i]
   for(i=argc; i>=0; i--)
@@ -480,6 +481,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
     *esp -= sizeof (char *);
     memcpy(*esp, &argv[i], sizeof (char *));
   }
+  printf("Done ptr to argv[]!\n");
   // Pointer to argv
   *esp -= sizeof (char **);
   memcpy(*esp, &argv, sizeof (char **));
@@ -489,6 +491,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
   // Return address
   *esp -= sizeof (char *);
   memcpy(*esp, &argv[argc], sizeof (char *));
+  printf("Done all!\n");
   char *tmp;
   printf("Stack tracking: ");
   for(tmp=*esp; tmp!=PHYS_BASE; tmp++) printf("%x",*tmp);
