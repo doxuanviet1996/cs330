@@ -115,6 +115,7 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_WRITE)
   {
     printf("SYS_WRITE!\n");
+    hex_dump(0, esp, 32, true);
     int fd = *(int *) get_arg(esp + 4);
     char *buffer = * (int *) get_arg(esp + 8);
     unsigned size = *(unsigned *) get_arg(esp + 12);
