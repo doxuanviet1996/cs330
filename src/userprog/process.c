@@ -97,6 +97,7 @@ void
 process_exit (void)
 {
   struct thread *cur = thread_current ();
+  printf("%s: exit(tbd)\n",cur->name);
   uint32_t *pd;
 
   /* Destroy the current process's page directory and switch back
@@ -207,8 +208,12 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
    and its initial stack pointer into *ESP.
    Returns true if successful, false otherwise. */
 bool
-load (const char *file_name, void (**eip) (void), void **esp) 
+load (const char *file_n_args, void (**eip) (void), void **esp) 
 {
+  // Splitting file_name and args
+  char *file_name, *save_ptr;
+  file_name = strtok_r(file_n_args, " ", &save_ptr);
+
   struct thread *t = thread_current ();
   struct Elf32_Ehdr ehdr;
   struct file *file = NULL;
