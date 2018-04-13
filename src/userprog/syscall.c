@@ -55,7 +55,7 @@ int check_valid(void *ptr)
   return res;
 }
 
-void *get_arg(void* &esp)
+void *get_arg(void *esp)
 {
   check_valid(esp);
   check_valid(esp + 1);
