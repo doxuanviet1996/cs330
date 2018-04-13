@@ -447,24 +447,50 @@ setup_stack (void **esp, char *args, char *save_ptr)
   }
   *esp = PHYS_BASE;
 
-  // Push args into stack
+  /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
-  printf("%s\n",save_ptr);
   args = strtok_r (NULL, " ", &save_ptr);
   while(args != NULL)
   {
     printf("Found args: %s\n", args);
     *esp -= strlen(args) + 1;
+    memcpy(*esp, args, strlen(args) + 1);
+
     argv[argc++] = *esp;
     if(argc >= argv_size)
     {
       argv_size *= 2;
       argv = realloc(argv, argv_size * (sizeof (char *)));
     }
-    memcpy(*esp, args, strlen(args) + 1);
     args = strtok_r (NULL, " ", &save_ptr);
   }
+  argv[argc] = 0;
+
+  // Word align access
+  while(*esp % 4 != 0)
+  {
+    *esp--;
+    memcpy(*esp, &argv[argc], 1);
+  }
+  int i;
+  // Pointer to argv[i]
+  for(i=argc; i>=0; i--)
+  {
+    *esp -= sizeof (char *);
+    memcpy(*esp, &argv[i], sizeof (char *));
+  }
+  // Pointer to argv
+  *esp -= sizeof (char **);
+  memcpy(*esp, &argv, sizeof (char **));
+  // argc
+  *esp -= sizeof int;
+  memcpy(*esp, &argc, sizeof int);
+  // Return address
+  *esp -= sizeof (char *);
+  memcpy(*esp, &argv[argc], sizeof (char *));
+  char *tmp;
+  for(*tmp=*esp; tmp!=PHYS_BASE; tmp++) printf("%c\n",**tmp);
   return true;
 }
 
