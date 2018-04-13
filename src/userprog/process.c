@@ -455,9 +455,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
   {
     printf("Found args: %s\n", args);
     *esp -= strlen(args) + 1;
-    printf("Error here!\n");
     memcpy(*esp, args, strlen(args) + 1);
-    printf("Error there!\n");
     argv[argc++] = *esp;
     if(argc >= argv_size)
     {
@@ -468,6 +466,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
   }
   argv[argc] = 0;
 
+  printf("Until here!\n");
   // Word align access
   while((size_t) *esp % 4 != 0)
   {
