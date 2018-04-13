@@ -4,8 +4,23 @@
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "devices/shutdown.h"
 
 static void syscall_handler (struct intr_frame *);
+
+void halt (void);
+void exit(int status);
+pid_t exec (const char * cmd_line);
+int wait (pid t pid);
+bool create (const char * file , unsigned initial_size );
+bool remove (const char * file );
+int open (const char * file );
+int filesize (int fd );
+int read (int fd , void * buffer , unsigned size );
+int write (int fd , const void * buffer , unsigned size );
+void seek (int fd , unsigned position );
+unsigned tell (int fd );
+void close (int fd );
 
 /* Reads a byte at user virtual address UADDR.
 UADDR must be below PHYS_BASE.
@@ -32,6 +47,24 @@ put_user (uint8_t *udst, uint8_t byte)
   return error_code != -1;
 }
 
+int check_valid(void *ptr)
+{
+  if(ptr >= PHYS_BASE) exit(-1);
+  int res = get_user(ptr);
+  if(res == -1) exit(-1);
+  return res;
+}
+
+char get_arg(void *esp)
+{
+  check_valid(esp);
+  check_valid(esp + 1);
+  check_valid(esp + 2);
+  check_valid(esp + 3);
+  check_valid(esp + 4);
+  return *(char *)esp;
+}
+
 void
 syscall_init (void) 
 {
@@ -42,11 +75,11 @@ static void
 syscall_handler (struct intr_frame *f) 
 {
   printf ("system call!\n");
-  int *esp = f->esp;
-  int call_num = *esp;
+  int call_num = (int) get_arg(f->esp);
   if(call_num == SYS_HALT)
   {
     printf("SYS_HALT!\n");
+    halt();
   }
   else if(call_num == SYS_EXIT)
   {
@@ -101,5 +134,60 @@ syscall_handler (struct intr_frame *f)
   	printf("Not known (yet) syscall.\n");
   	thread_exit ();
   }
+  thread_exit ();
 }
 
+void halt (void)
+{
+  shutdown_power_off();
+}
+void exit(int status)
+{
+  struct thread *cur = thread_current();
+  printf("%s: exit(%d)\n", cur->name, status);
+  thread_exit();
+}
+pid_t exec (const char * cmd_line)
+{
+  return 0;
+}
+int wait (pid t pid)
+{
+  return 0;
+}
+bool create (const char * file , unsigned initial_size )
+{
+  return 0;
+}
+bool remove (const char * file )
+{
+  return 0;
+}
+int open (const char * file )
+{
+  return 0;
+}
+int filesize (int fd )
+{
+  return 0;
+}
+int read (int fd , void * buffer , unsigned size )
+{
+  return 0;
+}
+int write (int fd , const void * buffer , unsigned size )
+{
+  return 0;
+}
+void seek (int fd , unsigned position )
+{
+
+}
+unsigned tell (int fd )
+{
+  return 0;
+}
+void close (int fd )
+{
+
+}
