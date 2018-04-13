@@ -468,6 +468,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
 
   printf("Done argv!\n");
   // Word align access
+  printf("leftover: %d\n",(size_t) *esp % 4);
   while((size_t) *esp % 4 != 0)
   {
     *esp--;
