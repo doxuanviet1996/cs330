@@ -119,6 +119,7 @@ syscall_handler (struct intr_frame *f)
     int fd = *(int *) get_arg(esp + 4);
     char *buffer = * (int *) get_arg(esp + 8);
     unsigned size = *(unsigned *) get_arg(esp + 12);
+    hex_dump(0, buffer, 32, true);
     char *tmp = malloc(size);
     memcpy(buffer, tmp, size);
     printf("%d %d\n",fd, size);
