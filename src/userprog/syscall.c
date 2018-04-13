@@ -122,6 +122,7 @@ syscall_handler (struct intr_frame *f)
     hex_dump(0, buffer, 32, true);
     char *tmp = malloc(size);
     memcpy(buffer, tmp, size);
+    printf("%s\n",tmp);
     printf("%d %d\n",fd, size);
     write(fd, tmp, size);
   }
