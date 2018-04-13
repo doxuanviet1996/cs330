@@ -81,7 +81,6 @@ static void
 syscall_handler (struct intr_frame *f) 
 {
   int args[4];
-  printf ("system call!\n");
   void *esp = f->esp;
   int call_num = get_arg(esp);
   esp += 4;
