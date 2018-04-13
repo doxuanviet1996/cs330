@@ -450,6 +450,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
   printf("ARGS: %s\n",save_ptr);
+  printf("char* size: %d\n",sizeof(char *));
   while(args != NULL)
   {
     printf("Found args: %s\n", args);
