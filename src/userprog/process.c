@@ -445,11 +445,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
     palloc_free_page (kpage);
     return false;
   }
-  *esp = PHYS_BASE - 12;
-  char *cnt;
-  printf("Stack tracing: \n");
-  for(cnt=*esp; cnt!=PHYS_BASE; cnt++) printf("%x %x\n",cnt, *cnt);
-  return true;
+  *esp = PHYS_BASE;
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
