@@ -448,11 +448,11 @@ setup_stack (void **esp, char *args, char *save_ptr)
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
-  printf("ARGS: %s\n",save_ptr);
-  printf("char* size: %d\n",sizeof(char *));
+  // printf("ARGS: %s\n",save_ptr);
+  // printf("char* size: %d\n",sizeof(char *));
   while(args != NULL)
   {
-    printf("Found args: %s\n", args);
+    // printf("Found args: %s\n", args);
     *esp -= strlen(args) + 1;
     memcpy(*esp, args, strlen(args) + 1);
     argv[argc++] = *esp;
@@ -465,14 +465,14 @@ setup_stack (void **esp, char *args, char *save_ptr)
   }
   argv[argc] = 0;
   int cnt;
-  for(cnt=0; cnt<=argc; cnt++) printf("%x ",argv[cnt]);
-  printf("Done argv!\n");
+  // for(cnt=0; cnt<=argc; cnt++) printf("%x ",argv[cnt]);
+  // printf("Done argv!\n");
   // Word align access
   int leftover = (size_t) *esp % 4;
-  printf("leftover: %d\n", leftover);
+  // printf("leftover: %d\n", leftover);
   *esp -= leftover;
   memcpy(*esp, &argv[argc], leftover);
-  printf("Done word align!\n");
+  // printf("Done word align!\n");
   int i;
   // Pointer to argv[i]
   for(i=argc; i>=0; i--)
@@ -480,7 +480,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
     *esp -= sizeof (char *);
     memcpy(*esp, &argv[i], sizeof (char *));
   }
-  printf("Done ptr to argv[] %x!\n", &argv);
+  // printf("Done ptr to argv[] %x!\n", &argv);
   // Pointer to argv
   char *argv_addr;
   argv_addr = *esp;
@@ -489,19 +489,19 @@ setup_stack (void **esp, char *args, char *save_ptr)
   // argc
   *esp -= sizeof(int);
   memcpy(*esp, &argc, sizeof(int));
-  printf("argc = %d\n",*(int*)*esp);
+  // printf("argc = %d\n",*(int*)*esp);
   // Return address
   *esp -= sizeof (char *);
   memcpy(*esp, &argv[argc], sizeof (char *));
-  printf("Done all!\n");
+  // printf("Done all!\n");
   char *tmp;
-  printf("ESP: %x\n",*esp);
-  printf("Stack tracking:\n");
-  for(tmp=*esp; tmp!=PHYS_BASE; tmp++) printf("%x %x\n",tmp, *tmp);
-  printf("\n");
-  printf("Stack tracking:\n");
-  for(tmp=*esp; tmp!=PHYS_BASE; tmp++) printf("%x %x\n",tmp, *(int *)tmp);
-  printf("\n");
+  // printf("ESP: %x\n",*esp);
+  // printf("Stack tracking:\n");
+  // for(tmp=*esp; tmp!=PHYS_BASE; tmp++) printf("%x %x\n",tmp, *tmp);
+  // printf("\n");
+  // printf("Stack tracking:\n");
+  // for(tmp=*esp; tmp!=PHYS_BASE; tmp++) printf("%x %x\n",tmp, *(int *)tmp);
+  // printf("\n");
   free(argv);
   return true;
 }
