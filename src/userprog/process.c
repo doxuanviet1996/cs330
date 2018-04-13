@@ -490,7 +490,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
   *esp -= sizeof (char *);
   memcpy(*esp, &argv[argc], sizeof (char *));
   char *tmp;
-  printf("Stack tracking: ")
+  printf("Stack tracking: ");
   for(tmp=*esp; tmp!=PHYS_BASE; tmp++) printf("%x",*tmp);
   printf("\n");
   return true;
