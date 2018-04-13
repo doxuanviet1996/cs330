@@ -197,7 +197,7 @@ struct Elf32_Phdr
 #define PF_W 2          /* Writable. */
 #define PF_R 4          /* Readable. */
 
-static bool setup_stack (void **esp, char *args, char *save_ptr);
+static bool setup_stack (void **esp, char *file_args);
 static bool validate_segment (const struct Elf32_Phdr *, struct file *);
 static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
                           uint32_t read_bytes, uint32_t zero_bytes,
@@ -208,11 +208,11 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
    and its initial stack pointer into *ESP.
    Returns true if successful, false otherwise. */
 bool
-load (const char *file_n_args, void (**eip) (void), void **esp) 
+load (const char *file_args, void (**eip) (void), void **esp) 
 {
   // Splitting file_name and args
   char *file_name, *save_ptr;
-  file_name = strtok_r(file_n_args, " ", &save_ptr);
+  file_name = strtok_r(file_args, " ", &save_ptr);
 
   struct thread *t = thread_current ();
   struct Elf32_Ehdr ehdr;
@@ -308,7 +308,7 @@ load (const char *file_n_args, void (**eip) (void), void **esp)
     }
 
   /* Set up stack. */
-  if (!setup_stack (esp, file_name, save_ptr))
+  if (!setup_stack (esp, file_args))
     goto done;
 
   /* Start address. */
@@ -433,7 +433,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 /* Create a minimal stack by mapping a zeroed page at the top of
    user virtual memory. */
 static bool
-setup_stack (void **esp, char *args, char *save_ptr) 
+setup_stack (void **esp, char *file_args) 
 {
   uint8_t *kpage;
   bool success = false;
@@ -449,7 +449,8 @@ setup_stack (void **esp, char *args, char *save_ptr)
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
-  args = strtok_r (NULL, " ", &save_ptr);
+  char *args, *save_ptr;
+  args = strtok_r (file_args, " ", &save_ptr);
   while(args != NULL)
   {
     printf("Found args: %s\n", args);
