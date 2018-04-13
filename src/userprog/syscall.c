@@ -116,7 +116,7 @@ syscall_handler (struct intr_frame *f)
   {
     printf("SYS_WRITE!\n");
     int fd = *(int *) get_arg(esp + 4);
-    char *buffer = * (char *) get_arg(esp + 8);
+    char *buffer = * (int *) get_arg(esp + 8);
     unsigned size = *(unsigned *) get_arg(esp + 12);
     char *tmp = malloc(size);
     memcpy(buffer, tmp, size);
