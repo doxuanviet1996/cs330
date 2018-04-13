@@ -91,55 +91,55 @@ syscall_handler (struct intr_frame *f)
   }
   else if(call_num == SYS_EXIT)
   {
-    printf("SYS_EXIT!\n");
+    // printf("SYS_EXIT!\n");
     int status = get_arg(esp);
     exit(status);
   }
   else if(call_num == SYS_EXEC)
   {
-    printf("SYS_EXEC!\n");
+    // printf("SYS_EXEC!\n");
   }
   else if(call_num == SYS_WAIT)
   {
-    printf("SYS_WAIT!\n");
+    // printf("SYS_WAIT!\n");
   }
   else if(call_num == SYS_CREATE)
   {
-    printf("SYS_CREATE!\n");
+    // printf("SYS_CREATE!\n");
   }
   else if(call_num == SYS_REMOVE)
   {
-    printf("SYS_REMOVE!\n");
+    // printf("SYS_REMOVE!\n");
   }
   else if(call_num == SYS_OPEN)
   {
-    printf("SYS_OPEN!\n");
+    // printf("SYS_OPEN!\n");
   }
   else if(call_num == SYS_FILESIZE)
   {
-    printf("SYS_FILESIZE!\n");
+    // printf("SYS_FILESIZE!\n");
   }
   else if(call_num == SYS_READ)
   {
-    printf("SYS_READ!\n");
+    // printf("SYS_READ!\n");
   }
   else if(call_num == SYS_WRITE)
   {
-    printf("SYS_WRITE!\n");
+    // printf("SYS_WRITE!\n");
     get_args(esp, args, 3);
     write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
   {
-    printf("SYS_SEEK!\n");
+    // printf("SYS_SEEK!\n");
   }
   else if(call_num == SYS_TELL)
   {
-    printf("SYS_TELL!\n");
+    // printf("SYS_TELL!\n");
   }
   else if(call_num == SYS_CLOSE)
   {
-    printf("SYS_CLOSE!\n");
+    // printf("SYS_CLOSE!\n");
   }
   else
   {
