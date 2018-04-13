@@ -67,7 +67,7 @@ void get_args(void *esp, int *args, int cnt)
 {
   while(cnt--)
   {
-    *args++ = get_arg(&esp);
+    *args++ = get_arg(esp);
     printf("find: %d\n", *(args-1));
     esp += 4;
   }
