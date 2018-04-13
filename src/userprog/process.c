@@ -478,12 +478,12 @@ setup_stack (void **esp, char *args, char *save_ptr)
   for(i=argc; i>=0; i--)
   {
     *esp -= sizeof (char *);
-    memcpy(*esp, &argv[i], sizeof (char *));
+    memcpy(*esp, argv[i], sizeof (char *));
   }
   printf("Done ptr to argv[]!\n");
   // Pointer to argv
   *esp -= sizeof (char **);
-  memcpy(*esp, &argv, sizeof (char **));
+  memcpy(*esp, argv, sizeof (char **));
   // argc
   *esp -= sizeof(int);
   memcpy(*esp, &argc, sizeof(int));
