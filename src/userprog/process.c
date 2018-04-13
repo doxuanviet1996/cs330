@@ -482,10 +482,10 @@ setup_stack (void **esp, char *args, char *save_ptr)
   }
   printf("Done ptr to argv[] %x!\n", &argv);
   // Pointer to argv
-  char *tmp;
-  tmp = *esp;
+  char *argv_addr;
+  argv_addr = *esp;
   *esp -= sizeof (char **);
-  memcpy(*esp, &tmp, sizeof (char **));
+  memcpy(*esp, &argv_addr, sizeof (char **));
   // argc
   *esp -= sizeof(int);
   memcpy(*esp, &argc, sizeof(int));
