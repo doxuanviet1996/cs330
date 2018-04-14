@@ -95,7 +95,7 @@ process_wait (tid_t child_tid)
   if(child == NULL) return -1;
   // Wait for its exit.
   if(!child->exit_status)
-    sema_down(child->exit_status);
+    sema_down(&child->exit_sema);
   return child->exit_retval;
 }
 
