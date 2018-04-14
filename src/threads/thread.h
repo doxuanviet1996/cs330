@@ -97,7 +97,6 @@ struct thread
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
 
-    int depth;
     int fd_id;
     struct thread *parent;
     struct child_process *child;
