@@ -69,11 +69,13 @@ int check_valid(void *ptr)
 
 void check_valid_str(char *ptr)
 {
+  printf("Validate: ");
   while(*ptr != '\0')
   {
     printf("%c",*ptr);
     check_valid(++ptr);
   }
+  printf("\n");
 }
 
 int get_arg(void *esp)
