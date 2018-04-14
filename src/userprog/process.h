@@ -13,7 +13,7 @@ struct child_process
 	struct semaphore load_sema;
 	struct semaphore exit_sema;
 	struct list_elem elem;
-}
+};
 
 tid_t process_execute (const char *file_name);
 int process_wait (tid_t);
