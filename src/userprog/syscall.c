@@ -78,7 +78,6 @@ syscall_handler (struct intr_frame *f)
   void *esp = f->esp;
   int call_num = get_arg(esp);
   esp += 4;
-  // printf("Call num: %d\n",call_num);
   if(call_num == SYS_HALT)
   {
     halt();
@@ -124,7 +123,6 @@ syscall_handler (struct intr_frame *f)
   }
   else if(call_num == SYS_READ)
   {
-    // printf("read\n");
     get_args(esp, args, 3);
     check_valid_buffer(args[1], args[2]);
     f->eax = read(args[0], args[1], args[2]);
@@ -133,7 +131,6 @@ syscall_handler (struct intr_frame *f)
   {
     get_args(esp, args, 3);
     check_valid_buffer(args[1], args[2]);
-    // printf("write %d\n", args[2]);
     f->eax = write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
