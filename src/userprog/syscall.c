@@ -273,6 +273,7 @@ int write (int fd , const void * buffer , unsigned size )
     printf("Now writing\n");
     hex_dump(0, buffer, 32, true);
     putbuf(buffer, size);
+    printf("Done writing\n");
     return size;
   }
   struct file_descriptor *file_desc = process_get_fd(fd);
