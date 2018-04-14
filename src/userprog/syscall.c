@@ -227,14 +227,11 @@ int open (const char * file )
   struct file *f = filesys_open(file);
   if(f == NULL)
   {
-    printf("Error here.\n");
     lock_release(&filesys_lock);
     return -1;
   }
-  printf("Error there.\n");
   struct file_descriptor *file_desc = process_add_fd(f);
   lock_release(&filesys_lock);
-  printf("file_desc: %d.\n",file_desc->fd);
   return file_desc->fd;
 }
 int filesize (int fd )

@@ -594,6 +594,7 @@ struct file_descriptor *process_get_fd(int fd)
     struct file_descriptor *file_desc = list_entry(e, struct file_descriptor, elem);
     if(file_desc->fd == fd) return file_desc;
   }
+  return NULL;
 }
 
 void process_remove_fd(int fd)
@@ -616,9 +617,10 @@ void process_remove_fd_all()
 {
   struct list_elem *e;
   struct thread *cur = thread_current();
-  for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list); e = list_next(e))
+  for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list);)
   {
     struct file_descriptor *file_desc = list_entry(e, struct file_descriptor, elem);
+    e = list_remove(e);
     free(file_desc);
   }
 }
