@@ -184,7 +184,7 @@ int exec(const char *cmd_line)
   if(child->load_status == -1)
     sema_down(&child->load_sema);
   // Load fail
-  else if(child->load_status == 1)
+  if(child->load_status == 1)
   {
     process_remove_child(child_tid);
     return -1;
