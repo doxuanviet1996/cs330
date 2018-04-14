@@ -279,7 +279,7 @@ int write (int fd , const void * buffer , unsigned size )
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
   // printf("Now writing\n");
-  hex_dump(0, buffer, 32, true);
+  // hex_dump(0, buffer, 32, true);
   int bytes_written = file_write(file_desc->file, buffer, size);
   return bytes_written;
 }
