@@ -120,6 +120,7 @@ void
 process_exit (void)
 {
   struct thread *cur = thread_current ();
+  file_close(cur->self_file);
   uint32_t *pd;
 
   /* Destroy the current process's page directory and switch back
@@ -257,7 +258,7 @@ load (const char *file_args, void (**eip) (void), void **esp)
       printf ("load: %s: open failed\n", file_name);
       goto done; 
     }
-    
+
   file_deny_write(file);
 
   /* Read and verify executable header. */
@@ -344,7 +345,6 @@ load (const char *file_args, void (**eip) (void), void **esp)
  done:
   /* We arrive here whether the load is successful or not. */
   lock_release(&filesys_lock);
-  file_close (file);
   return success;
 }
 

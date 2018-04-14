@@ -102,6 +102,9 @@ struct thread
     struct child_process *child;
     struct list child_list;
     struct list file_list;
+
+    // File pointer to open itself to deny write.
+    struct file *self_file;
 #endif
 
     /* Owned by thread.c. */
