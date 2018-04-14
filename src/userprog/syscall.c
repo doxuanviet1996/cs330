@@ -58,12 +58,11 @@ put_user (uint8_t *udst, uint8_t byte)
   return error_code != -1;
 }
 
-int check_valid(void *ptr)
+void check_valid(void *ptr)
 {
   void *usr_min_addr = 0x08048000;
   if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
-  int *cur_pd = thread_current()->pagedir;
-  if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
+  if(get_user(ptr) == -1) exit(-1);
   return 0;
 }
 
@@ -270,16 +269,11 @@ int write (int fd , const void * buffer , unsigned size )
 {
   if (fd == STDOUT_FILENO)
   {
-    // printf("Now writing to addr %p\n", buffer);
-    // hex_dump(0, buffer, 32, true);
     putbuf(buffer, size);
-    // printf("Done writing\n");
     return size;
   }
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
-  // printf("Now writing\n");
-  // hex_dump(0, buffer, 32, true);
   int bytes_written = file_write(file_desc->file, buffer, size);
   return bytes_written;
 }
