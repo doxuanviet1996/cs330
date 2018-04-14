@@ -596,9 +596,10 @@ void process_remove_child_all()
 {
   struct list_elem *e;
   struct list *child_lst = &thread_current()->child_list;
-  for(e=list_begin(child_lst); e != list_end(child_lst); e = list_next(e))
+  for(e=list_begin(child_lst); e != list_end(child_lst);)
   {
     struct child_process *c = list_entry (e, struct child_process, elem);
+    e = list_remove(e);
     free(c);
   }
 }
@@ -646,9 +647,10 @@ void process_remove_fd_all()
 {
   struct list_elem *e;
   struct thread *cur = thread_current();
-  for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list); e = list_next(e))
+  for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list);)
   {
     struct file_descriptor *file_desc = list_entry(e, struct file_descriptor, elem);
+    e = list_remove(e);
     free(file_desc);
   }
 }
