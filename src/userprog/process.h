@@ -21,6 +21,6 @@ void process_exit (void);
 void process_activate (void);
 struct child_process *process_add_child(int child_tid);
 struct child_process *process_get_child(int child_tid);
-void *process_remove_child(int child_tid);
+void process_remove_child(int child_tid);
 
 #endif /* userprog/process.h */
