@@ -250,6 +250,11 @@ int read (int fd , void * buffer , unsigned size )
       buff[i] = input_getc();
     return size;
   }
+
+  struct file_descriptor *file_desc = process_get_fd(fd);
+  if(!file_desc) return -1;
+  int bytes_read = file_read(file_desc->file, buffer, size);
+  return bytes_read;
 }
 int write (int fd , const void * buffer , unsigned size )
 {
@@ -258,7 +263,11 @@ int write (int fd , const void * buffer , unsigned size )
     putbuf(buffer, size);
     return size;
   }
-  return 0;
+
+  struct file_descriptor *file_desc = process_get_fd(fd);
+  if(!file_desc) return -1;
+  int bytes_written = file_write(file_desc->file, buffer, size);
+  return bytes_written;
 }
 void seek (int fd , unsigned position )
 {
