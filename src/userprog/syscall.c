@@ -177,6 +177,7 @@ void exit(int status)
 }
 int exec(const char *cmd_line)
 {
+  check_valid(cmd_line);
   tid_t child_tid = process_execute(cmd_line);
   struct child_process *child = process_get_child(child_tid);
   if(child == NULL) return -1;

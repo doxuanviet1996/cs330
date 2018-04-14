@@ -549,6 +549,7 @@ install_page (void *upage, void *kpage, bool writable)
 // list, and return the corresponding child_process.
 struct child_process *process_add_child(int child_tid)
 {
+  if(child_tid == -1) return NULL;
   struct child_process *child = malloc(sizeof (struct child_process));
   child->tid = child_tid;
   child->load_status = -1;
@@ -564,6 +565,7 @@ struct child_process *process_add_child(int child_tid)
 // Get child_process with tid = child_tid
 struct child_process *process_get_child(int child_tid)
 {
+  if(child_tid == -1) return NULL;
   struct list_elem *e;
   struct list *child_lst = &thread_current()->child_list;
   for(e=list_begin(child_lst); e != list_end(child_lst); e = list_next(e))
