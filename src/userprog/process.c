@@ -121,6 +121,7 @@ process_exit (void)
 {
   struct thread *cur = thread_current ();
   file_close(cur->self_file);
+  printf("Close file %s\n",cur->name);
   uint32_t *pd;
 
   /* Destroy the current process's page directory and switch back
