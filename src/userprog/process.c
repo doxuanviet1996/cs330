@@ -582,6 +582,7 @@ struct file_descriptor *process_add_fd(struct file *file)
   file_desc->fd = cur->fd_id++;
   file_desc->file = file;
   list_push_back(&cur->file_list, &file_desc->elem);
+  return file_desc;
 }
 
 struct file_descriptor *process_get_fd(int fd)
