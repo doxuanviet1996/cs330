@@ -103,6 +103,8 @@ process_wait (tid_t child_tid)
 {
   struct child_process *child = process_get_child(child_tid);
   if(child == NULL) return -1;
+  if(child->waiting) return -1;
+  child->waiting = true;
   // Wait for its exit.
   if(!child->exit_status)
     sema_down(&child->exit_sema);
@@ -552,6 +554,7 @@ struct child_process *process_add_child(int child_tid)
   child->load_status = -1;
   child->exit_status = 0;
   child->exit_retval = 0;
+  child->waiting = false;
   sema_init(&child->load_sema, 0);
   sema_init(&child->exit_sema, 0);
   list_push_back(&thread_current()->child_list, &child->elem);

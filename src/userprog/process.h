@@ -10,6 +10,7 @@ struct child_process
 	int load_status;
 	int exit_status;
 	int exit_retval;
+	bool waiting;
 	struct semaphore load_sema;
 	struct semaphore exit_sema;
 	struct list_elem elem;
