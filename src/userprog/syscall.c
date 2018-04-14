@@ -50,7 +50,7 @@ void check_valid(void *ptr)
 {
   void *usr_min_addr = 0x08048000;
   if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
-  int *cur_pd = thread_current()->page_dir;
+  int *cur_pd = thread_current()->pagedir;
   if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
   // if(get_user(ptr) == -1) exit(-1);
   return 0;
