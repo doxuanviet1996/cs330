@@ -236,7 +236,7 @@ int open (const char * file )
 }
 int filesize (int fd )
 {
-  struct file_descriptor *file_desc = process_find_fd(fd);
+  struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
   return file_length(file_desc->file);
 }
@@ -262,19 +262,19 @@ int write (int fd , const void * buffer , unsigned size )
 }
 void seek (int fd , unsigned position )
 {
-  struct file_descriptor *file_desc = process_find_fd(fd);
+  struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
   file_seek(file_desc->file, position);
 }
 unsigned tell (int fd )
 {
-  struct file_descriptor *file_desc = process_find_fd(fd);
+  struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
   return file_tell(file_desc->file);
 }
 void close (int fd )
 {
-  struct file_descriptor *file_desc = process_find_fd(fd);
+  struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
   process_remove_fd(fd);
 }
