@@ -83,7 +83,7 @@ start_process (void *file_name_)
   if (!success) 
     thread_exit ();
 
-  if(thread_current()->depth >32) exit(-1);
+  if(thread_current()->depth >36) exit(-1);
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
