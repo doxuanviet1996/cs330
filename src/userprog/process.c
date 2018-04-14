@@ -104,6 +104,7 @@ void
 process_exit (void)
 {
   struct thread *cur = thread_current ();
+  sema_up(&cur->exit_sema);
   uint32_t *pd;
 
   /* Destroy the current process's page directory and switch back
