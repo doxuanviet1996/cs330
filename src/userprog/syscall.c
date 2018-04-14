@@ -71,6 +71,7 @@ void check_valid_str(char *ptr)
 {
   printf("Validating\n");
   check_valid(ptr);
+  printf("okay..\n");
   while(*ptr != '\0')
   {
     printf("%c", *ptr);
