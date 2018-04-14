@@ -294,7 +294,6 @@ thread_exit (void)
   ASSERT (!intr_context ());
 
 #ifdef USERPROG
-  struct child_process *child = thread_current()->child;
   process_exit ();
 #endif
 

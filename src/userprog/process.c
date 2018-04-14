@@ -104,7 +104,6 @@ void
 process_exit (void)
 {
   struct thread *cur = thread_current ();
-  sema_up(&cur->exit_sema);
   uint32_t *pd;
 
   /* Destroy the current process's page directory and switch back
@@ -123,6 +122,7 @@ process_exit (void)
       pagedir_activate (NULL);
       pagedir_destroy (pd);
     }
+  sema_up(&cur->child->exit_sema);
 }
 
 /* Sets up the CPU for running user code in the current
