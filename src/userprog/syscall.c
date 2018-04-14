@@ -227,6 +227,7 @@ int open (const char * file )
   struct file *f = filesys_open(file);
   if(f == NULL)
   {
+    printf("Error here.\n");
     lock_release(&filesys_lock);
     return -1;
   }
