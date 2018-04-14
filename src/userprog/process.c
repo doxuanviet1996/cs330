@@ -38,8 +38,18 @@ process_execute (const char *file_name)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
 
+  char *true_name;
+  int name_size = 0;
+  while(*(file_name + name_size) != ' ' && *(file_name + name_size) != '\0')
+    name_size++;
+  name_size++;
+  true_name = malloc(name_size*(sizeof (char *)));
+  memcpy(true_name, a, name_size);
+  true_name[name_size-1] = '\0';
+
   /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
+  tid = thread_create (true_name, PRI_DEFAULT, start_process, fn_copy);
+  free(true_name);
   if (tid == TID_ERROR)
     palloc_free_page (fn_copy); 
   return tid;
@@ -217,10 +227,6 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
 bool
 load (const char *file_args, void (**eip) (void), void **esp) 
 {
-  // Splitting file_name and args
-  char *file_name, *save_ptr;
-  file_name = strtok_r(file_args, " ", &save_ptr);
-
   struct thread *t = thread_current ();
   struct Elf32_Ehdr ehdr;
   struct file *file = NULL;
