@@ -234,6 +234,7 @@ int open (const char * file )
   printf("Error there.\n");
   struct file_descriptor *file_desc = process_add_fd(f);
   lock_release(&filesys_lock);
+  printf("file_desc: %d.\n",file_desc->fd);
   return file_desc->fd;
 }
 int filesize (int fd )
