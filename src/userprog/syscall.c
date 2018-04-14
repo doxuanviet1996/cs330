@@ -103,6 +103,7 @@ syscall_handler (struct intr_frame *f)
   void *esp = f->esp;
   int call_num = get_arg(esp);
   esp += 4;
+  printf("Call num: %d\n",call_num);
   if(call_num == SYS_HALT)
   {
     halt();
