@@ -61,7 +61,7 @@ put_user (uint8_t *udst, uint8_t byte)
 int check_valid(void *ptr)
 {
   void *usr_min_addr = 0x08048000;
-  if(!is_valid_uaddr(ptr) || ptr < usr_min_addr) exit(-1);
+  if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
   int res = get_user(ptr);
   if(res == -1) exit(-1);
   return res;
