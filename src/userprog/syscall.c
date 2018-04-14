@@ -222,7 +222,10 @@ int filesize (int fd )
 {
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
-  return file_length(file_desc->file);
+  lock_acquire(&filesys_lock);
+  int res = file_length(file_desc->file);
+  lock_release(&filesys_lock);
+  return res;
 }
 int read (int fd , void * buffer , unsigned size )
 {
@@ -261,13 +264,18 @@ void seek (int fd , unsigned position )
 {
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
+  lock_acquire(&filesys_lock);
   file_seek(file_desc->file, position);
+  lock_release(&filesys_lock);
 }
 unsigned tell (int fd )
 {
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
-  return file_tell(file_desc->file);
+  lock_acquire(&filesys_lock);
+  int res = file_seek(file_desc->file, position);
+  lock_release(&filesys_lock);
+  return res;
 }
 void close (int fd )
 {
