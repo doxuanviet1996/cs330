@@ -19,6 +19,9 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 
+
+extern struct lock filesys_lock;
+
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
 
@@ -256,7 +259,7 @@ load (const char *file_args, void (**eip) (void), void **esp)
       goto done; 
     }
   file_deny_write(file);
-  
+
   /* Read and verify executable header. */
   if (file_read (file, &ehdr, sizeof ehdr) != sizeof ehdr
       || memcmp (ehdr.e_ident, "\177ELF\1\1\1", 7)
