@@ -67,6 +67,11 @@ int check_valid(void *ptr)
   return res;
 }
 
+void check_valid_str(char *ptr)
+{
+  while(*ptr != '\0') check_valid(++ptr);
+}
+
 int get_arg(void *esp)
 {
   check_valid(esp);
@@ -103,6 +108,7 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_EXEC)
   {
     get_args(esp, args, 1);
+    check_valid_str(args[0]);
     f->eax = exec(args[0]);
   }
   else if(call_num == SYS_WAIT)
@@ -113,16 +119,19 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_CREATE)
   {
     get_args(esp, args, 2);
+    check_valid_str(args[0]);
     f->eax = create(args[0], args[1]);
   }
   else if(call_num == SYS_REMOVE)
   {
     get_args(esp, args, 1);
+    check_valid_str(args[0]);
     f->eax = remove(args[0]);
   }
   else if(call_num == SYS_OPEN)
   {
     get_args(esp, args, 1);
+    check_valid_str(args[0]);
     f->eax = open(args[0]);
   }
   else if(call_num == SYS_FILESIZE)
@@ -177,7 +186,6 @@ void exit(int status)
 }
 int exec(const char *cmd_line)
 {
-  check_valid(cmd_line);
   tid_t child_tid = process_execute(cmd_line);
   struct child_process *child = process_get_child(child_tid);
   if(child == NULL) return -1;
