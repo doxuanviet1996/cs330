@@ -346,6 +346,7 @@ load (const char *file_args, void (**eip) (void), void **esp)
  done:
   /* We arrive here whether the load is successful or not. */
   lock_release(&filesys_lock);
+  t->self_file = file;
   return success;
 }
 
