@@ -270,6 +270,8 @@ int write (int fd , const void * buffer , unsigned size )
 {
   if (fd == STDOUT_FILENO)
   {
+    printf("Now writing\n");
+    hex_dump(0, buffer, 32, true);
     putbuf(buffer, size);
     return size;
   }
