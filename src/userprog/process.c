@@ -86,7 +86,7 @@ start_process (void *file_name_)
    been successfully called for the given TID, returns -1
    immediately, without waiting.
 
-   This function will be implemented in problem 2-2.  For now, it
+   This function will be implemented in pro 2-2.  For now, it
    does nothing. */
 int
 process_wait (tid_t child_tid) 
@@ -542,7 +542,8 @@ struct child_process *process_add_child(int child_tid)
   child->load_status = -1;
   child->exit_status = 0;
   child->exit_retval = 0;
-  sema_init(&child->load_sema);
+  sema_init(&child->load_sema, 0);
+  sema_init(&child->exit_sema, 0);
   list_push_back(&thread_current()->child_list, &child->elem);
   return child;
 }
