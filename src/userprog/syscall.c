@@ -273,7 +273,7 @@ unsigned tell (int fd )
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
   lock_acquire(&filesys_lock);
-  int res = file_seek(file_desc->file, position);
+  int res = file_tell(file_desc->file);
   lock_release(&filesys_lock);
   return res;
 }
