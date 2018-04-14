@@ -49,6 +49,7 @@ process_execute (const char *file_name)
     name_size++;
   name_size++;
   true_name = malloc(name_size*(sizeof (char *)));
+  if(!true_name) return -1;
   memcpy(true_name, file_name, name_size);
   true_name[name_size-1] = '\0';
 
@@ -83,8 +84,6 @@ start_process (void *file_name_)
   palloc_free_page (file_name);
   if (!success) 
     thread_exit ();
-
-  if(thread_current()->depth >36) exit(-1);
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
@@ -481,6 +480,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
+  if(!argv) return false;
   while(args != NULL)
   {
     *esp -= strlen(args) + 1;
@@ -490,6 +490,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
     {
       argv_size *= 2;
       argv = realloc(argv, argv_size * (sizeof (char *)));
+      if(!argv) return false;
     }
     args = strtok_r (NULL, " ", &save_ptr);
   }
@@ -547,6 +548,7 @@ struct child_process *process_add_child(int child_tid)
 {
   if(child_tid == -1) return NULL;
   struct child_process *child = malloc(sizeof (struct child_process));
+  if(!child) return NULL;
   child->tid = child_tid;
   child->load_status = -1;
   child->exit_status = 0;
@@ -594,10 +596,9 @@ void process_remove_child_all()
 {
   struct list_elem *e;
   struct list *child_lst = &thread_current()->child_list;
-  for(e=list_begin(child_lst); e != list_end(child_lst);)
+  for(e=list_begin(child_lst); e != list_end(child_lst); e = list_next(e))
   {
     struct child_process *c = list_entry (e, struct child_process, elem);
-    e = list_remove(e);
     free(c);
   }
 }
@@ -605,6 +606,7 @@ void process_remove_child_all()
 struct file_descriptor *process_add_fd(struct file *file)
 {
   struct file_descriptor *file_desc = malloc(sizeof(struct file_descriptor));
+  if(!file_desc) return NULL;
   struct thread *cur = thread_current();
   file_desc->fd = cur->fd_id++;
   file_desc->file = file;
@@ -644,10 +646,9 @@ void process_remove_fd_all()
 {
   struct list_elem *e;
   struct thread *cur = thread_current();
-  for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list);)
+  for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list); e = list_next(e))
   {
     struct file_descriptor *file_desc = list_entry(e, struct file_descriptor, elem);
-    e = list_remove(e);
     free(file_desc);
   }
 }
