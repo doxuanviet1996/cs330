@@ -6,6 +6,7 @@
 #include "threads/vaddr.h"
 #include "devices/shutdown.h"
 #include "process.h"
+#include "filesys/file.h"
 
 static void syscall_handler (struct intr_frame *);
 
