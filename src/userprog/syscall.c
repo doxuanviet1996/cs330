@@ -271,11 +271,9 @@ int write (int fd , const void * buffer , unsigned size )
     return size;
   }
 
-  printf("Trying to write:\n");
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
   int bytes_written = file_write(file_desc->file, buffer, size);
-  printf("Done writing %d\n",bytes_written);
   return bytes_written;
 }
 void seek (int fd , unsigned position )
