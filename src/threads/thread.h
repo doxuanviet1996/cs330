@@ -96,6 +96,15 @@ struct thread
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+
+    int fd_id;
+    struct thread *parent;
+    struct child_process *child;
+    struct list child_list;
+    struct list file_list;
+
+    // File pointer to open itself to deny write.
+    struct file *self_file;
 #endif
 
     /* Owned by thread.c. */
