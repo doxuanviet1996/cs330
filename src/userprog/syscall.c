@@ -74,6 +74,11 @@ void check_valid_str(char *ptr)
     check_valid(++ptr);
 }
 
+void check_valid_buffer(char *ptr, int size)
+{
+  while(size--) check_valid(ptr++);
+}
+
 int get_arg(void *esp)
 {
   check_valid(esp);
@@ -144,11 +149,13 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_READ)
   {
     get_args(esp, args, 3);
+    check_valid_buffer(args[1], args[2]);
     f->eax = read(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_WRITE)
   {
     get_args(esp, args, 3);
+    check_valid_buffer(args[1], args[2]);
     f->eax = write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
