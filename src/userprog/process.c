@@ -62,7 +62,7 @@ start_process (void *file_name_)
   success = load (file_name, &if_.eip, &if_.esp);
 
   thread_current()->child->load_status = success ? 0 : 1;
-  sema_up(thread_current()->child->load_sema);
+  sema_up(&thread_current()->child->load_sema);
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
@@ -94,9 +94,9 @@ process_wait (tid_t child_tid)
   struct child_process *child = process_get_child(child_tid);
   if(child == NULL) return -1;
   // Wait for its exit.
-  if(!cp->exit_status)
+  if(!child->exit_status)
     sema_down(child->exit_status);
-  return cp->exit_retval;
+  return child->exit_retval;
 }
 
 /* Free the current process's resources. */
