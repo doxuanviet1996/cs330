@@ -33,26 +33,12 @@ syscall_init (void)
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
-/* Reads a byte at user virtual address UADDR.
-UADDR must be below PHYS_BASE.
-Returns the byte value if successful, -1 if a segfault
-occurred. */
-static int
-get_user (const uint8_t *uaddr)
-{
-  int result;
-  asm ("movl $1f, %0; movzbl %1, %0; 1:"
-      : "=&a" (result) : "m" (*uaddr));
-  return result;
-}
-
 void check_valid(void *ptr)
 {
   void *usr_min_addr = 0x08048000;
   if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
   int *cur_pd = thread_current()->pagedir;
   if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
-  // if(get_user(ptr) == -1) exit(-1);
   return 0;
 }
 
