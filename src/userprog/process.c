@@ -61,6 +61,9 @@ start_process (void *file_name_)
   if_.eflags = FLAG_IF | FLAG_MBS;
   success = load (file_name, &if_.eip, &if_.esp);
 
+  thread_current()->child->load_status = success ? 0 : 1;
+  sema_up(thread_current()->child->load_sema);
+
   /* If load failed, quit. */
   palloc_free_page (file_name);
   if (!success) 
@@ -86,10 +89,14 @@ start_process (void *file_name_)
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
 int
-process_wait (tid_t child_tid UNUSED) 
+process_wait (tid_t child_tid) 
 {
-  // while(true) {}
-  return -1;
+  struct child_process *child = process_get_child(child_tid);
+  if(child == NULL) return -1;
+  // Wait for its exit.
+  if(!cp->exit_status)
+    sema_down(child->exit_status);
+  return cp->exit_retval;
 }
 
 /* Free the current process's resources. */
@@ -524,4 +531,48 @@ install_page (void *upage, void *kpage, bool writable)
      address, then map our page there. */
   return (pagedir_get_page (t->pagedir, upage) == NULL
           && pagedir_set_page (t->pagedir, upage, kpage, writable));
+}
+
+// Add thread with tid = child_tid to the current thread's child
+// list, and return the corresponding child_process.
+struct child_process *process_add_child(int child_tid)
+{
+  struct child_process *child = malloc(sizeof (struct child_process));
+  child->tid = child_tid;
+  child->load_status = -1;
+  child->exit_status = 0;
+  child->exit_retval = 0;
+  sema_init(&child->load_sema);
+  list_push_back(&thread_current()->child_list, &child->elem);
+  return child;
+}
+
+// Get child_process with tid = child_tid
+struct child_process *process_get_child(int child_tid)
+{
+  struct list_elem *e;
+  struct list *child_lst = &thread_current()->child_list;
+  for(e=list_begin(child_lst); e != list_end(child_lst); e = list_next(e))
+  {
+    struct child_process *c = list_entry (e, struct child_process, elem);
+    if(c->tid == child_tid) return c;
+  }
+  return NULL;
+}
+
+// Remove child_process with tid = child_tid
+void process_remove_child(int child_tid)
+{
+  struct list_elem *e;
+  struct list *child_lst = &thread_current()->child_list;
+  for(e=list_begin(child_lst); e != list_end(child_lst); e = list_next(e))
+  {
+    struct child_process *c = list_entry (e, struct child_process, elem);
+    if(c->tid == child_tid)
+    {
+      list_remove(e);
+      free(c);
+      return;
+    }
+  }
 }

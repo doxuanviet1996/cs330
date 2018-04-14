@@ -5,6 +5,7 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "devices/shutdown.h"
+#include "process.h"
 
 static void syscall_handler (struct intr_frame *);
 
@@ -21,6 +22,15 @@ int write (int fd , const void * buffer , unsigned size );
 void seek (int fd , unsigned position );
 unsigned tell (int fd );
 void close (int fd );
+
+struct lock filesys_lock;
+
+void
+syscall_init (void) 
+{
+  lock_init(&filesys_lock);
+  intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
+}
 
 /* Reads a byte at user virtual address UADDR.
 UADDR must be below PHYS_BASE.
@@ -70,11 +80,6 @@ void get_args(void *esp, int *args, int cnt)
     *args++ = get_arg(esp);
     esp += 4;
   }
-}
-
-syscall_init (void) 
-{
-  intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
 static void
@@ -167,23 +172,47 @@ void exit(int status)
 }
 int exec(const char *cmd_line)
 {
-  return 0;
+  tid_t child_tid = process_execute(cmd_line);
+  struct child_process *child = process_get_child(child_tid);
+  if(child == NULL) return -1;
+  // Not loaded yet
+  if(child->load_status == -1)
+    sema_down(&child->load_sema);
+  // Load fail
+  else if(child->load_status == 1)
+  {
+    process_remove_child(child_tid);
+    return -1;
+  }
+  return child_tid;
 }
 int wait (int pid)
 {
-  return 0;
+  return process_wait(pid);
 }
 bool create (const char * file , unsigned initial_size )
 {
-  return 0;
+  lock_acquire(&filesys_lock);
+  bool res = filesys_create(file, initial_size);
+  lock_release(&filesys_lock);
+  return res;
 }
 bool remove (const char * file )
 {
-  return 0;
+  lock_acquire(&filesys_lock);
+  bool res = filesys_remove(file);
+  lock_release(&filesys_lock);
+  return res;
 }
 int open (const char * file )
 {
-  return 0;
+  lock_acquire(&filesys_lock);
+  file *f = filesys_open(file);
+  if(f == NULL)
+  {
+    lock_release(&filesys_lock);
+    return false;
+  }
 }
 int filesize (int fd )
 {

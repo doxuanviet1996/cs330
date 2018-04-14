@@ -204,6 +204,9 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
   sf->ebp = 0;
 
+  t->parent_tid = thread_tid();
+  t->child = add_child(t->tid);
+
   intr_set_level (old_level);
 
   /* Add to run queue. */
@@ -291,6 +294,7 @@ thread_exit (void)
   ASSERT (!intr_context ());
 
 #ifdef USERPROG
+  struct child_process *child = thread_current()->child;
   process_exit ();
 #endif
 
@@ -470,6 +474,9 @@ init_thread (struct thread *t, const char *name, int priority)
   t->priority = priority;
   t->magic = THREAD_MAGIC;
   list_push_back (&all_list, &t->allelem);
+  t->parent_tid = -1;
+  t->child = NULL;
+  list_init(&t->child_list);
 }
 
 /* Allocates a SIZE-byte frame at the top of thread T's stack and
