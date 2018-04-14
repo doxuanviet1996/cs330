@@ -489,8 +489,13 @@ setup_stack (void **esp, char *args, char *save_ptr)
     if(argc >= argv_size)
     {
       argv_size *= 2;
-      argv = realloc(argv, argv_size * (sizeof (char *)));
-      if(!argv) return false;
+      char **tmp = realloc(argv, argv_size * (sizeof (char *)));
+      if(!tmp)
+      {
+        free(argv);
+        return false;
+      }
+      argv = tmp;
     }
     args = strtok_r (NULL, " ", &save_ptr);
   }
