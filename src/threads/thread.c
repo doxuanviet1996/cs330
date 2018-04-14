@@ -204,7 +204,7 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
   sf->ebp = 0;
 
-  t->parent_tid = thread_tid();
+  t->parent = thread_current();
   t->child = process_add_child(t->tid);
 
   intr_set_level (old_level);
@@ -473,7 +473,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->priority = priority;
   t->magic = THREAD_MAGIC;
   list_push_back (&all_list, &t->allelem);
-  t->parent_tid = -1;
+  t->parent = NULL;
   t->child = NULL;
   list_init(&t->child_list);
 }

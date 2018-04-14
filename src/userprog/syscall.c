@@ -24,8 +24,6 @@ void seek (int fd , unsigned position );
 unsigned tell (int fd );
 void close (int fd );
 
-struct lock filesys_lock;
-
 void
 syscall_init (void) 
 {
@@ -170,6 +168,9 @@ void exit(int status)
 {
   struct thread *cur = thread_current();
   printf("%s: exit(%d)\n", cur->name, status);
+  struct child_process *child = cur->child;
+  child->exit_retval = status;
+  child->exit_status = 1;
   thread_exit();
 }
 int exec(const char *cmd_line)
