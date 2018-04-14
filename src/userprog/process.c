@@ -617,7 +617,7 @@ void process_remove_fd_all()
   struct thread *cur = thread_current();
   for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list); e = list_next(e))
   {
-    struct file_descriptor *file_desc = list_entry(e, struct thread file_descriptor, elem);
+    struct file_descriptor *file_desc = list_entry(e, struct file_descriptor, elem);
     free(file_desc);
   }
 }
