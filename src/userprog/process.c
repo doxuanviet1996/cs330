@@ -252,12 +252,12 @@ load (const char *file_args, void (**eip) (void), void **esp)
   /* Open executable file. */
   lock_acquire(&filesys_lock);
   file = filesys_open (file_name);
-  lock_release(&filesys_lock);
   if (file == NULL) 
     {
       printf ("load: %s: open failed\n", file_name);
       goto done; 
     }
+    
   file_deny_write(file);
 
   /* Read and verify executable header. */
@@ -343,6 +343,7 @@ load (const char *file_args, void (**eip) (void), void **esp)
 
  done:
   /* We arrive here whether the load is successful or not. */
+  lock_release(&filesys_lock);
   file_close (file);
   return success;
 }
