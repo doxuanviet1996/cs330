@@ -231,6 +231,7 @@ int open (const char * file )
     lock_release(&filesys_lock);
     return -1;
   }
+  printf("Error there.\n");
   struct file_descriptor *file_desc = process_add_fd(f);
   lock_release(&filesys_lock);
   return file_desc->fd;
