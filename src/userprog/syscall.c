@@ -169,7 +169,6 @@ void exit(int status)
   struct child_process *child = cur->child;
   child->exit_retval = status;
   child->exit_status = 1;
-  process_remove_fd_all();
   thread_exit();
 }
 int exec(const char *cmd_line)
