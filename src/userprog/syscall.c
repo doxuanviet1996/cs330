@@ -90,8 +90,8 @@ syscall_handler (struct intr_frame *f)
   }
   else if(call_num == SYS_EXIT)
   {
-    int status = get_arg(esp);
-    exit(status);
+    get_args(esp, args, 1);
+    exit(args[0]);
   }
   else if(call_num == SYS_EXEC)
   {
