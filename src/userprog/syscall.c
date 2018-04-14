@@ -46,23 +46,13 @@ get_user (const uint8_t *uaddr)
   return result;
 }
 
-/* Writes BYTE to user address UDST.
-UDST must be below PHYS_BASE.
-Returns true if successful, false if a segfault occurred. */
-static bool
-put_user (uint8_t *udst, uint8_t byte)
-{
-  int error_code;
-  asm ("movl $1f, %0; movb %b2, %1; 1:"
-      : "=&a" (error_code), "=m" (*udst) : "q" (byte));
-  return error_code != -1;
-}
-
 void check_valid(void *ptr)
 {
   void *usr_min_addr = 0x08048000;
   if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
-  if(get_user(ptr) == -1) exit(-1);
+  int *cur_pd = thread_current()->page_dir;
+  if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
+  // if(get_user(ptr) == -1) exit(-1);
   return 0;
 }
 
