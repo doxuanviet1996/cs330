@@ -226,6 +226,7 @@ int filesize (int fd )
 }
 int read (int fd , void * buffer , unsigned size )
 {
+  if(fd == STDOUT_FILENO) return 0;
   if(fd == STDIN_FILENO)
   {
     char *buff = (char *) buffer;
@@ -236,8 +237,10 @@ int read (int fd , void * buffer , unsigned size )
   }
 
   struct file_descriptor *file_desc = process_get_fd(fd);
-  if(!file_desc) return -1;
+  if(!file_desc) return 0;
+  lock_acquire(&filesys_lock);
   int bytes_read = file_read(file_desc->file, buffer, size);
+  lock_release(&filesys_lock);
   return bytes_read;
 }
 int write (int fd , const void * buffer , unsigned size )
@@ -249,7 +252,9 @@ int write (int fd , const void * buffer , unsigned size )
   }
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
+  lock_acquire(&filesys_lock);
   int bytes_written = file_write(file_desc->file, buffer, size);
+  lock_release(&filesys_lock);
   return bytes_written;
 }
 void seek (int fd , unsigned position )
