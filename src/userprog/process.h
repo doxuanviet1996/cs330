@@ -9,7 +9,7 @@ struct child_process
 	int tid;
 	int load_status;
 	int exit_status;
-	int exit_ret_val;
+	int exit_retval;
 	struct semaphore load_sema;
 	struct semaphore exit_sema;
 	struct list_elem elem;
