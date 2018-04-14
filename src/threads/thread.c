@@ -205,7 +205,7 @@ thread_create (const char *name, int priority,
   sf->ebp = 0;
 
   t->parent_tid = thread_tid();
-  t->child = add_child(t->tid);
+  t->child = process_add_child(t->tid);
 
   intr_set_level (old_level);
 
