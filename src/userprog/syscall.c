@@ -136,7 +136,7 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_SEEK)
   {
     get_args(esp, args, 2);
-    f->eax = seek(args[0], args[1]);
+    seek(args[0], args[1]);
   }
   else if(call_num == SYS_TELL)
   {
@@ -146,7 +146,7 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_CLOSE)
   {
     get_args(esp, args, 1);
-    f->eax = close(args[0]);
+    close(args[0]);
   }
   else
   {
