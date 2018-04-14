@@ -122,7 +122,6 @@ kill (struct intr_frame *f)
 static void
 page_fault (struct intr_frame *f) 
 {
-
   f->eip = f->eax;
   f->eax = 0xffffffff;
   // bool not_present;  /* True: not-present page, false: writing r/o page. */
