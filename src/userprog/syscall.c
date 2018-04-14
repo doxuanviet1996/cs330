@@ -69,7 +69,11 @@ int check_valid(void *ptr)
 
 void check_valid_str(char *ptr)
 {
-  while(*ptr != '\0') check_valid(++ptr);
+  while(*ptr != '\0')
+  {
+    printf("%c",*ptr);
+    check_valid(++ptr);
+  }
 }
 
 int get_arg(void *esp)
