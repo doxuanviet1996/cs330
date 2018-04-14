@@ -90,55 +90,63 @@ syscall_handler (struct intr_frame *f)
   }
   else if(call_num == SYS_EXIT)
   {
-    // printf("SYS_EXIT!\n");
     int status = get_arg(esp);
     exit(status);
   }
   else if(call_num == SYS_EXEC)
   {
-    // printf("SYS_EXEC!\n");
+    get_args(esp, args, 1);
+    f->eax = exec(args[0]);
   }
   else if(call_num == SYS_WAIT)
   {
-    // printf("SYS_WAIT!\n");
+    get_args(esp, args, 1);
+    f->eax = wait(args[0]);
   }
   else if(call_num == SYS_CREATE)
   {
-    // printf("SYS_CREATE!\n");
+    get_args(esp, args, 2);
+    f->eax = create(args[0], args[1]);
   }
   else if(call_num == SYS_REMOVE)
   {
-    // printf("SYS_REMOVE!\n");
+    get_args(esp, args, 1);
+    f->eax = remove(args[0]);
   }
   else if(call_num == SYS_OPEN)
   {
-    // printf("SYS_OPEN!\n");
+    get_args(esp, args, 1);
+    f->eax = open(args[0]);
   }
   else if(call_num == SYS_FILESIZE)
   {
-    // printf("SYS_FILESIZE!\n");
+    get_args(esp, args, 1);
+    f->eax = filesize(args[0]);
   }
   else if(call_num == SYS_READ)
   {
-    // printf("SYS_READ!\n");
+    get_args(esp, args, 3);
+    f->eax = read(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_WRITE)
   {
-    // printf("SYS_WRITE!\n");
     get_args(esp, args, 3);
-    write(args[0], args[1], args[2]);
+    f->eax = write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
   {
-    // printf("SYS_SEEK!\n");
+    get_args(esp, args, 2);
+    f->eax = seek(args[0], args[1]);
   }
   else if(call_num == SYS_TELL)
   {
-    // printf("SYS_TELL!\n");
+    get_args(esp, args, 1);
+    f->eax = tell(args[0]);
   }
   else if(call_num == SYS_CLOSE)
   {
-    // printf("SYS_CLOSE!\n");
+    get_args(esp, args, 1);
+    f->eax = close(args[0]);
   }
   else
   {
@@ -157,7 +165,7 @@ void exit(int status)
   printf("%s: exit(%d)\n", cur->name, status);
   thread_exit();
 }
-int exec(const char * cmd_line)
+int exec(const char *cmd_line)
 {
   return 0;
 }
