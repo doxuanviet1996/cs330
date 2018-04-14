@@ -70,6 +70,7 @@ int check_valid(void *ptr)
 void check_valid_str(char *ptr)
 {
   printf("Validate: ");
+  check_valid(ptr);
   while(*ptr != '\0')
   {
     printf("%c",*ptr);
