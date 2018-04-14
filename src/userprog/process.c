@@ -121,6 +121,7 @@ process_exit (void)
 {
   struct thread *cur = thread_current ();
   file_close(cur->self_file);
+  process_remove_child_all();
   uint32_t *pd;
 
   /* Destroy the current process's page directory and switch back
@@ -581,6 +582,19 @@ void process_remove_child(int child_tid)
       free(c);
       return;
     }
+  }
+}
+
+// Remove all child of current process
+void process_remove_child_all()
+{
+  struct list_elem *e;
+  struct list *child_lst = &thread_current()->child_list;
+  for(e=list_begin(child_lst); e != list_end(child_lst);)
+  {
+    struct child_process *c = list_entry (e, struct child_process, elem);
+    e = list_remove(e);
+    free(c);
   }
 }
 
