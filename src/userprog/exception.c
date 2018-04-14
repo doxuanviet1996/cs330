@@ -124,6 +124,7 @@ page_fault (struct intr_frame *f)
 {
   f->eip = f->eax;
   f->eax = 0xffffffff;
+  printf("Stucked in page_fault.\n");
   // bool not_present;  /* True: not-present page, false: writing r/o page. */
   // bool write;        /* True: access was write, false: access was read. */
   // bool user;         /* True: access by user, false: access by kernel. */
