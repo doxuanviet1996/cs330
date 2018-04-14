@@ -44,7 +44,7 @@ process_execute (const char *file_name)
     name_size++;
   name_size++;
   true_name = malloc(name_size*(sizeof (char *)));
-  memcpy(true_name, file_name, name_size);
+  memcpy(true_name, fn_copy, name_size);
   true_name[name_size-1] = '\0';
 
   /* Create a new thread to execute FILE_NAME. */
