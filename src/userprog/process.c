@@ -467,11 +467,8 @@ setup_stack (void **esp, char *args, char *save_ptr)
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
-  // printf("ARGS: %s\n",save_ptr);
-  // printf("char* size: %d\n",sizeof(char *));
   while(args != NULL)
   {
-    // printf("Found args: %s\n", args);
     *esp -= strlen(args) + 1;
     memcpy(*esp, args, strlen(args) + 1);
     argv[argc++] = *esp;
@@ -484,22 +481,17 @@ setup_stack (void **esp, char *args, char *save_ptr)
   }
   argv[argc] = 0;
   int cnt;
-  // for(cnt=0; cnt<=argc; cnt++) printf("%x ",argv[cnt]);
-  // printf("Done argv!\n");
   // Word align access
   int leftover = (size_t) *esp % 4;
-  // printf("leftover: %d\n", leftover);
   *esp -= leftover;
   memcpy(*esp, &argv[argc], leftover);
-  // printf("Done word align!\n");
+
   int i;
-  // Pointer to argv[i]
   for(i=argc; i>=0; i--)
   {
     *esp -= sizeof (char *);
     memcpy(*esp, &argv[i], sizeof (char *));
   }
-  // printf("Done ptr to argv[] %x!\n", &argv);
   // Pointer to argv
   char *argv_addr;
   argv_addr = *esp;
@@ -508,19 +500,9 @@ setup_stack (void **esp, char *args, char *save_ptr)
   // argc
   *esp -= sizeof(int);
   memcpy(*esp, &argc, sizeof(int));
-  // printf("argc = %d\n",*(int*)*esp);
   // Return address
   *esp -= sizeof (char *);
   memcpy(*esp, &argv[argc], sizeof (char *));
-  // printf("Done all!\n");
-  char *tmp;
-  // printf("ESP: %x\n",*esp);
-  // printf("Stack tracking:\n");
-  // for(tmp=*esp; tmp!=PHYS_BASE; tmp++) printf("%x %x\n",tmp, *tmp);
-  // printf("\n");
-  // printf("Stack tracking:\n");
-  // for(tmp=*esp; tmp!=PHYS_BASE; tmp++) printf("%x %x\n",tmp, *(int *)tmp);
-  // printf("\n");
   free(argv);
   return true;
 }
@@ -590,5 +572,52 @@ void process_remove_child(int child_tid)
       free(c);
       return;
     }
+  }
+}
+
+struct file_descriptor *process_add_fd(struct file *file)
+{
+  struct file_descriptor *file_desc = malloc(sizeof(struct file_descriptor));
+  struct thread *cur = thread_current();
+  file_desc->fd = cur->fd_id++;
+  file_desc->file = file;
+  list_push_back(&cur->file_list, &file_desc->elem);
+}
+
+struct file_descriptor *process_get_fd(int fd)
+{
+  struct list_elem *e;
+  struct thread *cur = thread_current();
+  for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list); e = list_next(e))
+  {
+    struct file_descriptor *file_desc = list_entry(e, struct thread file_descriptor, elem);
+    if(file_desc->fd == fd) return file_desc;
+  }
+}
+
+void process_remove_fd(int fd)
+{
+  struct list_elem *e;
+  struct thread *cur = thread_current();
+  for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list); e = list_next(e))
+  {
+    struct file_descriptor *file_desc = list_entry(e, struct thread file_descriptor, elem);
+    if(file_desc->fd == fd)
+    {
+      list_remove(e);
+      free(file_desc);
+      return;
+    }
+  }
+}
+
+void process_remove_fd_all()
+{
+  struct list_elem *e;
+  struct thread *cur = thread_current();
+  for(e=list_begin(&cur->file_list); e!=list_end(&cur->file_list); e = list_next(e))
+  {
+    struct file_descriptor *file_desc = list_entry(e, struct thread file_descriptor, elem);
+    free(file_desc);
   }
 }

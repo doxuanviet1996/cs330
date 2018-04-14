@@ -184,6 +184,7 @@ void exit(int status)
   struct child_process *child = cur->child;
   child->exit_retval = status;
   child->exit_status = 1;
+  process_remove_fd_all();
   thread_exit();
 }
 int exec(const char *cmd_line)
@@ -227,17 +228,28 @@ int open (const char * file )
   if(f == NULL)
   {
     lock_release(&filesys_lock);
-    return false;
+    return -1;
   }
-  return 0;
+  struct file_descriptor file_desc = process_add_fd();
+  lock_release(&filesys_lock);
+  return file_desc->fd;
 }
 int filesize (int fd )
 {
-  return 0;
+  struct file_descriptor *file_desc = process_find_fd(fd);
+  if(!file_desc) return -1;
+  return file_length(file_desc->file);
 }
 int read (int fd , void * buffer , unsigned size )
 {
-  return 0;
+  if(fd == STDIN_FILENO)
+  {
+    char *buff = (char *) buffer;
+    int i;
+    for(i=0; i<size; i++)
+      buff[i] = input_getc();
+    return size;
+  }
 }
 int write (int fd , const void * buffer , unsigned size )
 {
@@ -250,13 +262,19 @@ int write (int fd , const void * buffer , unsigned size )
 }
 void seek (int fd , unsigned position )
 {
-
+  struct file_descriptor *file_desc = process_find_fd(fd);
+  if(!file_desc) return -1;
+  file_seek(file_desc->file, position);
 }
 unsigned tell (int fd )
 {
-  return 0;
+  struct file_descriptor *file_desc = process_find_fd(fd);
+  if(!file_desc) return -1;
+  return file_tell(file_desc->file);
 }
 void close (int fd )
 {
-
+  struct file_descriptor *file_desc = process_find_fd(fd);
+  if(!file_desc) return -1;
+  process_remove_fd(fd);
 }
