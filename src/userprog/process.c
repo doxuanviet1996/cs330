@@ -467,7 +467,6 @@ static bool
 setup_stack (void **esp, char *args, char *save_ptr) 
 {
   uint8_t *kpage;
-  bool success = false;
 
   kpage = palloc_get_page (PAL_USER | PAL_ZERO);
   if(kpage == NULL) return false;
@@ -500,7 +499,6 @@ setup_stack (void **esp, char *args, char *save_ptr)
     args = strtok_r (NULL, " ", &save_ptr);
   }
   argv[argc] = 0;
-  int cnt;
   // Word align access
   int leftover = (size_t) *esp % 4;
   *esp -= leftover;

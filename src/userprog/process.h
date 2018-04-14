@@ -32,9 +32,11 @@ void process_activate (void);
 struct child_process *process_add_child(int child_tid);
 struct child_process *process_get_child(int child_tid);
 void process_remove_child(int child_tid);
+void process_remove_child();
 
 struct file_descriptor *process_add_fd(struct file *file);
 struct file_descriptor *process_get_fd(int fd);
 void process_remove_fd(int fd);
+void process_remove_fd_all();
 
 #endif /* userprog/process.h */
