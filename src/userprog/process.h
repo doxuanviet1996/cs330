@@ -3,6 +3,7 @@
 
 #include "threads/thread.h"
 #include "threads/synch.h"
+#include "userprog/syscall.h"
 
 struct child_process
 {
