@@ -641,7 +641,9 @@ void process_remove_fd(int fd)
     {
       list_remove(e);
       struct file *f = file_desc->file;
+      lock_acquire(&filesys_lock);
       if(f) file_close(f);
+      lock_release(&filesys_lock);
       free(file_desc);
       return;
     }
@@ -657,7 +659,9 @@ void process_remove_fd_all()
     struct file_descriptor *file_desc = list_entry(e, struct file_descriptor, elem);
     e = list_remove(e);
     struct file *f = file_desc->file;
+    lock_acquire(&filesys_lock);
     if(f) file_close(f);
+    lock_release(&filesys_lock);
     free(file_desc);
   }
 }
