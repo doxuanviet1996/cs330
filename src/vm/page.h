@@ -7,7 +7,6 @@ enum addr_type
 {
 	FILE = 1;
 	SWAP = 2;
-
 };
 
 struct sup_page_table_entry
