@@ -22,7 +22,7 @@ struct list frame_table;
 struct lock frame_lock;
 
 void frame_init(void);
-void *frame_alloc(enum palloc_flags flags, struct sup_page_table_entry *spte);
+void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags);
 void *frame_evict(void);
 void frame_free(void *frame);
 
