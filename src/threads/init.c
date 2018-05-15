@@ -39,6 +39,7 @@
 #endif
 #include "vm/swap.h"
 #include "vm/frame.h"
+#include "vm/abcxyz.h"
 
 /* Page directory with kernel mappings only. */
 uint32_t *init_page_dir;
