@@ -1,6 +1,5 @@
-#include "vm/swap.h"
 
-void swap_init()
+void swap_init(void)
 {
 	lock_init(&swap_lock);
 

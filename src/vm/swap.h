@@ -18,7 +18,7 @@ struct block *swap_block;
 	 bitmap(i) = false -> frame i is free. */
 struct bitmap *swap_used_map;
 
-void swap_init();
+void swap_init(void);
 void swap_in(int swap_index, void *addr);
 int swap_out(void *addr);
 
