@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "vm/frame.h"
 #include "userprog/pagedir.h"
 #include "threads/palloc.h"
