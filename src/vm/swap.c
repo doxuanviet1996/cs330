@@ -7,7 +7,7 @@ void swap_init()
 	swap_block = block_get_role(BLOCK_SWAP);
 	if(!swap_block) return;
 
-	int swap_size = block_size(swap_block/SECTOR_PER_PAGE);
+	int swap_size = block_size(swap_block)/SECTOR_PER_PAGE;
 	swap_used_map = bitmap_create(swap_size);
 	if(!swap_used_map) return;
 }
