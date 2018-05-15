@@ -1,5 +1,5 @@
 
-void swap_init(void)
+void swap_init()
 {
 	lock_init(&swap_lock);
 
