@@ -37,7 +37,10 @@
 #include "filesys/filesys.h"
 #include "filesys/fsutil.h"
 #endif
+#ifdef VM
 #include "vm/swap.h"
+#include "vm/frame.h"
+#endif
 
 /* Page directory with kernel mappings only. */
 uint32_t *init_page_dir;
@@ -397,6 +400,7 @@ locate_block_devices (void)
 #ifdef VM
   locate_block_device (BLOCK_SWAP, swap_bdev_name);
   swap_init ();
+  frame_init();
 #endif
 }
 
