@@ -23,7 +23,7 @@ void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags)
 	struct frame_table_entry *fte = malloc(sizeof(struct frame_table_entry));
 	fte->frame = addr;
 	fte->spte = spte;
-	frame->owner = thread_current();
+	fte->owner = thread_current();
 
 	lock_acquire(&frame_lock);
 	list_push_back(&frame_table, &fte->elem);
