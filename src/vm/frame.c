@@ -20,7 +20,7 @@ void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags)
 		PANIC("Frame allocation failed.\n");
 
 	// add to frame table
-	frame_table_entry *fte = malloc(sizeof(struct frame_table_entry));
+	struct frame_table_entry *fte = malloc(sizeof(struct frame_table_entry));
 	fte->frame = addr;
 	fte->spte = spte;
 	frame->owner = thread_current();
@@ -32,7 +32,7 @@ void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags)
 	return addr;
 }
 
-void *frame_evict()
+void *frame_evict(enum palloc_flags flags)
 {
 	return NULL;
 }
