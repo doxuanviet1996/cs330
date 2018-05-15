@@ -26,6 +26,4 @@ void *frame_alloc(enum palloc_flags flags, struct sup_page_table_entry *spte);
 void *frame_evict();
 void frame_free(void *frame);
 
-
-
 #endif /* vm/frame.h */
