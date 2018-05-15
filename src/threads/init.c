@@ -397,7 +397,7 @@ locate_block_devices (void)
   locate_block_device (BLOCK_SCRATCH, scratch_bdev_name);
 #ifdef VM
   locate_block_device (BLOCK_SWAP, swap_bdev_name);
-  swap_init ();
+  // swap_init ();
   frame_init ();
 #endif
 }
