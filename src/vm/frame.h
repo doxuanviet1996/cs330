@@ -2,9 +2,11 @@
 #define VM_FRAME_H
 
 #include <stdlib.h>
+#include <list.h>
 #include "threads/palloc.h"
 #include "threads/synch.h"
 #include "threads/vaddr.h"
+#include "vm/page.h"
 
 /* In case page sharing is implemented, there will be modification
 	 to how we define frame_table entry. */
