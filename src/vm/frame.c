@@ -1,5 +1,3 @@
-#include <stdlib.h>
-
 #include "vm/frame.h"
 #include "userprog/pagedir.h"
 #include "threads/palloc.h"
@@ -14,7 +12,7 @@ void frame_init()
 
 void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags)
 {
-	assert(flags & PAL_USER);
+	ASSERT(flags & PAL_USER);
 
 	void *addr = palloc_get_page(flags);
 	if(addr == NULL) addr = frame_evict(flags);
