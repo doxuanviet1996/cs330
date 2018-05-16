@@ -62,20 +62,21 @@ void check_valid_buffer(char *ptr, int size, void *esp)
   while(size--) check_valid(ptr++, esp);
 }
 
-int get_arg(void *esp)
+int get_arg(void *ptr, void *esp)
 {
-  check_valid(esp);
-  check_valid(esp + 1);
-  check_valid(esp + 2);
-  check_valid(esp + 3);
-  return *(int *)esp;
+  check_valid(ptr, esp);
+  check_valid(ptr + 1, esp);
+  check_valid(ptr + 2, esp);
+  check_valid(ptr + 3, esp);
+  return *(int *)ptr;
 }
 void get_args(void *esp, int *args, int cnt)
 {
+  void *ptr = esp;
   while(cnt--)
   {
-    *args++ = get_arg(esp);
-    esp += 4;
+    *args++ = get_arg(ptr, esp);
+    ptr += 4;
   }
 }
 
