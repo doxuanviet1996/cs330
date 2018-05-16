@@ -60,9 +60,7 @@ bool check_valid(void *ptr, void *esp)
 
   // Stack growth - allow to fault 32 bytes below esp.
   if(esp - ptr <= 32 && stack_grow(ptr)) return true;
-
-  int *cur_pd = thread_current()->pagedir;
-  if(pagedir_get_page(cur_pd, ptr)) return;
+  
   exit_debug(2);
 }
 
