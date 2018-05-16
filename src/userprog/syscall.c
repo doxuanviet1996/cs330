@@ -67,7 +67,7 @@ void check_valid_str(char *ptr, void *esp)
   printf("DOne\n");
 }
 
-void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
+void check_valid_buffer(void *ptr, int size, void *esp, bool writable)
 {
   printf("Validating buffer\n");
   char *uaddr = (char *) ptr;
