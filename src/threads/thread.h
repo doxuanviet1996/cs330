@@ -107,6 +107,8 @@ struct thread
     struct file *self_file;
 #endif
 
+    struct hash spt;
+
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
   };

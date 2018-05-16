@@ -1,0 +1,7 @@
+Tests to pass:
+pintos -v -k -T 60 --qemu  --filesys-size=2 -p tests/vm/pt-grow-stack -a pt-grow-stack --swap-size=4 -- -q  -f run pt-grow-stack
+
+Work remains:
+ - Implement page.c and page.h
+ - Frame eviction
+ - Stack growth

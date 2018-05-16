@@ -123,8 +123,6 @@ kill (struct intr_frame *f)
 static void
 page_fault (struct intr_frame *f) 
 {
-  // f->eip = f->eax;
-  // f->eax = 0xffffffff;
   bool not_present;  /* True: not-present page, false: writing r/o page. */
   bool write;        /* True: access was write, false: access was read. */
   bool user;         /* True: access by user, false: access by kernel. */
@@ -151,7 +149,16 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  if(!not_present || !fault_addr || !is_user_vaddr(fault_addr)) exit(-1);
+  // Check if the page fault can be resolved.
+  if(not_present && is_user_vaddr(fault_addr) && fault_addr >= 0x08048000)
+  {
+    struct hash *cur_spt = thread_current()->spt;
+    struct sup_page_table_entry *spte = spt_lookup(cur_spt, fault_addr);
+    // Demand paging
+    if(spte && spt_load(spte)) return;
+    // Stack growth
+    if(!spte && f->esp - fault_addr <= STACK_LIMIT && stack_grow(fault_addr)) return;
+  }
 
   /* To implement virtual memory, delete the rest of the function
      body, and replace it with code that brings in the page to
@@ -164,4 +171,3 @@ page_fault (struct intr_frame *f)
 
   kill (f);
 }
-
