@@ -75,7 +75,8 @@ bool stack_grow(void *uaddr)
 {
 	if(PHYS_BASE - uaddr > STACK_LIMIT) return false;
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
-
+	if(!spte) return false;
+	
 	spte->uaddr = pg_round_down(uaddr);
 	spte->type = SWAP;
 	spte->is_loaded = true;
