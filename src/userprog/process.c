@@ -472,7 +472,7 @@ setup_stack (void **esp, char *args, char *save_ptr)
     return false;
   }
   *esp = PHYS_BASE;
-  
+  printf("FINE FINE FINE\n");
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
