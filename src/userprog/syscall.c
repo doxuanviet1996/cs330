@@ -37,6 +37,7 @@ void check_valid(void *ptr, void *esp)
 {
   if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit(-1);
   int *cur_pd = thread_current()->pagedir;
+  if(pagedir_get_page(cur_pd, ptr)) return;
 
   struct sup_page_table_entry *spte = spt_lookup(&thread_current()->spt, ptr);
 
@@ -46,7 +47,7 @@ void check_valid(void *ptr, void *esp)
   // Stack growth - allow to fault 32 bytes below esp.
   if(!spte && esp - ptr <= 32 && stack_grow(ptr)) return;
 
-  if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
+  exit(-1);
 }
 
 void check_valid_str(char *ptr, void *esp)
