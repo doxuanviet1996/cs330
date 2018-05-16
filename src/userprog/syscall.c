@@ -67,8 +67,8 @@ void check_valid_str(char *ptr, void *esp)
 
 void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
 {
-  while(size--) check_valid(ptr++, esp);
-    //if(check_valid(ptr++, esp) != writable && writable == true) exit(-1);
+  while(size--)
+    if(check_valid(ptr++, esp) != writable && writable == true) exit(-1);
 }
 
 int get_arg(void *ptr, void *esp)
