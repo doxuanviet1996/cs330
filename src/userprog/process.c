@@ -466,9 +466,13 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 static bool
 setup_stack (void **esp, char *args, char *save_ptr) 
 {
-  if(!stack_grow(PHYS_BASE - 1)) return false;
+  if(!stack_grow(PHYS_BASE - 1))
+  {
+    printf("Oops..\n");
+    return false;
+  }
   *esp = PHYS_BASE;
-
+  
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
