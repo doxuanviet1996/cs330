@@ -21,7 +21,7 @@ void *frame_evict(enum palloc_flags flags)
 	{
 		struct frame_table_entry *fte = list_entry(e, struct frame_table_entry, elem);
 
-		if(!fte->is_locked)
+		if(!fte->spte->is_locked)
 		{
 			struct thread *owner = fte->owner;
 			if(pagedir_is_accessed(owner->pagedir, fte->spte->uaddr))
