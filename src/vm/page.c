@@ -82,7 +82,7 @@ bool stack_grow(void *uaddr)
 	spte->is_locked = true;
 	spte->writable = true;
 
-	void *frame = frame_alloc(spte, PAL_USER);
+	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
 	if(!frame)
 	{
 		free(spte);
