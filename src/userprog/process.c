@@ -466,16 +466,9 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 static bool
 setup_stack (void **esp, char *args, char *save_ptr) 
 {
-  uint8_t *kpage;
-
-  kpage = palloc_get_page (PAL_USER | PAL_ZERO);
-  if(kpage == NULL) return false;
-  if(!install_page (((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true))
-  {
-    palloc_free_page (kpage);
-    return false;
-  }
+  if(!stack_grow(PHYS_BASE - 1)) return false;
   *esp = PHYS_BASE;
+
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
