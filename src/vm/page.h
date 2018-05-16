@@ -9,6 +9,12 @@
 struct sup_page_table_entry
 {
 	void *uaddr;
+
+	int type;		// 0 for swap, 1 for file
+	bool is_loaded;
+
+	int swap_index;
+
 	struct hash_elem elem;
 };
 

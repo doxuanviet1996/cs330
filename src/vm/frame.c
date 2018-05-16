@@ -35,6 +35,32 @@ void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags)
 void *frame_evict(enum palloc_flags flags)
 {
 	return NULL;
+	/*lock_acquire(&frame_lock);
+	struct list_elem *e = list_begin(&frame_table);
+
+	// Frame eviction using second chance algorithm
+	while(true)
+	{
+		struct frame_table_entry *fte = list_entry(e, struct frame_table_entry, elem);
+		struct thread *owner = fte->owner;
+
+		if(pagedir_is_accessed(owner->pagedir, fte->spte->uaddr))
+			pagedir_set_accessed(t->pagedir, fte->spte->uva, false);
+		else // Found one.
+		{
+			fte->spte->type = 0;
+			fte->spte->swap_index = swap_out(fte->frame);
+			fte->spte->is_loaded = false;
+			list_remove(e);
+			pagedir_clear_page(owner->pagedir, fte->spte->uaddr);
+			palloc_free_page(fte->frame);
+			free(fte);
+			return palloc_get_page(flags);
+		}
+
+		e = list_next(e);
+		if(e == list_end(&frame_table)) e = list_begin(&frame_table);
+	}*/
 }
 
 void frame_free(void *frame)

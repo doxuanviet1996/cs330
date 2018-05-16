@@ -33,24 +33,33 @@ syscall_init (void)
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
-void check_valid(void *ptr)
+void check_valid(void *ptr, void *esp)
 {
-  void *usr_min_addr = 0x08048000;
-  if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
+  if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit(-1);
   int *cur_pd = thread_current()->pagedir;
-  if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
+  // if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
+
+  struct sup_page_table_entry *spte = spt_lookup(&thread_current()->spt, ptr);
+
+  // Demand paging
+  if(spte && spt_load(spte)) return;
+
+  // Stack growth - allow to fault 32 bytes below esp.
+  if(!spte && esp - ptr <= 32 && stack_grow(ptr)) return;
+
+  exit(-1);
 }
 
-void check_valid_str(char *ptr)
+void check_valid_str(char *ptr, void *esp)
 {
-  check_valid(ptr);
+  check_valid(ptr, esp);
   while(*ptr != '\0')
-    check_valid(++ptr);
+    check_valid(++ptr, esp);
 }
 
-void check_valid_buffer(char *ptr, int size)
+void check_valid_buffer(char *ptr, int size, void *esp)
 {
-  while(size--) check_valid(ptr++);
+  while(size--) check_valid(ptr++, esp);
 }
 
 int get_arg(void *esp)
@@ -89,7 +98,7 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_EXEC)
   {
     get_args(esp, args, 1);
-    check_valid_str(args[0]);
+    check_valid_str(args[0], esp);
     f->eax = exec(args[0]);
   }
   else if(call_num == SYS_WAIT)
@@ -100,19 +109,19 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_CREATE)
   {
     get_args(esp, args, 2);
-    check_valid_str(args[0]);
+    check_valid_str(args[0], esp);
     f->eax = create(args[0], args[1]);
   }
   else if(call_num == SYS_REMOVE)
   {
     get_args(esp, args, 1);
-    check_valid_str(args[0]);
+    check_valid_str(args[0], esp);
     f->eax = remove(args[0]);
   }
   else if(call_num == SYS_OPEN)
   {
     get_args(esp, args, 1);
-    check_valid_str(args[0]);
+    check_valid_str(args[0], esp);
     f->eax = open(args[0]);
   }
   else if(call_num == SYS_FILESIZE)
@@ -123,13 +132,13 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_READ)
   {
     get_args(esp, args, 3);
-    check_valid_buffer(args[1], args[2]);
+    check_valid_buffer(args[1], args[2], esp);
     f->eax = read(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_WRITE)
   {
     get_args(esp, args, 3);
-    check_valid_buffer(args[1], args[2]);
+    check_valid_buffer(args[1], args[2], esp);
     f->eax = write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
