@@ -468,7 +468,7 @@ static bool
 setup_stack (void **esp, char *args, char *save_ptr) 
 {
   printf("Heyyyy\n");
-  if(!stack_grow(PHYS_BASE - PGSIZE))
+  if(!stack_grow(((uint8_t *) PHYS_BASE) - PGSIZE))
   {
     printf("Oops..\n");
     return false;
