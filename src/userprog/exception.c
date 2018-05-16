@@ -158,8 +158,8 @@ page_fault (struct intr_frame *f)
     struct sup_page_table_entry *spte = spt_lookup(&thread_current()->spt, fault_addr);
     // Demand paging
     if(spte && spt_load(spte)) return;
-    // Stack growth
-    if(!spte && f->esp - fault_addr <= STACK_LIMIT && stack_grow(fault_addr)) return;
+    // Stack growth - allow to fault 32 bytes below esp.
+    if(!spte && f->esp - fault_addr <= 32 && stack_grow(fault_addr)) return;
   }
 
   /* To implement virtual memory, delete the rest of the function
