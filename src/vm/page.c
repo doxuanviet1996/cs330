@@ -34,25 +34,65 @@ void spt_destroy(struct hash *spt)
 
 struct sup_page_table_entry *spt_lookup(struct hash *spt, void *uaddr)
 {
+	// Simulate a spte with same uaddr to find in hash table.
 	struct sup_page_table_entry tmp;
 	tmp.uaddr = pg_round_down(uaddr);
-
-	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
+	struct hash_elem *e = hash_find(spt, &tmp.elem);
 	if(!e) return NULL;
 	return hash_entry(e, struct sup_page_table_entry, elem);
 }
-bool spt_load(struct sup_page_table_entry *spte)
+
+bool spt_load_swap(struct sup_page_table_entry *spte)
+{
+	void *frame = frame_alloc(spte, PAL_USER);
+	if(!frame) return false;
+	if(!install_page(spte->uaddr, frame, spte->writable))
+	{
+		frame_free(frame);
+		return false;
+	}
+	swap_in(spte->swap_index, spte->uaddr);
+	spte->is_loaded = true;
+	return true;
+}
+
+bool spt_load_file(struct sup_page_table_entry *spte)
 {
 	return false;
 }
+
+bool spt_load(struct sup_page_table_entry *spte)
+{
+	spte->is_locked = true;
+	if(spte->is_loaded) return false;
+
+	// SWAP loading
+	if(spte->type == SWAP) return spt_load_swap(spte);
+	if(spte->type == FILE) return spt_load_file(spte);
+}
+
 bool stack_grow(void *uaddr)
 {
 	if(PHYS_BASE - uaddr > STACK_LIMIT) return false;
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
 
 	spte->uaddr = pg_round_down(uaddr);
+	spte->type = SWAP;
+	spte->is_loaded = true;
+	spte->is_locked = true;
+	spte->writable = true;
 
 	void *frame = frame_alloc(spte, PAL_USER);
-	if(!install_page(spte->uaddr, frame, true)) return false;
+	if(!frame)
+	{
+		free(spte);
+		return false;
+	}
+	if(!install_page(spte->uaddr, frame, true))
+	{
+		free(spte);
+		frame_free(frame);
+		return false;
+	}
 	return hash_insert(&thread_current()->spt, &spte->elem) == NULL;
 }

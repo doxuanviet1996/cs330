@@ -6,12 +6,20 @@
 
 #define STACK_LIMIT (1<<23)
 
+enum spte_type
+{
+	SWAP = 0,
+	FILE = 1
+};
+
 struct sup_page_table_entry
 {
-	void *uaddr;
+	void *uaddr;						// User virtual address
 
-	int type;		// 0 for swap, 1 for file
-	bool is_loaded;
+	enum spte_type type;		// 0 for swap, 1 for file
+	bool is_loaded;					// True if loaded to RAM
+	bool is_locked;					// True if locked to the table (can't be evicted)
+	bool writable;					// True if page is writable
 
 	int swap_index;
 

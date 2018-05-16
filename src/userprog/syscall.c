@@ -33,19 +33,21 @@ syscall_init (void)
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
-void check_valid(void *ptr, void *esp)
+bool check_valid(void *ptr, void *esp)
 {
   if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit(-1);
-  int *cur_pd = thread_current()->pagedir;
-  if(pagedir_get_page(cur_pd, ptr)) return;
 
   struct sup_page_table_entry *spte = spt_lookup(&thread_current()->spt, ptr);
-
-  // Demand paging
-  if(spte && spt_load(spte)) return;
+  // Not presented error -> try load spte.
+  if(spte)
+  {
+    spt_load(spte);
+    if(!spte->is_loaded) exit(-1);
+    return spte->writable;
+  }
 
   // Stack growth - allow to fault 32 bytes below esp.
-  if(!spte && esp - ptr <= 32 && stack_grow(ptr)) return;
+  if(esp - ptr <= 32 && stack_grow(ptr)) return true;
 
   exit(-1);
 }
@@ -57,9 +59,10 @@ void check_valid_str(char *ptr, void *esp)
     check_valid(++ptr, esp);
 }
 
-void check_valid_buffer(char *ptr, int size, void *esp)
+void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
 {
-  while(size--) check_valid(ptr++, esp);
+  while(size--)
+    if(check_valid(ptr++, esp) != writable && writable == true) exit(-1);
 }
 
 int get_arg(void *ptr, void *esp)
@@ -133,13 +136,13 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_READ)
   {
     get_args(esp, args, 3);
-    check_valid_buffer(args[1], args[2], esp);
+    check_valid_buffer(args[1], args[2], esp, false);
     f->eax = read(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_WRITE)
   {
     get_args(esp, args, 3);
-    check_valid_buffer(args[1], args[2], esp);
+    check_valid_buffer(args[1], args[2], esp, true);
     f->eax = write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
