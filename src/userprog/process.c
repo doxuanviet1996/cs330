@@ -19,6 +19,7 @@
 #include "threads/palloc.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "vm/page.h"
 
 
 extern struct lock filesys_lock;
