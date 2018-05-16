@@ -1,8 +1,9 @@
-#include "vm/frame.h"
-#include "userprog/pagedir.h"
 #include "threads/palloc.h"
 #include "threads/pte.h"
+#include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "userprog/pagedir.h"
+#include "vm/frame.h"
 
 void frame_init()
 {
