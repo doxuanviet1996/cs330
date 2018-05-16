@@ -41,6 +41,12 @@ void exit_debug(int err_code)
 
 bool check_valid(void *ptr, void *esp)
 {
+  void *usr_min_addr = 0x08048000;
+  if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
+  int *cur_pd = thread_current()->pagedir;
+  if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
+  return;
+
   if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit_debug(0);
 
   struct sup_page_table_entry *spte = spt_lookup(&thread_current()->spt, ptr);
