@@ -55,6 +55,8 @@ bool check_valid(void *ptr, void *esp)
   // Stack growth - allow to fault 32 bytes below esp.
   if(esp - ptr <= 32 && stack_grow(ptr)) return true;
 
+  int *cur_pd = thread_current()->pagedir;
+  if(pagedir_get_page(cur_pd, ptr)) return;
   exit_debug(2);
 }
 
@@ -148,13 +150,13 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_READ)
   {
     get_args(esp, args, 3);
-    check_valid_buffer((void *) args[1], args[2], esp, false);
+    check_valid_buffer(args[1], args[2], esp, false);
     f->eax = read(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_WRITE)
   {
     get_args(esp, args, 3);
-    check_valid_buffer((void *) args[1], args[2], esp, true);
+    check_valid_buffer(args[1], args[2], esp, true);
     f->eax = write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
