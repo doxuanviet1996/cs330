@@ -64,6 +64,7 @@ void check_valid_str(char *ptr, void *esp)
   check_valid(ptr, esp);
   while(*ptr != '\0')
     check_valid(++ptr, esp);
+  printf("DOne\n");
 }
 
 void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
