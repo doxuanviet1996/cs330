@@ -466,6 +466,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 static bool
 setup_stack (void **esp, char *args, char *save_ptr) 
 {
+  printf("Heyyyy\n");
   if(!stack_grow(PHYS_BASE - 1))
   {
     printf("Oops..\n");
