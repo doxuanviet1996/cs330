@@ -70,7 +70,7 @@ start_process (void *file_name_)
   char *file_name = file_name_;
   struct intr_frame if_;
   bool success;
-  
+
   /* Initialize the process' sup_page_table. */
   spt_init(&thread_current()->spt);
 
@@ -130,6 +130,8 @@ process_exit (void)
   process_remove_child_all();
   process_remove_fd_all();
   uint32_t *pd;
+
+  spt_destroy(cur->spt);
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
@@ -467,14 +469,8 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 static bool
 setup_stack (void **esp, char *args, char *save_ptr) 
 {
-  printf("Heyyyy\n");
-  if(!stack_grow(((uint8_t *) PHYS_BASE) - PGSIZE))
-  {
-    printf("Oops..\n");
-    return false;
-  }
+  if(!stack_grow(((uint8_t *) PHYS_BASE) - PGSIZE)) return false;
   *esp = PHYS_BASE;
-  printf("FINE FINE FINE\n");
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
   char **argv = malloc(sizeof (char *));
