@@ -60,6 +60,7 @@ bool check_valid(void *ptr, void *esp)
 
 void check_valid_str(char *ptr, void *esp)
 {
+  printf("Validating string\n");
   check_valid(ptr, esp);
   while(*ptr != '\0')
     check_valid(++ptr, esp);
