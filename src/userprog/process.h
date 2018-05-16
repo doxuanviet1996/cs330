@@ -39,6 +39,6 @@ struct file_descriptor *process_get_fd(int fd);
 void process_remove_fd(int fd);
 void process_remove_fd_all();
 
-static bool install_page (void *upage, void *kpage, bool writable);
+bool install_page (void *upage, void *kpage, bool writable);
 
 #endif /* userprog/process.h */
