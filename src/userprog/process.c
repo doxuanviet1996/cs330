@@ -355,7 +355,6 @@ load (const char *file_args, void (**eip) (void), void **esp)
   t->self_file = file;
   return success;
 }
-
 /* load() helpers. */
 
 static bool install_page (void *upage, void *kpage, bool writable);
