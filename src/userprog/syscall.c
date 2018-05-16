@@ -67,7 +67,7 @@ void check_valid_str(char *ptr, void *esp)
   printf("DOne\n");
 }
 
-void check_valid_buffer(void *ptr, int size, void *esp, bool writable)
+void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
 {
   printf("Validating buffer\n");
   char *uaddr = (char *) ptr;
@@ -148,7 +148,7 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_READ)
   {
     get_args(esp, args, 3);
-    check_valid_buffer(args[1], args[2], esp, false);
+    check_valid_buffer((void *) args[1], args[2], esp, false);
     f->eax = read(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_WRITE)
