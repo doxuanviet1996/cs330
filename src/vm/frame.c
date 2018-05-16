@@ -24,6 +24,8 @@ void *frame_evict(enum palloc_flags flags)
 		if(!fte->spte->is_locked)
 		{
 			struct thread *owner = fte->owner;
+			owner->pagedir;
+			fte->spte->uaddr;
 			if(pagedir_is_accessed(owner->pagedir, fte->spte->uaddr))
 				pagedir_set_accessed(owner->pagedir, fte->spte->uaddr, false);
 			else // Found one.

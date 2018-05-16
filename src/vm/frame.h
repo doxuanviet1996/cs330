@@ -13,7 +13,7 @@ struct frame_table_entry
 {
 	void *frame;													/* Physical address of the frame. */
 	struct sup_page_table_entry *spte;		/* The corresponding sup_page_table_entry. */
-	struct thread *owner;								/* The thread owning this frame. */
+	struct thread *owner;									/* The thread owning this frame. */
 	struct list_elem elem;								/* Element in the frame_table list. */
 };
 
