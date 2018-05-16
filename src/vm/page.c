@@ -73,10 +73,12 @@ bool spt_load(struct sup_page_table_entry *spte)
 
 bool stack_grow(void *uaddr)
 {
+	printf("CHECKPOINT 0\n");
 	if(PHYS_BASE - uaddr > STACK_LIMIT) return false;
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
 	if(!spte) return false;
-	
+
+	printf("CHECKPOINT 1\n");
 	spte->uaddr = pg_round_down(uaddr);
 	spte->type = SWAP;
 	spte->is_loaded = true;
@@ -89,11 +91,14 @@ bool stack_grow(void *uaddr)
 		free(spte);
 		return false;
 	}
+
+	printf("CHECKPOINT 2\n");
 	if(!install_page(spte->uaddr, frame, true))
 	{
 		free(spte);
 		frame_free(frame);
 		return false;
 	}
+	printf("CHECKPOINT 3\n");
 	return hash_insert(&thread_current()->spt, &spte->elem) == NULL;
 }
