@@ -1,3 +1,5 @@
+#include <hash.h>
+
 #include "vm/page.h"
 #include "threads/vaddr.h"
 #include "userprog/process.h"
@@ -100,5 +102,10 @@ bool stack_grow(void *uaddr)
 		return false;
 	}
 	printf("CHECKPOINT 3\n");
-	return hash_insert(&thread_current()->spt, &spte->elem) == NULL;
+
+	struct hash_elem *elem = hash_insert(&thread_current()->spt, &spte->elem);
+
+	printf("CHECKPOINT 4\n");
+
+	return elem == NULL;
 }
