@@ -70,6 +70,9 @@ start_process (void *file_name_)
   char *file_name = file_name_;
   struct intr_frame if_;
   bool success;
+  
+  /* Initialize the process' sup_page_table. */
+  spt_init(&thread_current()->spt);
 
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
@@ -85,9 +88,6 @@ start_process (void *file_name_)
   palloc_free_page (file_name);
   if (!success) 
     thread_exit ();
-
-  /* Initialize the process' sup_page_table. */
-  spt_init(&thread_current()->spt);
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
