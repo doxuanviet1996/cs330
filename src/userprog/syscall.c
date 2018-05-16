@@ -154,7 +154,7 @@ syscall_handler (struct intr_frame *f)
   else if(call_num == SYS_WRITE)
   {
     get_args(esp, args, 3);
-    check_valid_buffer(args[1], args[2], esp, true);
+    check_valid_buffer((void *) args[1], args[2], esp, true);
     f->eax = write(args[0], args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
