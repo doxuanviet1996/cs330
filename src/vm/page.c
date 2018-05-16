@@ -1,6 +1,7 @@
 #include "vm/page.h"
 #include "threads/vaddr.h"
 #include "userprog/process.h"
+#include "threads/palloc.h"
 
 unsigned hash_func (const struct hash_elem *e, void *aux)
 {
@@ -8,10 +9,10 @@ unsigned hash_func (const struct hash_elem *e, void *aux)
 	return hash_int(spte->uaddr);
 }
 
-bool hash_less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
+bool less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
 {
-	struct sup_page table entry *spte_a = hash_entry(a, struct sup_page_table_entry, elem);
-	struct sup_page table entry *spte_b = hash_entry(b, struct sup_page_table_entry, elem);
+	struct sup_page_table_entry *spte_a = hash_entry(a, struct sup_page_table_entry, elem);
+	struct sup_page_table_entry *spte_b = hash_entry(b, struct sup_page_table_entry, elem);
 	return spte_a->uaddr < spte_b->uaddr;
 }
 
@@ -33,7 +34,7 @@ void spt_destroy(struct hash *spt)
 
 struct sup_page_table_entry *spt_lookup(struct hash *spt, void *uaddr)
 {
-	struct sup_page_table_entry *tmp;
+	struct sup_page_table_entry tmp;
 	tmp.uaddr = pg_round_down(uaddr);
 
 	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
