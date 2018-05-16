@@ -39,7 +39,6 @@ void check_valid(void *ptr)
   if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
   int *cur_pd = thread_current()->pagedir;
   if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
-  return 0;
 }
 
 void check_valid_str(char *ptr)

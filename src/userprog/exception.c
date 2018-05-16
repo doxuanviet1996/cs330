@@ -152,9 +152,9 @@ page_fault (struct intr_frame *f)
   user = (f->error_code & PF_U) != 0;
 
   // Check if the page fault can be resolved.
-  if(not_present && is_user_vaddr(fault_addr) && fault_addr >= 0x08048000)
+  if(not_present)
   {
-    if(fault_addr < f->esp) exit(-1);
+    if(!is_user_vaddr(fault_addr) || fault_addr < 0x08048000) exit(-1);
     struct sup_page_table_entry *spte = spt_lookup(&thread_current()->spt, fault_addr);
     // Demand paging
     if(spte && spt_load(spte)) return;
