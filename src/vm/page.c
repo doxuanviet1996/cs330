@@ -53,6 +53,6 @@ bool stack_grow(void *uaddr)
 	spte->uaddr = pg_round_down(uaddr);
 
 	void *frame = frame_alloc(spte, PAL_USER);
-	install_page(spte->uaddr, frame, true);
+	if(!install_page(spte->uaddr, frame, true)) return false;
 	return hash_insert(&thread_current()->spt, &spte->elem) == NULL;
 }
