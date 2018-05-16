@@ -131,7 +131,7 @@ process_exit (void)
   process_remove_fd_all();
   uint32_t *pd;
 
-  spt_destroy(cur->spt);
+  spt_destroy(&cur->spt);
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
