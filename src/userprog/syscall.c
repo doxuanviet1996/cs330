@@ -102,6 +102,7 @@ syscall_handler (struct intr_frame *f)
   }
   else if(call_num == SYS_EXIT)
   {
+    printf("Now exitting\n");
     get_args(esp, args, 1);
     exit(args[0]);
   }
