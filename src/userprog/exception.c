@@ -160,6 +160,7 @@ page_fault (struct intr_frame *f)
     if(spte && spt_load(spte)) return;
     // Stack growth - allow to fault 32 bytes below esp.
     if(!spte && f->esp - fault_addr <= 32 && stack_grow(fault_addr)) return;
+    exit(-1);
   }
 
   /* To implement virtual memory, delete the rest of the function
