@@ -66,18 +66,18 @@ bool check_valid(void *ptr, void *esp)
 
 void check_valid_str(char *ptr, void *esp)
 {
-  printf("Validating string\n");
+  // printf("Validating string\n");
   check_valid(ptr, esp);
   while(*ptr != '\0')
     check_valid(++ptr, esp);
-  printf("DOne\n");
+  // printf("DOne\n");
 }
 
 void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
 {
-  printf("Validating buffer %s\n", writable ? "Writable" : "not writable");
+  // printf("Validating buffer %s\n", writable ? "Writable" : "not writable");
   char *uaddr = (char *) ptr;
-  printf("%x %x\n",uaddr, ptr);
+  // printf("%x %x\n",uaddr, ptr);
   while(size--) // check_valid(uaddr++, esp);
     if(check_valid(ptr++, esp) != writable && writable == true) exit(-1);
 }
@@ -113,7 +113,6 @@ syscall_handler (struct intr_frame *f)
   }
   else if(call_num == SYS_EXIT)
   {
-    printf("Now exitting\n");
     get_args(esp, args, 1);
     exit(args[0]);
   }

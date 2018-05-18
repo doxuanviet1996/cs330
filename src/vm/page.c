@@ -40,10 +40,10 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 	struct sup_page_table_entry tmp;
 	tmp.uaddr = pg_round_down(uaddr);
 	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
-	printf("HASH FIND %x\n", tmp.uaddr);
+	// printf("HASH FIND %x\n", tmp.uaddr);
 	if(!e)
 	{
-		printf("HASH FIND NOT FOUND\n");
+		// printf("HASH FIND NOT FOUND\n");
 		return NULL;
 	}
 	return hash_entry(e, struct sup_page_table_entry, elem);
