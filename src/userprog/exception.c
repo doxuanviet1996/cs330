@@ -151,9 +151,9 @@ page_fault (struct intr_frame *f)
 
   // printf("Checkpoint page_fault %p %p\n", fault_addr, f->esp);
   // Check if the page fault can be resolved.
-  if(not_present && is_user_vaddr(fault_addr))
+  if(not_present)
   {
-    if(fault_addr < 0x08048000) exit(-1);
+    if(!is_user_vaddr(fault_addr) || fault_addr < 0x08048000) exit(-1);
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     if(spte)
     {
