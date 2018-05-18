@@ -153,6 +153,6 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		return NULL;
 	}
 	// printf("CHECKPOINT 3\n");
-	// printf("HASH INSERT %x\n",spte->uaddr);
+	printf("Stack grow %x\n",spte->uaddr);
 	if(hash_insert(&thread_current()->spt, &spte->elem) == NULL) return spte;
 }
