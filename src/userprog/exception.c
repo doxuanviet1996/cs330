@@ -156,6 +156,7 @@ page_fault (struct intr_frame *f)
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     if(spte)
     {
+      printf("Found ya\n");
       if(spt_load(spte))
       {
         spte->is_locked = false;
