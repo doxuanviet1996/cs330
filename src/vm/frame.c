@@ -15,6 +15,7 @@ void frame_init()
 
 void *frame_evict(enum palloc_flags flags)
 {
+	return false;
 	lock_acquire(&frame_lock);
 	struct list_elem *e = list_begin(&frame_table);
 
@@ -23,15 +24,14 @@ void *frame_evict(enum palloc_flags flags)
 	while(loop < 2)
 	{
 		struct frame_table_entry *fte = list_entry(e, struct frame_table_entry, elem);
-
-		if(!fte->spte->is_locked)
+		struct sup_page_table_entry *spte = fte->spte;
+		if(!spte->is_locked)
 		{
 			struct thread *owner = fte->owner;
-			if(pagedir_is_accessed(owner->pagedir, fte->spte->uaddr))
-				pagedir_set_accessed(owner->pagedir, fte->spte->uaddr, false);
+			if(pagedir_is_accessed(owner->pagedir, spte->uaddr))
+				pagedir_set_accessed(owner->pagedir, spte->uaddr, false);
 			else // Found one.
 			{
-				struct sup_page_table_entry *spte = fte->spte;
 				if(spte->type == SWAP)
 				{
 					spte->type = 0;

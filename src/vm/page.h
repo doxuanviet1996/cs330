@@ -40,7 +40,9 @@ void spt_destroy(struct hash *spt);
 
 struct sup_page_table_entry *spt_lookup(void *uaddr);
 bool spt_load(struct sup_page_table_entry *spte);
-bool spt_add_file(void *uaddr, struct file *file, int ofs, int read_bytes, int zero_bytes, bool writable);
-bool stack_grow(void *uaddr); 
+struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file,
+																					int ofs, int read_bytes,
+																					int zero_bytes, bool writable);
+struct sup_page_table_entry *stack_grow(void *uaddr); 
 
 #endif /* vm/page.h */

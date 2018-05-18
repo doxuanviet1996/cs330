@@ -99,12 +99,13 @@ bool spt_load(struct sup_page_table_entry *spte)
 	if(spte->type == FILE) return spt_load_file(spte);
 }
 
-bool spt_add_file(void *uaddr, struct file *file, int ofs, int read_bytes, int zero_bytes, bool writable)
+struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int ofs,
+																					int read_bytes, int zero_bytes, bool writable)
 {
-	if(read_bytes + zero_bytes != PGSIZE) return false;
+	if(read_bytes + zero_bytes != PGSIZE) return NULL;
 
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
-	if(!spte) return false;
+	if(!spte) return NULL;
 
 	spte->uaddr = pg_round_down(uaddr);
 	spte->type = FILE;
@@ -118,15 +119,14 @@ bool spt_add_file(void *uaddr, struct file *file, int ofs, int read_bytes, int z
 	spte->zero_bytes = zero_bytes;
 
 	printf("HASH INSERT %x\n",spte->uaddr);
-	return hash_insert(&thread_current()->spt, &spte->elem) == NULL;
+	if(hash_insert(&thread_current()->spt, &spte->elem) == NULL) return spte;
 }
 
-bool stack_grow(void *uaddr)
+struct sup_page_table_entry *stack_grow(void *uaddr)
 {
-	// printf("CHECKPOINT 0\n");
-	if(PHYS_BASE - uaddr > STACK_LIMIT) return false;
+	if(PHYS_BASE - uaddr > STACK_LIMIT) return NULL;
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
-	if(!spte) return false;
+	if(!spte) return NULL;
 
 	// printf("CHECKPOINT 1\n");
 	spte->uaddr = pg_round_down(uaddr);
@@ -139,7 +139,7 @@ bool stack_grow(void *uaddr)
 	if(!frame)
 	{
 		free(spte);
-		return false;
+		return NULL;
 	}
 
 	// printf("CHECKPOINT 2\n");
@@ -147,9 +147,9 @@ bool stack_grow(void *uaddr)
 	{
 		free(spte);
 		frame_free(frame);
-		return false;
+		return NULL;
 	}
 	// printf("CHECKPOINT 3\n");
 	printf("HASH INSERT %x\n",spte->uaddr);
-	return hash_insert(&thread_current()->spt, &spte->elem) == NULL;
+	if(hash_insert(&thread_current()->spt, &spte->elem) == NULL) return spte;
 }
