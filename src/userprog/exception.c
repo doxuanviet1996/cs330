@@ -162,6 +162,7 @@ page_fault (struct intr_frame *f)
         spte->is_locked = false;
         return;
       }
+      else printf("CHECKPOINT EXCEPTION\n");
     }
     // Stack growth - allow to fault 32 bytes below esp.
     else if(f->esp - fault_addr <= 32 && stack_grow(fault_addr)) return;
