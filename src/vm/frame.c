@@ -48,7 +48,7 @@ void *frame_evict(enum palloc_flags flags)
 				palloc_free_page(fte->frame);
 				free(fte);
 				lock_release(&frame_lock);
-				printf("Evict successful\n");
+				// printf("Evict successful\n");
 				return palloc_get_page(flags);
 			}
 		}

@@ -51,7 +51,7 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 
 bool spt_load_swap(struct sup_page_table_entry *spte)
 {
-	printf("Load swap\n");
+	// printf("Load swap\n");
 	void *frame = frame_alloc(spte, PAL_USER);
 	if(!frame) return false;
 	if(!install_page(spte->uaddr, frame, spte->writable))
@@ -66,7 +66,7 @@ bool spt_load_swap(struct sup_page_table_entry *spte)
 
 bool spt_load_file(struct sup_page_table_entry *spte)
 {
-	printf("Load file: %d %d %d %d\n",spte->uaddr, spte->ofs, spte->read_bytes, spte->zero_bytes);
+	// printf("Load file: %d %d %d %d\n",spte->uaddr, spte->ofs, spte->read_bytes, spte->zero_bytes);
 	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
 	if(!frame) return false;
 
