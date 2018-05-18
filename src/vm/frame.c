@@ -31,16 +31,15 @@ void *frame_evict(enum palloc_flags flags)
 				pagedir_set_accessed(owner->pagedir, spte->uaddr, false);
 			else // Found one.
 			{
-				if(spte->type == SWAP)
+				if(spte->type == SWAP || spte->type == FILE)
 				{
 					spte->type = 0;
 					spte->swap_index = swap_out(fte->frame);
 				}
-				else // if(pagedir_is_dirty(owner->pagedir, spte->uaddr))
+				else if(pagedir_is_dirty(owner->pagedir, spte->uaddr))
 				{
 					lock_acquire(&filesys_lock);
 					int write_bytes = file_write_at(spte->file, fte->frame, spte->read_bytes, spte->ofs);
-					if(write_bytes != spte->read_bytes) printf("Suspicious.. %d %d\n",write_bytes, spte->read_bytes);
 					lock_release(&filesys_lock);
 				}
 				fte->spte->is_loaded = false;
