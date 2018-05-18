@@ -265,7 +265,6 @@ int read (int fd , void * buffer , unsigned size )
 }
 int write (int fd , const void * buffer , unsigned size )
 {
-  printf("Writing to %p\n", buffer);
   if (fd == STDOUT_FILENO)
   {
     putbuf(buffer, size);

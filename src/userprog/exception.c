@@ -149,7 +149,7 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  printf("Checkpoint page_fault %p %p\n", fault_addr, f->esp);
+  // printf("Checkpoint page_fault %p %p\n", fault_addr, f->esp);
   // Check if the page fault can be resolved.
   if(not_present && is_user_vaddr(fault_addr))
   {
