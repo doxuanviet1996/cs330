@@ -161,6 +161,7 @@ page_fault (struct intr_frame *f)
       printf("Found ya\n");
       if(spt_load(spte))
       {
+        printf("Loaded\n");
         spte->is_locked = false;
         return;
       }
