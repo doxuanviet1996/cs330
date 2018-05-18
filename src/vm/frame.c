@@ -33,7 +33,7 @@ void *frame_evict(enum palloc_flags flags)
 			{
 				if(spte->type == SWAP || spte->type == FILE)
 				{
-					spte->type = 0;
+					spte->type = SWAP;
 					spte->swap_index = swap_out(fte->frame);
 				}
 				else if(pagedir_is_dirty(owner->pagedir, spte->uaddr))

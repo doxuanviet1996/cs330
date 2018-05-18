@@ -17,7 +17,7 @@ void swap_in(int swap_index, void *addr)
 {
 	lock_acquire(&swap_lock);
 
-	if(bitmap_test(swap_used_map, swap_index) == true)
+	if(bitmap_test(swap_used_map, swap_index) == false)
 		PANIC("Swapping in a free page.\n");
 	bitmap_flip(swap_used_map, swap_index);
 
