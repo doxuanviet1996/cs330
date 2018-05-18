@@ -65,11 +65,8 @@ bool spt_load_swap(struct sup_page_table_entry *spte)
 
 bool spt_load_file(struct sup_page_table_entry *spte)
 {
-	enum palloc_flags flags = PAL_USER;
-	if(spte->read_bytes == 0) flags |= PAL_ZERO;
-	void *frame = frame_alloc(spte, flags);
+	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
 	if(!frame) return false;
-	memset(frame, 0, PGSIZE);
 
 	lock_acquire(&filesys_lock);
 	int read_bytes = file_read_at(spte->file, frame, spte->read_bytes , spte->ofs);
