@@ -164,7 +164,7 @@ page_fault (struct intr_frame *f)
       }
     }
     // Stack growth - allow to fault 32 bytes below esp.
-    printf("PAGE FAULT %p %p %d\n", fault_addr, f->esp, f->esp - fault_addr);
+    // printf("PAGE FAULT %p %p %d\n", fault_addr, f->esp, f->esp - fault_addr);
     if(f->esp <= fault_addr + 32 && stack_grow(fault_addr)) return;
     if(f->esp > fault_addr + 32) exit(-1);
   }
