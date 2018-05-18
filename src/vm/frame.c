@@ -36,7 +36,7 @@ void *frame_evict(enum palloc_flags flags)
 					spte->type = 0;
 					spte->swap_index = swap_out(fte->frame);
 				}
-				else if(pagedir_is_dirty(owner->pagedir, spte->uaddr))
+				else // if(pagedir_is_dirty(owner->pagedir, spte->uaddr))
 				{
 					lock_acquire(&filesys_lock);
 					int write_bytes = file_write_at(spte->file, fte->frame, spte->read_bytes, spte->ofs);
