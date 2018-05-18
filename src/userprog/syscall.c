@@ -69,8 +69,6 @@ void check_valid_str(char *ptr, void *esp)
 void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
 {
   // printf("Validating buffer %s\n", writable ? "Writable" : "not writable");
-  char *uaddr = (char *) ptr;
-  // printf("%x %x\n",uaddr, ptr);
   while(size--) // check_valid(uaddr++, esp);
     if(check_valid(ptr++, esp) != writable && writable == true) exit(-1);
 }
@@ -267,6 +265,7 @@ int read (int fd , void * buffer , unsigned size )
 }
 int write (int fd , const void * buffer , unsigned size )
 {
+  printf("Writing to %p\n", buffer);
   if (fd == STDOUT_FILENO)
   {
     putbuf(buffer, size);
