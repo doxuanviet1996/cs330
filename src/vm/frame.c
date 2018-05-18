@@ -40,7 +40,7 @@ void *frame_evict(enum palloc_flags flags)
 				{
 					lock_acquire(&filesys_lock);
 					int write_bytes = file_write_at(spte->file, fte->frame, spte->read_bytes, spte->ofs);
-					if(write_bytes != read_bytes) printf("Suspicious..\n");
+					if(write_bytes != spte->read_bytes) printf("Suspicious..\n");
 					lock_release(&filesys_lock);
 				}
 				fte->spte->is_loaded = false;
