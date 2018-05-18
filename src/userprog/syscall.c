@@ -39,7 +39,7 @@ void exit_debug(int err_code)
 
 bool check_valid(void *ptr, void *esp)
 {
-  printf("validate %p %p %d\n", ptr, esp, esp - ptr);
+  printf("validate %p %p\n", ptr, esp);
   if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit(-1);
 
   struct sup_page_table_entry *spte = spt_lookup(ptr);
@@ -52,7 +52,7 @@ bool check_valid(void *ptr, void *esp)
   }
 
   // Stack growth - allow to fault 32 bytes below esp.
-  if(esp - ptr <= 32 && stack_grow(ptr)) return true;
+  if(esp <= ptr + 32 && stack_grow(ptr)) return true;
   
   exit(-1);
 }
