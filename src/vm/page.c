@@ -119,7 +119,7 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 	spte->ofs = ofs;
 	spte->read_bytes = read_bytes;
 	spte->zero_bytes = zero_bytes;
-	printf("%d %d %d %d\n",spte->uaddr, ofs, read_bytes, zero_bytes);
+	// printf("%d %d %d %d\n",spte->uaddr, ofs, read_bytes, zero_bytes);
 
 	// printf("HASH INSERT %x\n",spte->uaddr);
 	if(hash_insert(&thread_current()->spt, &spte->elem) == NULL) return spte;
