@@ -440,7 +440,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       /* Get a page of memory. */
       if(!spt_add_file(upage, file, ofs, page_read_bytes, page_zero_bytes, writable))
         return false;
-      if(!spt_load(spt_lookup(upage)) return false;
+      if(!spt_load(spt_lookup(upage))) return false;
       // uint8_t *kpage = palloc_get_page (PAL_USER);
       // if (kpage == NULL)
       //   return false;
