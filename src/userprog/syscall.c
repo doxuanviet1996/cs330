@@ -39,8 +39,8 @@ void exit_debug(int err_code)
 
 bool check_valid(void *ptr, void *esp)
 {
-  printf("validate %x\n", ptr);
-  
+  printf("validate %p\n", ptr);
+
   void *usr_min_addr = 0x08048000;
   if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
   int *cur_pd = thread_current()->pagedir;
