@@ -68,6 +68,7 @@ bool spt_load_file(struct sup_page_table_entry *spte)
 	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
 	if(!frame) return false;
 
+	printf("Loading file to %p %p\n", spte->uaddr, frame);
 	// lock_acquire(&filesys_lock);
 	int read_bytes = file_read_at(spte->file, frame, spte->read_bytes , spte->ofs);
 	// lock_release(&filesys_lock);
