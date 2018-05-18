@@ -59,7 +59,7 @@ bool spt_load_swap(struct sup_page_table_entry *spte)
 		frame_free(frame);
 		return false;
 	}
-	swap_in(spte->swap_index, spte->uaddr);
+	swap_in(spte->swap_index, frame);
 	spte->is_loaded = true;
 	return true;
 }
