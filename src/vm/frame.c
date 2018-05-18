@@ -15,7 +15,6 @@ void frame_init()
 
 void *frame_evict(enum palloc_flags flags)
 {
-	return false;
 	lock_acquire(&frame_lock);
 	struct list_elem *e = list_begin(&frame_table);
 
