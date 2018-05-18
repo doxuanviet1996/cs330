@@ -152,11 +152,11 @@ page_fault (struct intr_frame *f)
   // Check if the page fault can be resolved.
   if(not_present && is_user_vaddr(fault_addr) && fault_addr >= 0x08048000)
   {
-    printf("Checkpoint page_fault %p %p %d\n", fault_addr, f->esp, fault_addr - f->esp);
+    // printf("Checkpoint page_fault %p %p %d\n", fault_addr, f->esp, fault_addr - f->esp);
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     if(spte)
     {
-      printf("Found yaaa\n");
+      // printf("Found yaaa\n");
       if(spt_load(spte))
       {
         spte->is_locked = false;
