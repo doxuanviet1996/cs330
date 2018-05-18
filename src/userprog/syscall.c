@@ -39,14 +39,7 @@ void exit_debug(int err_code)
 
 bool check_valid(void *ptr, void *esp)
 {
-  // printf("validate %p\n", ptr);
-
-  // void *usr_min_addr = 0x08048000;
-  // if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
-  // int *cur_pd = thread_current()->pagedir;
-  // if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
-  // return;
-
+  printf("validate %p %p\n", ptr, esp);
   if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit(-1);
 
   struct sup_page_table_entry *spte = spt_lookup(ptr);
