@@ -96,8 +96,7 @@ bool spt_load(struct sup_page_table_entry *spte)
 
 	// SWAP loading
 	if(spte->type == SWAP) return spt_load_swap(spte);
-	if(spte->type == FILE) return spt_load_file(spte);
-	return true;
+	else return spt_load_file(spte);
 }
 
 struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int ofs,
