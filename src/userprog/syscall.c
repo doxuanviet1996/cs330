@@ -39,29 +39,29 @@ void exit_debug(int err_code)
 
 bool check_valid(void *ptr, void *esp)
 {
-  printf("validate %p\n", ptr);
+  // printf("validate %p\n", ptr);
 
-  void *usr_min_addr = 0x08048000;
-  if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
-  int *cur_pd = thread_current()->pagedir;
-  if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
-  return;
+  // void *usr_min_addr = 0x08048000;
+  // if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
+  // int *cur_pd = thread_current()->pagedir;
+  // if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
+  // return;
 
-  if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit_debug(0);
+  if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit(-1);
 
   struct sup_page_table_entry *spte = spt_lookup(ptr);
   // Not presented error -> try load spte.
   if(spte)
   {
     spt_load(spte);
-    if(!spte->is_loaded) exit_debug(1);
+    if(!spte->is_loaded) exit(-1);
     return spte->writable;
   }
 
   // Stack growth - allow to fault 32 bytes below esp.
   if(esp - ptr <= 32 && stack_grow(ptr)) return true;
   
-  exit_debug(2);
+  exit(-1);
 }
 
 void check_valid_str(char *ptr, void *esp)
