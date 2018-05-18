@@ -151,9 +151,8 @@ page_fault (struct intr_frame *f)
 
   // printf("Checkpoint page_fault %p %p\n", fault_addr, f->esp);
   // Check if the page fault can be resolved.
-  if(not_present)
+  if(not_present && is_user_vaddr(fault_addr) && fault_addr >= 0x08048000)
   {
-    if(!is_user_vaddr(fault_addr) || fault_addr < 0x08048000) exit(-1);
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     if(spte)
     {
@@ -169,6 +168,8 @@ page_fault (struct intr_frame *f)
     if(f->esp <= fault_addr + 32 && stack_grow(fault_addr)) return;
     if(f->esp > fault_addr + 32) exit(-1);
   }
+
+  if(user) exit(-1);
 
   /* To implement virtual memory, delete the rest of the function
      body, and replace it with code that brings in the page to
