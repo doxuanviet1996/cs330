@@ -15,7 +15,6 @@ void frame_init()
 
 void *frame_evict(enum palloc_flags flags)
 {
-	return NULL;
 	lock_acquire(&frame_lock);
 	struct list_elem *e = list_begin(&frame_table);
 
@@ -37,12 +36,13 @@ void *frame_evict(enum palloc_flags flags)
 					spte->type = 0;
 					spte->swap_index = swap_out(fte->frame);
 				}
-				// else if(pagedir_is_dirty(owner->pagedir, spte->uaddr))
-				// {
-				// 	lock_acquire(&filesys_lock);
-				// 	file_write_at(spte->file, fte->frame, spte->read_bytes, spte->ofs);
-				// 	lock_release(&filesys_lock);
-				// }
+				else if(pagedir_is_dirty(owner->pagedir, spte->uaddr))
+				{
+					lock_acquire(&filesys_lock);
+					int write_bytes = file_write_at(spte->file, fte->frame, spte->read_bytes, spte->ofs);
+					if(write_bytes != read_bytes) printf("Suspicious..\n");
+					lock_release(&filesys_lock);
+				}
 				fte->spte->is_loaded = false;
 				list_remove(e);
 				pagedir_clear_page(owner->pagedir, fte->spte->uaddr);
