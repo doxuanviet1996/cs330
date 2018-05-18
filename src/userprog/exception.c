@@ -153,7 +153,7 @@ page_fault (struct intr_frame *f)
   // Check if the page fault can be resolved.
   if(not_present && is_user_vaddr(fault_addr))
   {
-    if(fault_addr >= 0x08048000) exit(-1);
+    if(fault_addr < 0x08048000) exit(-1);
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     if(spte)
     {
