@@ -65,7 +65,7 @@ bool spt_load_swap(struct sup_page_table_entry *spte)
 
 bool spt_load_file(struct sup_page_table_entry *spte)
 {
-	printf("Load file: %d %d %d\n",spte->ofs, spte->read_bytes, spte->zero_bytes);
+	printf("Load file: %d %d %d %d\n",spte->uaddr, spte->ofs, spte->read_bytes, spte->zero_bytes);
 	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
 	if(!frame) return false;
 
@@ -118,7 +118,7 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 	spte->ofs = ofs;
 	spte->read_bytes = read_bytes;
 	spte->zero_bytes = zero_bytes;
-	printf("%d %d %d\n",ofs, read_bytes, zero_bytes);
+	printf("%d %d %d %d\n",spte->uaddr, ofs, read_bytes, zero_bytes);
 
 	// printf("HASH INSERT %x\n",spte->uaddr);
 	if(hash_insert(&thread_current()->spt, &spte->elem) == NULL) return spte;
