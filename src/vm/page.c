@@ -78,7 +78,7 @@ bool spt_load_file(struct sup_page_table_entry *spte)
 		return false;
 	}
 
-	iff(!install_page(spte->uaddr, frame, spte->writable))
+	if(!install_page(spte->uaddr, frame, spte->writable))
 	{
 		frame_free(frame);
 		return false;
