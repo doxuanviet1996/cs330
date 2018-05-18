@@ -68,8 +68,8 @@ bool spt_load_file(struct sup_page_table_entry *spte)
 	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
 	if(!frame) return false;
 
-	printf("Loading file to %p %p\n", spte->uaddr, frame);
-	printf("%d %d %d\n",spte->ofs, spte->read_bytes, spte->zero_bytes);
+	// printf("Loading file to %p %p\n", spte->uaddr, frame);
+	// printf("%d %d %d\n",spte->ofs, spte->read_bytes, spte->zero_bytes);
 	// lock_acquire(&filesys_lock);
 	int read_bytes = file_read_at(spte->file, frame, spte->read_bytes , spte->ofs);
 	// lock_release(&filesys_lock);
@@ -119,9 +119,9 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 	spte->ofs = ofs;
 	spte->read_bytes = read_bytes;
 	spte->zero_bytes = zero_bytes;
-	printf("%d %d %d\n",ofs, read_bytes, zero_bytes);
+	// printf("%d %d %d\n",ofs, read_bytes, zero_bytes);
 
-	printf("HASH INSERT %x\n",spte->uaddr);
+	// printf("HASH INSERT %x\n",spte->uaddr);
 	if(hash_insert(&thread_current()->spt, &spte->elem) == NULL) return spte;
 }
 
@@ -153,6 +153,6 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		return NULL;
 	}
 	// printf("CHECKPOINT 3\n");
-	printf("HASH INSERT %x\n",spte->uaddr);
+	// printf("HASH INSERT %x\n",spte->uaddr);
 	if(hash_insert(&thread_current()->spt, &spte->elem) == NULL) return spte;
 }
