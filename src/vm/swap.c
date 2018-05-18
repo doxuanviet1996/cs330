@@ -29,7 +29,7 @@ void swap_in(int swap_index, void *addr)
 		block_read(swap_block, cur_sector, cur_addr);
 	}
 	
-	lock_acquire(&swap_lock);
+	lock_release(&swap_lock);
 }
 
 /* Swap out a frame starting at addr and return the swap index
