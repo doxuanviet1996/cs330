@@ -83,13 +83,15 @@ bool spt_load_file(struct sup_page_table_entry *spte)
 		frame_free(frame);
 		return false;
 	}
-	spte->is_locked = true;
+	spte->is_locked = false;
 	spte->is_loaded = true;
 	return true;
 }
 
 bool spt_load(struct sup_page_table_entry *spte)
 {
+	if(spte == NULL) return false;
+	
 	spte->is_locked = true;
 	if(spte->is_loaded) return false;
 
