@@ -24,8 +24,6 @@ void seek (int fd , unsigned position );
 unsigned tell (int fd );
 void close (int fd );
 
-struct lock filesys_lock;
-
 void
 syscall_init (void) 
 {
@@ -41,15 +39,15 @@ void exit_debug(int err_code)
 
 bool check_valid(void *ptr, void *esp)
 {
-  void *usr_min_addr = 0x08048000;
-  if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
-  int *cur_pd = thread_current()->pagedir;
-  if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
-  return;
+  // void *usr_min_addr = 0x08048000;
+  // if(!is_user_vaddr(ptr) || ptr < usr_min_addr) exit(-1);
+  // int *cur_pd = thread_current()->pagedir;
+  // if(!pagedir_get_page(cur_pd, ptr)) exit(-1);
+  // return;
 
   if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit_debug(0);
 
-  struct sup_page_table_entry *spte = spt_lookup(&thread_current()->spt, ptr);
+  struct sup_page_table_entry *spte = spt_lookup(ptr);
   // Not presented error -> try load spte.
   if(spte)
   {
@@ -78,8 +76,8 @@ void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
   printf("Validating buffer\n");
   char *uaddr = (char *) ptr;
   printf("%x %x\n",uaddr, ptr);
-  while(size--) check_valid(uaddr++, esp);
-    //if(check_valid(ptr++, esp) != writable && writable == true) exit(-1);
+  while(size--) //check_valid(uaddr++, esp);
+    if(check_valid(ptr++, esp) != writable && writable == true) exit(-1);
 }
 
 int get_arg(void *ptr, void *esp)

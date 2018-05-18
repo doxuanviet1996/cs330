@@ -1,7 +1,9 @@
+#include "filesys/file.h"
 #include "threads/palloc.h"
 #include "threads/pte.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
+#include "userprog/syscall.h"
 #include "userprog/pagedir.h"
 #include "vm/frame.h"
 
@@ -29,13 +31,24 @@ void *frame_evict(enum palloc_flags flags)
 				pagedir_set_accessed(owner->pagedir, fte->spte->uaddr, false);
 			else // Found one.
 			{
-				fte->spte->type = 0;
-				fte->spte->swap_index = swap_out(fte->frame);
+				struct sup_page_table_entry *spte = fte->spte;
+				if(spte->type == SWAP)
+				{
+					spte->type = 0;
+					spte->swap_index = swap_out(fte->frame);
+				}
+				else if(pagedir_is_dirty(owner->pagedir, spte->uaddr))
+				{
+					lock_acquire(&filesys_lock);
+					file_write_at(spte->file, fte->frame, spte->read_bytes, spte->ofs);
+					lock_release(&filesys_lock);
+				}
 				fte->spte->is_loaded = false;
 				list_remove(e);
 				pagedir_clear_page(owner->pagedir, fte->spte->uaddr);
 				palloc_free_page(fte->frame);
 				free(fte);
+				lock_release(&frame_lock);
 				return palloc_get_page(flags);
 			}
 		}
@@ -47,12 +60,13 @@ void *frame_evict(enum palloc_flags flags)
 			e = list_begin(&frame_table);
 		}
 	}
+	lock_release(&frame_lock);
 	return NULL;
 }
 
 void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags)
 {
-	ASSERT(flags & PAL_USER);
+	if(!(flags & PAL_USER)) return NULL;
 
 	void *addr = palloc_get_page(flags);
 	if(addr == NULL) addr = frame_evict(flags);

@@ -34,12 +34,12 @@ void spt_destroy(struct hash *spt)
 	hash_destroy(spt, destroy_func);
 }
 
-struct sup_page_table_entry *spt_lookup(struct hash *spt, void *uaddr)
+struct sup_page_table_entry *spt_lookup(void *uaddr)
 {
 	// Simulate a spte with same uaddr to find in hash table.
 	struct sup_page_table_entry tmp;
 	tmp.uaddr = pg_round_down(uaddr);
-	struct hash_elem *e = hash_find(spt, &tmp.elem);
+	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
 	printf("HASH FIND %x\n", tmp.uaddr);
 	if(!e)
 	{
@@ -65,7 +65,27 @@ bool spt_load_swap(struct sup_page_table_entry *spte)
 
 bool spt_load_file(struct sup_page_table_entry *spte)
 {
-	return false;
+	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
+	if(!frame) return false;
+
+	lock_acquire(&filesys_lock);
+	int read_bytes = file_read_at(spte->file, frame, spte->read_bytes , spte->ofs);
+	lock_release(&filesys_lock);
+
+	if(read_bytes != spte->read_bytes)
+	{
+		frame_free(frame);
+		return false;
+	}
+
+	iff(!install_page(spte->uaddr, frame, spte->writable))
+	{
+		frame_free(frame);
+		return false;
+	}
+	// spte->is_locked = true;
+	spte->is_loaded = true;
+	return true;
 }
 
 bool spt_load(struct sup_page_table_entry *spte)
@@ -76,6 +96,28 @@ bool spt_load(struct sup_page_table_entry *spte)
 	// SWAP loading
 	if(spte->type == SWAP) return spt_load_swap(spte);
 	if(spte->type == FILE) return spt_load_file(spte);
+}
+
+bool spt_add_file(void *uaddr, struct file *file, int ofs, int read_bytes, int zero_bytes, bool writable)
+{
+	if(read_bytes + zero_bytes != PGSIZE) return false;
+
+	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
+	if(!spte) return false;
+
+	spte->uaddr = pg_round_down(uaddr);
+	spte->type = FILE;
+	spte->is_loaded = false;
+	spte->is_locked = false;
+	spte->writable = writable;
+
+	spte->file = file;
+	spte->ofs = ofs;
+	spte->read_bytes = read_bytes;
+	spte->zero_bytes = zero_bytes;
+
+	printf("HASH INSERT %x\n",spte->uaddr);
+	return hash_insert(&thread_current()->spt, &spte->elem) == NULL;
 }
 
 bool stack_grow(void *uaddr)

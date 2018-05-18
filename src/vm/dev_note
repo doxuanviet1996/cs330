@@ -1,4 +1,16 @@
+Work by files:
+swap.c: Done
+swap.h: Done
+frame.c: Done (if no bug)
+frame.h: Done
+page.c: Done (spt_load() for file)
+page.h: Done
+process.c: load_segment() now use spt to ask for frame.
+syscall.c: validate pointer user + (later) mmap syscall.
+exception.c: ?
+
 Tests to pass:
+git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/userprog/args-none -a args-none --swap-size=4 -- -q  -f run args-none
 git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/vm/pt-grow-stack -a pt-grow-stack --swap-size=4 -- -q  -f run pt-grow-stack
 git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/vm/pt-grow-bad -a pt-grow-bad --swap-size=4 -- -q  -f run pt-grow-bad
 
@@ -6,3 +18,4 @@ Work remains:
  - Implement page.c and page.h
  - Frame eviction
  - Refine stack growth: validate user pointer in syscall.c correctly.
+ - MMAP.
