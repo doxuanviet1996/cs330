@@ -154,18 +154,14 @@ page_fault (struct intr_frame *f)
   // Check if the page fault can be resolved.
   if(not_present && is_user_vaddr(fault_addr) && fault_addr >= 0x08048000)
   {
-    printf("CHECKPOINT EXCEPTION\n");
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     if(spte)
     {
-      printf("Found ya\n");
       if(spt_load(spte))
       {
-        printf("Loaded\n");
         spte->is_locked = false;
         return;
       }
-      else printf("CHECKPOINT EXCEPTION\n");
     }
     // Stack growth - allow to fault 32 bytes below esp.
     else if(f->esp - fault_addr <= 32 && stack_grow(fault_addr)) return;
