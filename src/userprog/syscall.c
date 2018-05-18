@@ -75,7 +75,7 @@ void check_valid_str(char *ptr, void *esp)
 
 void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
 {
-  printf("Validating buffer\n");
+  printf("Validating buffer %s\n", writable ? "Writable" : "not writable");
   char *uaddr = (char *) ptr;
   printf("%x %x\n",uaddr, ptr);
   while(size--) // check_valid(uaddr++, esp);
