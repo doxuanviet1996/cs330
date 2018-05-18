@@ -14,6 +14,7 @@ git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/u
 git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/vm/pt-grow-stack -a pt-grow-stack --swap-size=4 -- -q  -f run pt-grow-stack
 git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/vm/pt-grow-bad -a pt-grow-bad --swap-size=4 -- -q  -f run pt-grow-bad
 git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/userprog/create-bad-ptr -a create-bad-ptr --swap-size=4 -- -q  -f run create-bad-ptr
+git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/userprog/bad-read -a bad-read --swap-size=4 -- -q  -f run bad-read
 
 Work remains:
  - Implement page.c and page.h
