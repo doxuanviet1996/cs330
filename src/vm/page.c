@@ -28,7 +28,7 @@ void destroy_func (struct hash_elem *e, void *aux)
 
 	if(spte->is_loaded)
 	{
-		printf("Start checkpoint\n");
+		printf("Start checkpoint %s\n",thread_current()->name);
 		void *frame = pagedir_get_page(&thread_current()->pagedir, spte->uaddr);
 		printf("End checkpoint\n");
 		// if(frame) frame_free(frame);
@@ -178,7 +178,7 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		frame_free(frame);
 		return NULL;
 	}
-	printf("Stack growed at %p\n", spte->uaddr);
+	printf("%s: Stack growed at %p\n", thread_current()->name, spte->uaddr);
 	spte->is_locked = false;
 	return spte;
 }
