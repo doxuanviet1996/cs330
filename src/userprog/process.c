@@ -133,7 +133,7 @@ process_exit (void)
   uint32_t *pd;
 
   int i;
-  for(i=0; i<cur->mmap_id; cur++) munmap(i);
+  for(i=0; i<cur->mmap_id; i++) munmap(i);
 
   printf("PROCESS EXIT: DONE UNMAPPING\n");
 
