@@ -150,7 +150,7 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int ofs,
 																					int read_bytes, int zero_bytes)
 {
-	printf("SPT adding mmap %p\n",uaddr);
+	// printf("SPT adding mmap %p\n",uaddr);
 	if(read_bytes + zero_bytes != PGSIZE) return NULL;
 
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
@@ -169,7 +169,6 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 
 	if(hash_insert(&thread_current()->spt, &spte->elem))
 	{
-		printf("Hash error\n");
 		free(spte);
 		return NULL;
 	}
@@ -181,7 +180,7 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 	mmap_desc->mmap_id = thread_current()->mmap_id;
 	list_push_back(&thread_current()->mmap_list, &mmap_desc->elem);
 
-	printf("Hash insert %p\n", spte->uaddr);
+	// printf("Hash insert %p\n", spte->uaddr);
 	return spte;
 }
 
