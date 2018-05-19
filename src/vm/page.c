@@ -38,7 +38,9 @@ void spt_init(struct hash *spt)
 
 void spt_destroy(struct hash *spt)
 {
+	printf("Start spt destroy\n");
 	hash_destroy(spt, destroy_func);
+	printf("Finish spt destroy\n");
 }
 
 struct sup_page_table_entry *spt_lookup(void *uaddr)
