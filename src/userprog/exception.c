@@ -171,6 +171,7 @@ page_fault (struct intr_frame *f)
     }
   }
   printf("Can't resolved %p\n", fault_addr);
+  if(user) printf("Will exit -1\n");
   if(user) exit(-1);
 
   /* To implement virtual memory, delete the rest of the function
