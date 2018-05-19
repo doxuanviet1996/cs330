@@ -372,9 +372,9 @@ void munmap(int mmap_id)
           frame_free(frame);
         }
         pagedir_clear_page(thread_current()->pagedir, spte->uaddr);
-        printf("Hash delete %p\n", spte->uaddr);
-        hash_delete(&cur->spt, &spte->elem);
       }
+      printf("Hash delete %p\n", spte->uaddr);
+      hash_delete(&cur->spt, &spte->elem);
       free(spte);
       free(mmap_desc);
     }
