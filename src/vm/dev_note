@@ -23,6 +23,8 @@ git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/u
 
 git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/userprog/sc-bad-sp -a sc-bad-sp --swap-size=4 -- -q  -f run sc-bad-sp
 
+git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/vm/mmap-read -a mmap-read -p ../tests/vm/sample.txt -a sample.txt --swap-size=4 -- -q  -f run mmap-read
+
 Work remains:
  - Implement page.c and page.h
  - MMAP.
