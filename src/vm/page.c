@@ -31,8 +31,8 @@ void destroy_func (struct hash_elem *e, void *aux)
 		printf("Start checkpoint\n");
 		void *frame = pagedir_get_page(&thread_current()->pagedir, spte->uaddr);
 		printf("End checkpoint\n");
-		if(frame) frame_free(frame);
-		pagedir_clear_page(&thread_current()->pagedir, spte->uaddr);
+		// if(frame) frame_free(frame);
+		// pagedir_clear_page(&thread_current()->pagedir, spte->uaddr);
 	}
 
 	free(spte);
@@ -158,7 +158,7 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 	spte->is_locked = true;
 	spte->writable = true;
 
-	void *frame = frame_alloc(spte, PAL_USER);
+	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
 	if(!frame)
 	{
 		free(spte);
