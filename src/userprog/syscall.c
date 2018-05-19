@@ -336,7 +336,7 @@ int mmap(int fd, void *addr)
     addr += PGSIZE;
     ofs += page_read_bytes;
   }
-
+  printf("Done mmap\n");
   return thread_current()->mmap_id++;
 }
 void munmap(int mmap_id)
