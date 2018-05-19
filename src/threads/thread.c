@@ -478,6 +478,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->self_file = NULL;
   // fd_id 0 and 1 is reserved for stdin and stdout.
   t->fd_id = 2;
+  t->mmap_id = 0;
   list_init(&t->child_list);
   list_init(&t->file_list);
 }

@@ -110,6 +110,9 @@ struct thread
 
     struct hash spt;
 
+    int mmap_id;
+    struct list mmap_list;
+
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
   };

@@ -158,6 +158,16 @@ syscall_handler (struct intr_frame *f)
     get_args(esp, args, 1);
     close(args[0]);
   }
+  else if(call_num == MMAP)
+  {
+    get_args(esp, args, 2);
+    f->eax = mmap(args[0], args[1]);
+  }
+  else if(call_num == MUNMAP)
+  {
+    get_args(esp, args, 1);
+    munmap(args[0]);
+  }
   else
   {
   	printf("Not known (yet) syscall.\n");
@@ -289,4 +299,83 @@ void close (int fd )
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
   process_remove_fd(fd);
+}
+
+/* Project 3 */
+int mmap(int fd, void *addr)
+{
+  if(!is_user_vaddr(addr) || addr < 0x08048000) return -1;
+  if(addr % PGSIZE) return -1;
+
+  struct file_descriptor *file_desc = process_get_fd(fd);
+  if(!file_desc) return -1;
+
+  struct file *file = file_desc->file;
+  if(!file || file_length(file) == 0) return -1;
+
+  struct file *f = freopen(file);
+
+  int ofs = 0;
+  int read_bytes = file_length(f);
+  while (read_bytes > 0) 
+  {
+    int page_read_bytes = read_bytes < PGSIZE ? read_bytes : PGSIZE;
+    int page_zero_bytes = PGSIZE - page_read_bytes;
+
+    /* Get a page of memory. */
+    struct sup_page_table_entry *spte = spt_add_mmap(addr, f, ofs, page_read_bytes, page_zero_bytes);
+    if(!spte)
+    {
+      munmap(thread_current()->map_id);
+      return -1;
+    }
+    
+    /* Advance. */
+    read_bytes -= page_read_bytes;
+    upage += PGSIZE;
+    ofs += page_read_bytes;
+  }
+
+  return thread_current()->mmap_id++;
+}
+void munmap(int map_id)
+{
+  struct list_elem *e;
+  struct thread *cur = thread_current();
+  struct file *to_close;
+  for(e = list_begin(cur->mmap_list); e != list_end(cur->mmap_list);)
+  {
+    struct mmap_descriptor *mmap_desc = list_entry(e, struct mmap_descriptor, elem);
+    struct sup_page_table_entry *spte = mmap_desc->spte;
+    if(mmap_desc->map_id == map_id)
+    {
+      e = list_remove(e);
+      to_close = spte->file;
+      if(spte->is_loaded)
+      {
+        void *frame = pagedir_get_page(thread_current()->pagedir, spte->uaddr);
+        if(frame)
+        {
+          if(page_pagedir_is_dirty(thread_current()->pagedir, spte->uaddr))
+          {
+            lock_acquire(&filesys_lock);
+            file_write_at(spte->file, frame, spte->read_bytes, spte->ofs);
+            lock_release(&filesys_lock);
+          }
+          frame_free(frame);
+        }
+        pagedir_clear_page(thread_current()->pagedir, spte->uaddr);
+        hash_delete(&cur->spt, spte->elem);
+      }
+      free(mmap_desc->spte);
+      free(mmap_desc);
+    }
+    else e = list_next(e);
+  }
+  if(to_close)
+  {
+    lock_acquire(&filesys_lock);
+    fclose(to_close);
+    lock_release(&filesys_lock);
+  }
 }

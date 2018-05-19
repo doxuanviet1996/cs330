@@ -4,6 +4,7 @@
 #include "threads/thread.h"
 #include "threads/synch.h"
 #include "userprog/syscall.h"
+#include "vm/page.h"
 
 struct child_process
 {
@@ -21,6 +22,13 @@ struct file_descriptor
 {
 	int fd;
 	struct file *file;
+	struct list_elem elem;
+};
+
+struct mmap_descriptor
+{
+	struct sup_page_table_entry *spte;
+	int map_id;
 	struct list_elem elem;
 };
 

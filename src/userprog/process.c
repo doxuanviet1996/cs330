@@ -132,6 +132,9 @@ process_exit (void)
   process_remove_fd_all();
   uint32_t *pd;
 
+  int i;
+  for(i=0; i<cur->mmap_id; cur++) munmap(i);
+
   spt_destroy(&cur->spt);
 
   /* Destroy the current process's page directory and switch back
