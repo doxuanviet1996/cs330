@@ -314,6 +314,8 @@ int mmap(int fd, void *addr)
   struct file *file = file_desc->file;
   if(!file || file_length(file) == 0) return -1;
 
+  printf("MMAP checkpoint 0\n");
+
   struct file *f = file_reopen(file);
 
   int ofs = 0;
