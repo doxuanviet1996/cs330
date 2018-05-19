@@ -52,8 +52,9 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 	tmp.uaddr = pg_round_down(uaddr);
 	printf("Looking up\n");
 	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
-	printf("Look up found\n");
 	if(!e) return NULL;
+	
+	printf("Look up found\n");
 
 	return hash_entry(e, struct sup_page_table_entry, elem);
 }
@@ -172,7 +173,7 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 		free(spte);
 		return NULL;
 	}
-	
+
 	printf("Hash insert %p\n", spte->uaddr);
 	return spte;
 }
