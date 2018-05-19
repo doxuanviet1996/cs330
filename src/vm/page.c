@@ -137,7 +137,7 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 		free(spte);
 		return NULL;
 	}
-
+	printf("Hash insert %p\n", spte->uaddr);
 	return spte;
 }
 
@@ -172,7 +172,8 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 		free(spte);
 		return NULL;
 	}
-
+	
+	printf("Hash insert %p\n", spte->uaddr);
 	return spte;
 }
 
@@ -209,6 +210,7 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		frame_free(frame);
 		return NULL;
 	}
+	printf("Hash insert %p\n", spte->uaddr);
 	spte->is_locked = false;
 	return spte;
 }
