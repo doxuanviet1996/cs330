@@ -230,15 +230,18 @@ bool remove (const char * file )
 }
 int open (const char * file )
 {
+  printf("Start open\n");
   lock_acquire(&filesys_lock);
   struct file *f = filesys_open(file);
   if(f == NULL)
   {
     lock_release(&filesys_lock);
+    printf("End open\n");
     return -1;
   }
   struct file_descriptor *file_desc = process_add_fd(f);
   lock_release(&filesys_lock);
+  printf("End open\n");
   return file_desc->fd;
 }
 int filesize (int fd )
@@ -264,16 +267,20 @@ int read (int fd , void * buffer , unsigned size )
 
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return 0;
+  printf("Start read\n");
   lock_acquire(&filesys_lock);
   int bytes_read = file_read(file_desc->file, buffer, size);
   lock_release(&filesys_lock);
+  printf("End read\n");
   return bytes_read;
 }
 int write (int fd , const void * buffer , unsigned size )
 {
+  printf("Start write\n");
   if (fd == STDOUT_FILENO)
   {
     putbuf(buffer, size);
+    printf("End write\n");
     return size;
   }
   struct file_descriptor *file_desc = process_get_fd(fd);
@@ -281,15 +288,18 @@ int write (int fd , const void * buffer , unsigned size )
   lock_acquire(&filesys_lock);
   int bytes_written = file_write(file_desc->file, buffer, size);
   lock_release(&filesys_lock);
+  printf("End write\n");
   return bytes_written;
 }
 void seek (int fd , unsigned position )
 {
+  printf("Start seek\n");
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
   lock_acquire(&filesys_lock);
   file_seek(file_desc->file, position);
   lock_release(&filesys_lock);
+  printf("End seek\n");
 }
 unsigned tell (int fd )
 {
