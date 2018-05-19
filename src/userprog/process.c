@@ -456,7 +456,7 @@ static bool
 setup_stack (void **esp, char *args, char *save_ptr) 
 {
   if(!stack_grow(PHYS_BASE - PGSIZE)) return false;
-  void *frame = pagedir_get_page(&thread_current()->pagedir, PHYS_BASE - PGSIZE);
+  // void *frame = pagedir_get_page(&thread_current()->pagedir, PHYS_BASE - PGSIZE);
   *esp = PHYS_BASE;
   /* Pushing args into stack */
   int argc = 0, argv_size = 1;
