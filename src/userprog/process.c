@@ -132,6 +132,7 @@ process_exit (void)
   process_remove_fd_all();
   uint32_t *pd;
 
+  // Unmap all mapped files.
   int i;
   for(i=0; i<cur->mmap_id; i++) munmap(i);
 

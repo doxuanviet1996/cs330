@@ -19,8 +19,8 @@ void *frame_evict(enum palloc_flags flags)
 	struct list_elem *e = list_begin(&frame_table);
 
 	// Frame eviction using second chance algorithm
-	int loop = 0;
-	while(true)
+	int max_loop = 100;
+	while(max_loop--)
 	{
 		struct frame_table_entry *fte = list_entry(e, struct frame_table_entry, elem);
 		struct sup_page_table_entry *spte = fte->spte;
@@ -60,7 +60,7 @@ void *frame_evict(enum palloc_flags flags)
 		e = list_next(e);
 		if(e == list_end(&frame_table))
 		{
-			loop++;
+			loop--;
 			e = list_begin(&frame_table);
 		}
 	}

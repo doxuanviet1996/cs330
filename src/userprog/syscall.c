@@ -46,12 +46,7 @@ bool check_valid(void *ptr, void *esp)
   }
 
   // Stack growth - allow to fault 32 bytes below esp.
-  // printf("esp %p and ptr %p\n",esp, ptr);
-  if(esp <= ptr + 32 && stack_grow(ptr))
-  {
-    // printf("Stack grow at %p\n", ptr);
-    return true;
-  }
+  if(esp <= ptr + 32 && stack_grow(ptr)) return true;
   
   exit(-1);
 }
@@ -349,13 +344,10 @@ void munmap(int mmap_id)
   struct file *to_close = NULL;
   for(e = list_begin(&cur->mmap_list); e != list_end(&cur->mmap_list);)
   {
-    // printf("Checking one..\n");
     struct mmap_descriptor *mmap_desc = list_entry(e, struct mmap_descriptor, elem);
     struct sup_page_table_entry *spte = mmap_desc->spte;
-    // printf("Munmap match: %d %d\n", mmap_desc->mmap_id, mmap_id);
     if(mmap_desc->mmap_id == mmap_id)
     {
-      // printf("Found!!\n");
       e = list_remove(e);
       to_close = spte->file;
       if(spte->is_loaded)
@@ -373,7 +365,6 @@ void munmap(int mmap_id)
         }
         pagedir_clear_page(thread_current()->pagedir, spte->uaddr);
       }
-      // printf("Hash delete %p\n", spte->uaddr);
       hash_delete(&cur->spt, &spte->elem);
       free(spte);
       free(mmap_desc);
@@ -382,10 +373,8 @@ void munmap(int mmap_id)
   }
   if(to_close)
   {
-    // printf("wth..\n");
     lock_acquire(&filesys_lock);
     file_close(to_close);
     lock_release(&filesys_lock);
   }
-  // printf("Done unmmapping %d\n", mmap_id);
 }
