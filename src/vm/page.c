@@ -50,8 +50,9 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 	// Simulate a spte with same uaddr to find in hash table.
 	struct sup_page_table_entry tmp;
 	tmp.uaddr = pg_round_down(uaddr);
-
+	printf("Looking up\n");
 	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
+	printf("Look up found\n");
 	if(!e) return NULL;
 
 	return hash_entry(e, struct sup_page_table_entry, elem);
