@@ -314,7 +314,7 @@ int mmap(int fd, void *addr)
   struct file *file = file_desc->file;
   if(!file || file_length(file) == 0) return -1;
 
-  printf("MMAP checkpoint 0\n");
+  // printf("MMAP checkpoint 0\n");
 
   struct file *f = file_reopen(file);
 
@@ -332,29 +332,29 @@ int mmap(int fd, void *addr)
       munmap(thread_current()->mmap_id);
       return -1;
     }
-    printf("MMAP checkpoint 1\n");
+    // printf("MMAP checkpoint 1\n");
     /* Advance. */
     read_bytes -= page_read_bytes;
     addr += PGSIZE;
     ofs += page_read_bytes;
   }
-  printf("Done mmap\n");
+  // printf("Done mmap\n");
   return thread_current()->mmap_id++;
 }
 void munmap(int mmap_id)
 {
-  printf("Called to munmap %d\n", mmap_id);
+  // printf("Called to munmap %d\n", mmap_id);
   struct list_elem *e;
   struct thread *cur = thread_current();
   struct file *to_close = NULL;
   for(e = list_begin(&cur->mmap_list); e != list_end(&cur->mmap_list);)
   {
-    printf("Checking one..\n");
+    // printf("Checking one..\n");
     struct mmap_descriptor *mmap_desc = list_entry(e, struct mmap_descriptor, elem);
     struct sup_page_table_entry *spte = mmap_desc->spte;
     if(mmap_desc->mmap_id == mmap_id)
     {
-      printf("Found!!\n");
+      // printf("Found!!\n");
       e = list_remove(e);
       to_close = spte->file;
       if(spte->is_loaded)
@@ -380,10 +380,10 @@ void munmap(int mmap_id)
   }
   if(to_close)
   {
-    printf("wth..\n");
+    // printf("wth..\n");
     lock_acquire(&filesys_lock);
     file_close(to_close);
     lock_release(&filesys_lock);
   }
-  printf("Done unmmapping %d\n", mmap_id);
+  // printf("Done unmmapping %d\n", mmap_id);
 }
