@@ -375,7 +375,7 @@ void munmap(int mmap_id)
   if(to_close)
   {
     lock_acquire(&filesys_lock);
-    fclose(to_close);
+    file_close(to_close);
     lock_release(&filesys_lock);
   }
 }
