@@ -24,7 +24,9 @@ void destroy_func (struct hash_elem *e, void *aux)
 	struct sup_page_table_entry *spte = hash_entry(e, struct sup_page_table_entry, elem);
 	if(spte->is_loaded)
 	{
+		printf("Start checkpoint\n");
 		void *frame = pagedir_get_page(&thread_current()->pagedir, spte->uaddr);
+		printf("End checkpoint\n");
 		if(frame) frame_free(frame);
 		// pagedir_clear_page(&thread_current()->pagedir, spte->uaddr);
 	}
