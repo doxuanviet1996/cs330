@@ -40,9 +40,9 @@ void unlock (void *ptr)
 
 void unlock_string (void* ptr)
 {
-  unlock(str);
-  while (*str != '\0')
-    unlock(++str);
+  unlock(ptr);
+  while (*ptr != '\0')
+    unlock(++ptr);
 }
 
 void unlock_buffer (void *ptr, int size)
