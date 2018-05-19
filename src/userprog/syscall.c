@@ -384,4 +384,5 @@ void munmap(int mmap_id)
     file_close(to_close);
     lock_release(&filesys_lock);
   }
+  printf("Done unmmapping %d\n", mmap_id);
 }
