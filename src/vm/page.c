@@ -24,11 +24,11 @@ void destroy_func (struct hash_elem *e, void *aux)
 {
 	struct sup_page_table_entry *spte = hash_entry(e, struct sup_page_table_entry, elem);
 
-	if(!spte->is_loaded && spte->type == SWAP)
-	{
-		if(bitmap_test(swap_used_map, spte->swap_index))
-			bitmap_flip(swap_used_map, spte->swap_index);
-	}
+	// if(!spte->is_loaded && spte->type == SWAP)
+	// {
+	// 	if(bitmap_test(swap_used_map, spte->swap_index))
+	// 		bitmap_flip(swap_used_map, spte->swap_index);
+	// }
 
 	if(spte->is_loaded)
 	{
