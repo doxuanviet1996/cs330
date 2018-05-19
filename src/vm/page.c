@@ -186,7 +186,8 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 
 struct sup_page_table_entry *stack_grow(void *uaddr)
 {
-	if(PHYS_BASE - uaddr > STACK_LIMIT) return NULL;
+
+	if(PHYS_BASE > uaddr + STACK_LIMIT) return NULL;
 
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
 	if(!spte) return NULL;
