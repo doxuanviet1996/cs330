@@ -163,7 +163,7 @@ syscall_handler (struct intr_frame *f)
     get_args(esp, args, 2);
     f->eax = mmap(args[0], args[1]);
   }
-  else if(call_num == SYSMUNMAP)
+  else if(call_num == SYS_MUNMAP)
   {
     get_args(esp, args, 1);
     munmap(args[0]);
