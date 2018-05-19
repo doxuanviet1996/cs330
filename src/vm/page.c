@@ -167,19 +167,19 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 	spte->read_bytes = read_bytes;
 	spte->zero_bytes = zero_bytes;
 
-	struct mmap_descriptor *mmap_desc = malloc(sizeof (struct mmap_descriptor));
-	if(!mmap_desc) return NULL;
-
-	mmap_desc->spte = spte;
-	mmap_desc->mmap_id = thread_current()->mmap_id;
-	list_push_back(&thread_current()->mmap_list, &mmap_desc->elem);
-
 	if(hash_insert(&thread_current()->spt, &spte->elem))
 	{
 		printf("Hash error\n");
 		free(spte);
 		return NULL;
 	}
+
+	struct mmap_descriptor *mmap_desc = malloc(sizeof (struct mmap_descriptor));
+	if(!mmap_desc) return NULL;
+
+	mmap_desc->spte = spte;
+	mmap_desc->mmap_id = thread_current()->mmap_id;
+	list_push_back(&thread_current()->mmap_list, &mmap_desc->elem);
 
 	printf("Hash insert %p\n", spte->uaddr);
 	return spte;
