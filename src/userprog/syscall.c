@@ -319,8 +319,6 @@ int mmap(int fd, void *addr)
   struct file *file = file_desc->file;
   if(!file || file_length(file) == 0) return -1;
 
-  // printf("MMAP checkpoint 0\n");
-
   struct file *f = file_reopen(file);
 
   int ofs = 0;
@@ -337,18 +335,15 @@ int mmap(int fd, void *addr)
       munmap(thread_current()->mmap_id);
       return -1;
     }
-    // printf("MMAP checkpoint 1\n");
     /* Advance. */
     read_bytes -= page_read_bytes;
     addr += PGSIZE;
     ofs += page_read_bytes;
   }
-  // printf("Done mmap\n");
   return thread_current()->mmap_id++;
 }
 void munmap(int mmap_id)
 {
-  // printf("Called to munmap %d\n", mmap_id);
   struct list_elem *e;
   struct thread *cur = thread_current();
   struct file *to_close = NULL;

@@ -135,11 +135,7 @@ process_exit (void)
   int i;
   for(i=0; i<cur->mmap_id; i++) munmap(i);
 
-  // printf("PROCESS EXIT: DONE UNMAPPING\n");
-
   spt_destroy(&cur->spt);
-
-  // printf("PROCESS EXIT: DONE DESTROYING SPT\n");
 
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
