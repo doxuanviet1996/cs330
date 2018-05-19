@@ -1,4 +1,5 @@
 #include "vm/swap.h"
+#include "threads/vaddr.h"
 
 void swap_init()
 {
@@ -7,8 +8,7 @@ void swap_init()
 	swap_block = block_get_role(BLOCK_SWAP);
 	if(!swap_block) return;
 
-	int swap_size = block_size(swap_block)/SECTOR_PER_PAGE;
-	swap_used_map = bitmap_create(swap_size);
+	swap_used_map = bitmap_create(block_size(swap_block) / SECTOR_PER_PAGE);
 	if(!swap_used_map) return;
 }
 

@@ -5,7 +5,6 @@
 
 #include "devices/block.h"
 #include "threads/synch.h"
-#include "threads/vaddr.h"
 
 #define SECTOR_PER_PAGE (PGSIZE / BLOCK_SECTOR_SIZE)
 
