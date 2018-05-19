@@ -32,22 +32,15 @@ syscall_init (void)
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
-void unlock (void *ptr)
-{
-  struct sup_page_table_entry *spte = spt_lookup(ptr);
-  if (spte) spte->is_locked = false;
-}
-
-void unlock_string (char* ptr)
-{
-  unlock(ptr);
-  while (*ptr != '\0')
-    unlock(++ptr);
-}
-
 void unlock_buffer (void *ptr, int size)
 {
-  while(size--) unlock(ptr++);
+  while(size > 0)
+  {
+    struct sup_page_table_entry *spte = spt_lookup(ptr);
+    if (spte) spte->is_locked = false;
+    size -= PGSIZE;
+    ptr += PGSIZE;
+  }
 }
 
 bool check_valid(void *ptr, void *esp)
