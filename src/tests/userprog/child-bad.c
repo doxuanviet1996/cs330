@@ -10,5 +10,7 @@ void
 test_main (void) 
 {
   asm volatile ("movl $0x20101234, %esp; int $0x30");
+  printf("Checkpoint 0\n");
   fail ("should have exited with -1");
+  printf("Checkpoint 1\n");
 }
