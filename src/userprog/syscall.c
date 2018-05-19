@@ -35,6 +35,7 @@ syscall_init (void)
 
 void check_valid(void *ptr)
 {
+  printf("validate %p\n",ptr);
   void *usr_min_addr = 0x08048000;
   if(!is_user_vaddr(ptr) || ptr < usr_min_addr)
   {
