@@ -383,6 +383,7 @@ void munmap(int mmap_id)
   }
   if(to_close)
   {
+    printf("wth..\n");
     lock_acquire(&filesys_lock);
     file_close(to_close);
     lock_release(&filesys_lock);
