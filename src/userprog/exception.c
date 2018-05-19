@@ -155,7 +155,7 @@ page_fault (struct intr_frame *f)
   {
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     // Load spte if found.
-    if(spte) printf("Founded: %p\n",spte->uaddr);
+    printf("Find %p found %p\n",fault_addr, spte->uaddr);
     if(spte && spt_load(spte))
     {
       printf("Loaded: %p\n",spte->uaddr);
