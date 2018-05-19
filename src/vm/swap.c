@@ -43,7 +43,6 @@ int swap_out(void *addr)
 	if(swap_index == BITMAP_ERROR)
 		PANIC("SWAP partition full.\n");
 
-	/* Copy block sectors starting from addr to swap_index*SECTOR_PER_PAGE */
 	int i;
 	for(i=0; i<SECTOR_PER_PAGE; i++)
 	{

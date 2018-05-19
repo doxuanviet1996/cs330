@@ -15,6 +15,7 @@ void frame_init()
 
 void *frame_evict(enum palloc_flags flags)
 {
+	printf("Evicting..\n");
 	lock_acquire(&frame_lock);
 	struct list_elem *e = list_begin(&frame_table);
 
@@ -74,7 +75,7 @@ void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags)
 
 	void *frame = palloc_get_page(flags);
 	if(frame == NULL) frame = frame_evict(flags);
-
+	else printf("Alloc\n");
 	if(frame == NULL) PANIC("Frame allocation failed.\n");
 
 	// add to frame table
