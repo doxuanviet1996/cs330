@@ -343,6 +343,7 @@ int mmap(int fd, void *addr)
 }
 void munmap(int mmap_id)
 {
+  printf("Called to munmap\n");
   struct list_elem *e;
   struct thread *cur = thread_current();
   struct file *to_close;
