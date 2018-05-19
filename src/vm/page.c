@@ -32,7 +32,7 @@ void destroy_func (struct hash_elem *e, void *aux)
 		// printf("Thread %d, %s with pagedir %p\n", thread_current()->tid, thread_current()->name, thread_current()->pagedir);
 		void *frame = pagedir_get_page(thread_current()->pagedir, spte->uaddr);
 		// printf("End checkpoint\n");
-		// if(frame) frame_free(frame);
+		if(frame) frame_free(frame);
 		pagedir_clear_page(thread_current()->pagedir, spte->uaddr);
 	}
 
