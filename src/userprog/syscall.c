@@ -347,6 +347,9 @@ void munmap(int mmap_id)
   struct list_elem *e;
   struct thread *cur = thread_current();
   struct file *to_close;
+  printf("checkpoint 0\n");
+  e = list_begin(&cur->mmap_list);
+  printf("checkpoint 1\n");
   for(e = list_begin(&cur->mmap_list); e != list_end(&cur->mmap_list);)
   {
     printf("Checking one..\n");
