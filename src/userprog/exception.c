@@ -161,7 +161,7 @@ page_fault (struct intr_frame *f)
       printf("Loaded: %p\n",spte->uaddr);
       return;
     }
-    printf("Try grow\n");
+    // printf("Try grow\n");
     // Stack growth - allow to fault 32 bytes below esp.
     if(!spte && f->esp <= fault_addr + 32 && stack_grow(fault_addr))
     {
