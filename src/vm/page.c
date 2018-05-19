@@ -163,7 +163,7 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 	if(!mmap_desc) return NULL;
 
 	mmap_desc->spte = spte;
-	mmap_desc->id = thread_current()->mmap_id;
+	mmap_desc->mmap_id = thread_current()->mmap_id;
 	list_push_back(&thread_current()->mmap_list, &mmap_desc->elem);
 
 	if(hash_insert(&thread_current()->spt, &spte->elem))
