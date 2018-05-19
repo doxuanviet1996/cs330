@@ -21,7 +21,7 @@ void *frame_evict(enum palloc_flags flags)
 
 	// Frame eviction using second chance algorithm
 	int loop = 0;
-	while(loop < 2)
+	while(loop < 10)
 	{
 		struct frame_table_entry *fte = list_entry(e, struct frame_table_entry, elem);
 		struct sup_page_table_entry *spte = fte->spte;

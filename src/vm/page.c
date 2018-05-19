@@ -116,9 +116,9 @@ bool spt_load(struct sup_page_table_entry *spte)
 {
 	if(spte == NULL) return false;
 
+	spte->is_locked = true;
 	if(spte->is_loaded) return false;
 
-	spte->is_locked = true;
 	if(spte->type == SWAP) return spt_load_swap(spte);
 	else return spt_load_file(spte);
 }
