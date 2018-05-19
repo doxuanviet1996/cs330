@@ -5,7 +5,6 @@
 #include "userprog/pagedir.h"
 #include "userprog/process.h"
 #include "vm/page.h"
-#include "vm/swap.h"
 
 unsigned hash_func (const struct hash_elem *e, void *aux)
 {
@@ -24,9 +23,7 @@ void destroy_func (struct hash_elem *e, void *aux)
 {
 	struct sup_page_table_entry *spte = hash_entry(e, struct sup_page_table_entry, elem);
 
-	// if(!spte->is_loaded && spte->type == SWAP)
-	// 	if(bitmap_test(swap_used_map, spte->swap_index))
-	// 		bitmap_flip(swap_used_map, spte->swap_index);
+	//if(!spte->is_loaded && spte->type == SWAP) spt_load(spte);
 
 	if(spte->is_loaded)
 	{
@@ -53,8 +50,16 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 	// Simulate a spte with same uaddr to find in hash table.
 	struct sup_page_table_entry tmp;
 	tmp.uaddr = pg_round_down(uaddr);
+	// printf("Looking up %p\n", tmp.uaddr);
 	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
-	if(!e) return NULL;
+	// printf("Done looking up\n");
+	if(!e)
+		{
+			// printf("Return NULL\n");
+			return NULL;
+		}
+
+	// printf("Look up found\n");
 
 	return hash_entry(e, struct sup_page_table_entry, elem);
 }
@@ -97,7 +102,6 @@ bool spt_load_file(struct sup_page_table_entry *spte)
 		frame_free(frame);
 		return false;
 	}
-
 	spte->is_loaded = true;
 	spte->is_locked = false;
 	return true;
@@ -106,11 +110,13 @@ bool spt_load_file(struct sup_page_table_entry *spte)
 bool spt_load(struct sup_page_table_entry *spte)
 {
 	if(spte == NULL) return false;
-	if(spte->is_loaded) return false;
 
 	spte->is_locked = true;
+	if(spte->is_loaded) return false;
+
+	// SWAP loading
 	if(spte->type == SWAP) return spt_load_swap(spte);
-	return spt_load_file(spte);
+	else return spt_load_file(spte);
 }
 
 struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int ofs,
@@ -137,12 +143,14 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 		free(spte);
 		return NULL;
 	}
+	// printf("Hash insert %p\n", spte->uaddr);
 	return spte;
 }
 
 struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int ofs,
 																					int read_bytes, int zero_bytes)
 {
+	// printf("SPT adding mmap %p\n",uaddr);
 	if(read_bytes + zero_bytes != PGSIZE) return NULL;
 
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
@@ -172,6 +180,7 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 	mmap_desc->mmap_id = thread_current()->mmap_id;
 	list_push_back(&thread_current()->mmap_list, &mmap_desc->elem);
 
+	// printf("Hash insert %p\n", spte->uaddr);
 	return spte;
 }
 
@@ -209,6 +218,7 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		frame_free(frame);
 		return NULL;
 	}
+	// printf("Hash insert %p\n", spte->uaddr);
 	spte->is_locked = false;
 	return spte;
 }

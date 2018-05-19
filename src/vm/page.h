@@ -17,7 +17,7 @@ enum spte_type
 
 struct sup_page_table_entry
 {
-	void *uaddr;						// User virtual address.
+	void *uaddr;						// User virtual address
 
 	enum spte_type type;		// either SWAP, FILE or MMAP.
 	bool is_loaded;					// True if loaded to RAM.
@@ -25,7 +25,7 @@ struct sup_page_table_entry
 	bool writable;					// True if page is writable.
 
 	// Swap data
-	int swap_index;					// Swap index in swap block if it is currently swapped out.
+	int swap_index;
 
 	// File data
 	struct file *file;			// File pointer.
@@ -33,7 +33,7 @@ struct sup_page_table_entry
 	int read_bytes;					// Number of bytes to read.
 	int zero_bytes;					// Number of zero bytes at the end.
 
-	struct hash_elem elem;	// Elem in hash table.
+	struct hash_elem elem;
 };
 
 void spt_init(struct hash *spt);
@@ -46,6 +46,6 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file,
 																					int zero_bytes, bool writable);
 struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file,
 																					int ofs, int read_bytes, int zero_bytes);
-struct sup_page_table_entry *stack_grow(void *uaddr);
+struct sup_page_table_entry *stack_grow(void *uaddr); 
 
 #endif /* vm/page.h */
