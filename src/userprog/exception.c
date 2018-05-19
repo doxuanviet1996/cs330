@@ -156,13 +156,12 @@ page_fault (struct intr_frame *f)
     printf("YES\n");
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     // Load spte if found.
-    printf("Find %p found %p\n",fault_addr, spte->uaddr);
     if(spte && spt_load(spte))
     {
       printf("Loaded: %p\n",spte->uaddr);
       return;
     }
-
+    printf("Try grow\n");
     // Stack growth - allow to fault 32 bytes below esp.
     if(!spte && f->esp <= fault_addr + 32 && stack_grow(fault_addr))
     {
