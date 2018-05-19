@@ -352,6 +352,7 @@ void munmap(int mmap_id)
     // printf("Checking one..\n");
     struct mmap_descriptor *mmap_desc = list_entry(e, struct mmap_descriptor, elem);
     struct sup_page_table_entry *spte = mmap_desc->spte;
+    printf("Munmap match: %d %d\n", mmap_desc->mmap_id, mmap_id);
     if(mmap_desc->mmap_id == mmap_id)
     {
       // printf("Found!!\n");
