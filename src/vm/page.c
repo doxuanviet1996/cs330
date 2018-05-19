@@ -66,7 +66,7 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 
 bool spt_load_swap(struct sup_page_table_entry *spte)
 {
-	void *frame = frame_alloc(spte, PAL_USER);
+	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
 	if(!frame) return false;
 
 	if(!install_page(spte->uaddr, frame, spte->writable))
