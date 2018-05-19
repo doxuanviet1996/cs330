@@ -53,7 +53,11 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 	printf("Looking up %p\n", tmp.uaddr);
 	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
 	printf("Done looking up\n");
-	if(!e) return NULL;
+	if(!e)
+		{
+			printf("Return NULL\n");
+			return NULL;
+		}
 
 	printf("Look up found\n");
 
