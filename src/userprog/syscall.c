@@ -343,16 +343,18 @@ int mmap(int fd, void *addr)
 }
 void munmap(int mmap_id)
 {
-  printf("Called to munmap\n");
+  printf("Called to munmap %d\n", mmap_id);
   struct list_elem *e;
   struct thread *cur = thread_current();
   struct file *to_close;
   for(e = list_begin(&cur->mmap_list); e != list_end(&cur->mmap_list);)
   {
+    printf("Checking one..\n");
     struct mmap_descriptor *mmap_desc = list_entry(e, struct mmap_descriptor, elem);
     struct sup_page_table_entry *spte = mmap_desc->spte;
     if(mmap_desc->mmap_id == mmap_id)
     {
+      printf("Found!!\n");
       e = list_remove(e);
       to_close = spte->file;
       if(spte->is_loaded)
