@@ -32,6 +32,24 @@ syscall_init (void)
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
+void unlock (void *ptr)
+{
+  struct sup_page_table_entry *spte = spt_lookup(ptr);
+  if (spte) spte->is_locked = false;
+}
+
+void unlock_string (void* ptr)
+{
+  unlock(str);
+  while (*str != '\0')
+    unlock(++str);
+}
+
+void unlock_buffer (void *ptr, int size)
+{
+  while(size--) unlock(ptr++);
+}
+
 bool check_valid(void *ptr, void *esp)
 {
   if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit(-1);
@@ -137,12 +155,14 @@ syscall_handler (struct intr_frame *f)
     get_args(esp, args, 3);
     check_valid_buffer(args[1], args[2], esp, true);
     f->eax = read(args[0], args[1], args[2]);
+    unlock_buffer(args[1], args[2]);
   }
   else if(call_num == SYS_WRITE)
   {
     get_args(esp, args, 3);
     check_valid_buffer(args[1], args[2], esp, false);
     f->eax = write(args[0], args[1], args[2]);
+    unlock_buffer(args[1], args[2]);
   }
   else if(call_num == SYS_SEEK)
   {
