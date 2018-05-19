@@ -135,6 +135,8 @@ process_exit (void)
   int i;
   for(i=0; i<cur->mmap_id; cur++) munmap(i);
 
+  printf("PROCESS EXIT: DONE UNMAPPING\n");
+
   spt_destroy(&cur->spt);
 
   /* Destroy the current process's page directory and switch back
