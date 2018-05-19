@@ -205,6 +205,7 @@ int exec(const char *cmd_line)
     process_remove_child(child_tid);
     return -1;
   }
+  printf("Done exec-ing\n");
   return child_tid;
 }
 int wait (int pid)
