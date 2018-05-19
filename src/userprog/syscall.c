@@ -305,7 +305,7 @@ void close (int fd )
 int mmap(int fd, void *addr)
 {
   if(!is_user_vaddr(addr) || addr < 0x08048000) return -1;
-  if(addr % PGSIZE == 0) return -1;
+  if(int(addr) % PGSIZE == 0) return -1;
 
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
@@ -332,7 +332,7 @@ int mmap(int fd, void *addr)
     
     /* Advance. */
     read_bytes -= page_read_bytes;
-    upage += PGSIZE;
+    addr += PGSIZE;
     ofs += page_read_bytes;
   }
 
@@ -343,7 +343,7 @@ void munmap(int mmap_id)
   struct list_elem *e;
   struct thread *cur = thread_current();
   struct file *to_close;
-  for(e = list_begin(cur->mmap_list); e != list_end(cur->mmap_list);)
+  for(e = list_begin(&cur->mmap_list); e != list_end(&cur->mmap_list);)
   {
     struct mmap_descriptor *mmap_desc = list_entry(e, struct mmap_descriptor, elem);
     struct sup_page_table_entry *spte = mmap_desc->spte;
@@ -365,7 +365,7 @@ void munmap(int mmap_id)
           frame_free(frame);
         }
         pagedir_clear_page(thread_current()->pagedir, spte->uaddr);
-        hash_delete(&cur->spt, spte->elem);
+        hash_delete(&cur->spt, &spte->elem);
       }
       free(mmap_desc->spte);
       free(mmap_desc);
