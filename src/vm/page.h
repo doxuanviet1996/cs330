@@ -44,6 +44,8 @@ bool spt_load(struct sup_page_table_entry *spte);
 struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file,
 																					int ofs, int read_bytes,
 																					int zero_bytes, bool writable);
+struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file,
+																					int ofs, int read_bytes, int zero_bytes);
 struct sup_page_table_entry *stack_grow(void *uaddr); 
 
 #endif /* vm/page.h */

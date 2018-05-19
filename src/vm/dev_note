@@ -25,6 +25,4 @@ git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/u
 
 Work remains:
  - Implement page.c and page.h
- - Frame eviction
- - Refine stack growth: validate user pointer in syscall.c correctly.
  - MMAP.

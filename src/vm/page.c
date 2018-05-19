@@ -23,15 +23,11 @@ void destroy_func (struct hash_elem *e, void *aux)
 {
 	struct sup_page_table_entry *spte = hash_entry(e, struct sup_page_table_entry, elem);
 
-	// printf("Destroying spte: %p %d\n", spte->uaddr, spte->type);
 	if(!spte->is_loaded && spte->type == SWAP) spt_load(spte);
 
 	if(spte->is_loaded)
 	{
-		// printf("Start checkpoint %s\n",thread_current()->name);
-		// printf("Thread %d, %s with pagedir %p\n", thread_current()->tid, thread_current()->name, thread_current()->pagedir);
 		void *frame = pagedir_get_page(thread_current()->pagedir, spte->uaddr);
-		// printf("End checkpoint\n");
 		if(frame) frame_free(frame);
 		pagedir_clear_page(thread_current()->pagedir, spte->uaddr);
 	}
@@ -46,9 +42,7 @@ void spt_init(struct hash *spt)
 
 void spt_destroy(struct hash *spt)
 {
-	// printf("Start spt destroy\n");
 	hash_destroy(spt, destroy_func);
-	// printf("Finish spt destroy\n");
 }
 
 struct sup_page_table_entry *spt_lookup(void *uaddr)
@@ -146,6 +140,41 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 	return spte;
 }
 
+struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int ofs,
+																					int read_bytes, int zero_bytes)
+{
+	if(read_bytes + zero_bytes != PGSIZE) return NULL;
+
+	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
+	if(!spte) return NULL;
+
+	spte->uaddr = pg_round_down(uaddr);
+	spte->type = MMAP;
+	spte->is_loaded = false;
+	spte->is_locked = false;
+	spte->writable = true;
+
+	spte->file = file;
+	spte->ofs = ofs;
+	spte->read_bytes = read_bytes;
+	spte->zero_bytes = zero_bytes;
+
+	struct mmap_descriptor *mmap_desc = malloc(sizeof (struct mmap_descriptor));
+	if(!mmap_desc) return NULL;
+
+	mmap_desc->spte = spte;
+	mmap_desc->id = thread_current()->mmap_id;
+	list_push_back(&thread_current()->mmap_list, &mmap_desc->elem);
+
+	if(hash_insert(&thread_current()->spt, &spte->elem))
+	{
+		free(spte);
+		return NULL;
+	}
+
+	return spte;
+}
+
 struct sup_page_table_entry *stack_grow(void *uaddr)
 {
 	if(PHYS_BASE - uaddr > STACK_LIMIT) return NULL;
@@ -179,7 +208,6 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		frame_free(frame);
 		return NULL;
 	}
-	// printf("%s: Stack growed at %p\n", thread_current()->name, spte->uaddr);
 	spte->is_locked = false;
 	return spte;
 }
