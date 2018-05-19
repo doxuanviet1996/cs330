@@ -3,8 +3,8 @@
 #include "threads/pte.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
-#include "userprog/syscall.h"
 #include "userprog/pagedir.h"
+#include "userprog/syscall.h"
 #include "vm/frame.h"
 
 void frame_init()
@@ -18,7 +18,7 @@ void *frame_evict(enum palloc_flags flags)
 	lock_acquire(&frame_lock);
 	struct list_elem *e = list_begin(&frame_table);
 
-	// Frame eviction using second chance algorithm
+	// Frame eviction using second chance algorithm.
 	int loop = 0;
 	while(loop < 2)
 	{
