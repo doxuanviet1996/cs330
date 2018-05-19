@@ -39,13 +39,13 @@ void check_valid(void *ptr)
   void *usr_min_addr = 0x08048000;
   if(!is_user_vaddr(ptr) || ptr < usr_min_addr)
   {
-    printf("Error detected in syscall\n");
+    printf("Error 0 detected in syscall\n");
     exit(-1);
   }
   int *cur_pd = thread_current()->pagedir;
   if(!pagedir_get_page(cur_pd, ptr))
   {
-    printf("Error detected in syscall\n");
+    printf("Error 1 detected in syscall\n");
     exit(-1);
   }
   return;
