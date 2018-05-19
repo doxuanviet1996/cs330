@@ -196,9 +196,7 @@ void exit(int status)
 }
 int exec(const char *cmd_line)
 {
-  printf("exec-ing\n");
   tid_t child_tid = process_execute(cmd_line);
-  printf("Child_tid %d\n", child_tid);
   struct child_process *child = process_get_child(child_tid);
   if(child == NULL) return -1;
   // Not loaded yet
@@ -210,7 +208,6 @@ int exec(const char *cmd_line)
     process_remove_child(child_tid);
     return -1;
   }
-  printf("Done exec-ing\n");
   return child_tid;
 }
 int wait (int pid)

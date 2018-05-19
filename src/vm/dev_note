@@ -29,6 +29,8 @@ git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/v
 
 git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/vm/mmap-over-code -a mmap-over-code -p ../tests/vm/sample.txt -a sample.txt --swap-size=4 -- -q  -f run mmap-over-code
 
+git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/vm/page-parallel -a page-parallel -p build/tests/vm/child-linear -a child-linear --swap-size=4 -- -q  -f run page-parallel
+
 Work remains:
  - Implement page.c and page.h
  - MMAP.
