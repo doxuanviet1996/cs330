@@ -46,10 +46,10 @@ bool check_valid(void *ptr, void *esp)
   }
 
   // Stack growth - allow to fault 32 bytes below esp.
-  printf("esp %p and ptr %p\n",esp, ptr);
+  // printf("esp %p and ptr %p\n",esp, ptr);
   if(esp <= ptr + 32 && stack_grow(ptr))
   {
-    printf("Stack grow at %p\n", ptr);
+    // printf("Stack grow at %p\n", ptr);
     return true;
   }
   
