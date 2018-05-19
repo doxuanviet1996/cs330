@@ -46,7 +46,7 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 	// Simulate a spte with same uaddr to find in hash table.
 	struct sup_page_table_entry tmp;
 	tmp.uaddr = pg_round_down(uaddr);
-	
+
 	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
 	if(!e) return NULL;
 
@@ -127,7 +127,11 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 	spte->read_bytes = read_bytes;
 	spte->zero_bytes = zero_bytes;
 
-	if(!hash_insert(&thread_current()->spt, &spte->elem)) return NULL;
+	if(hash_insert(&thread_current()->spt, &spte->elem))
+	{
+		free(spte);
+		return NULL;
+	}
 
 	return spte;
 }
@@ -159,7 +163,12 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		return NULL;
 	}
 
-	if(!hash_insert(&thread_current()->spt, &spte->elem)) return NULL;
+	if(hash_insert(&thread_current()->spt, &spte->elem))
+	{
+		free(spte);
+		frame_free(frame);
+		return NULL;
+	}
 
 	spte->is_locked = false;
 	return spte;
