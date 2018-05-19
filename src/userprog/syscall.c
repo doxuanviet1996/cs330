@@ -32,7 +32,7 @@ syscall_init (void)
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
-void unlock (void *ptr)
+void unlock (char *ptr)
 {
   struct sup_page_table_entry *spte = spt_lookup(ptr);
   if (spte) spte->is_locked = false;
