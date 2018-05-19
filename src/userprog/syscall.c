@@ -1,13 +1,13 @@
-#include "userprog/syscall.h"
-#include "userprog/pagedir.h"
 #include <stdio.h>
 #include <syscall-nr.h>
+#include "devices/shutdown.h"
+#include "filesys/file.h"
+#include "process.h"
 #include "threads/interrupt.h"
 #include "threads/thread.h"
 #include "threads/vaddr.h"
-#include "devices/shutdown.h"
-#include "process.h"
-#include "filesys/file.h"
+#include "userprog/pagedir.h"
+#include "userprog/syscall.h"
 
 static void syscall_handler (struct intr_frame *);
 
@@ -343,7 +343,7 @@ int mmap(int fd, void *addr)
       munmap(thread_current()->mmap_id);
       return -1;
     }
-    /* Advance. */
+    
     read_bytes -= page_read_bytes;
     addr += PGSIZE;
     ofs += page_read_bytes;

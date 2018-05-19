@@ -25,7 +25,7 @@ struct sup_page_table_entry
 	bool writable;					// True if page is writable.
 
 	// Swap data
-	int swap_index;
+	int swap_index;					// Swap index in the swap block.
 
 	// File data
 	struct file *file;			// File pointer.

@@ -18,7 +18,11 @@ void *frame_evict(enum palloc_flags flags)
 	lock_acquire(&frame_lock);
 	struct list_elem *e = list_begin(&frame_table);
 
-	// Frame eviction using second chance algorithm
+	// Frame eviction using second chance algorithm.
+
+	// "loop" determines how many times we try finding a frame to evict,
+	// sometimes we have to wait for some processes to release resources.
+	// Set loop = -1 will run infinitely until an evictable frame is found.
 	int loop = -1;
 	while(loop)
 	{
@@ -48,9 +52,7 @@ void *frame_evict(enum palloc_flags flags)
 				list_remove(e);
 				fte->spte->is_loaded = false;
 				palloc_free_page(fte->frame);
-
 				pagedir_clear_page(owner->pagedir, fte->spte->uaddr);
-
 				free(fte);
 				lock_release(&frame_lock);
 				return palloc_get_page(flags);

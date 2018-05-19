@@ -15,7 +15,9 @@ struct block *swap_block;
 
 /* A bitmap to store available frame (NOT available sector).
 	 bitmap(i) = true -> frame i is used.
-	 bitmap(i) = false -> frame i is free. */
+	 bitmap(i) = false -> frame i is free.
+	 A swap block's memory unit is sector, not frame, so one bit in
+	 the bitmap corresponds to 1 frame(which is normally 4 sectors). */
 struct bitmap *swap_used_map;
 
 void swap_init(void);

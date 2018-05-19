@@ -146,7 +146,6 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int ofs,
 																					int read_bytes, int zero_bytes)
 {
-	// printf("SPT adding mmap %p\n",uaddr);
 	if(read_bytes + zero_bytes != PGSIZE) return NULL;
 
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
