@@ -176,6 +176,7 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 
 	if(hash_insert(&thread_current()->spt, &spte->elem))
 	{
+		printf("Hash error\n");
 		free(spte);
 		return NULL;
 	}
