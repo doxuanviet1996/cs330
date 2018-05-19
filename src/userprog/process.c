@@ -139,6 +139,8 @@ process_exit (void)
 
   spt_destroy(&cur->spt);
 
+  printf("PROCESS EXIT: DONE DESTROYING SPT\n");
+
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;
