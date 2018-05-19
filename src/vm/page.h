@@ -25,7 +25,7 @@ struct sup_page_table_entry
 	bool writable;					// True if page is writable.
 
 	// Swap data
-	int swap_index;
+	int swap_index;					// Swap index in swap block if it is currently swapped out.
 
 	// File data
 	struct file *file;			// File pointer.
@@ -33,7 +33,7 @@ struct sup_page_table_entry
 	int read_bytes;					// Number of bytes to read.
 	int zero_bytes;					// Number of zero bytes at the end.
 
-	struct hash_elem elem;
+	struct hash_elem elem;	// Elem in hash table.
 };
 
 void spt_init(struct hash *spt);
