@@ -169,7 +169,7 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		frame_free(frame);
 		return NULL;
 	}
-
+	printf("Stack growed at %p\n", spte->uaddr);
 	spte->is_locked = false;
 	return spte;
 }
