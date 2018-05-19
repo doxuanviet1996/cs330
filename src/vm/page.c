@@ -5,6 +5,7 @@
 #include "userprog/pagedir.h"
 #include "userprog/process.h"
 #include "vm/page.h"
+#include "vm/swap.h"
 
 unsigned hash_func (const struct hash_elem *e, void *aux)
 {
