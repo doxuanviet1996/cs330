@@ -153,6 +153,7 @@ page_fault (struct intr_frame *f)
   // Check if the page fault can be resolved.
   if(not_present && is_user_vaddr(fault_addr) && fault_addr >= 0x08048000)
   {
+    printf("YES\n");
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     // Load spte if found.
     printf("Find %p found %p\n",fault_addr, spte->uaddr);
