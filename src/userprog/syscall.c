@@ -357,7 +357,7 @@ void munmap(int mmap_id)
         void *frame = pagedir_get_page(thread_current()->pagedir, spte->uaddr);
         if(frame)
         {
-          if(page_pagedir_is_dirty(thread_current()->pagedir, spte->uaddr))
+          if(pagedir_is_dirty(thread_current()->pagedir, spte->uaddr))
           {
             lock_acquire(&filesys_lock);
             file_write_at(spte->file, frame, spte->read_bytes, spte->ofs);
