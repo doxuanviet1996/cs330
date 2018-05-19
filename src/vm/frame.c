@@ -102,7 +102,7 @@ void frame_free(void *frame)
 		struct frame_table_entry *fte = list_entry(e, struct frame_table_entry, elem);
 		if(fte->frame == frame)
 		{
-			printf("Free\n");
+			// printf("Free\n");
 			list_remove(e);
 			fte->spte->is_loaded = false;
 			free(fte);
