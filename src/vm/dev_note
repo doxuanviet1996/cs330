@@ -27,6 +27,8 @@ git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/v
 
 git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/vm/mmap-unmap -a mmap-unmap -p ../tests/vm/sample.txt -a sample.txt --swap-size=4 -- -q  -f run mmap-unmap
 
+git pull && make && pintos -v -k -T 60 --qemu  --filesys-size=2 -p build/tests/vm/mmap-over-code -a mmap-over-code -p ../tests/vm/sample.txt -a sample.txt --swap-size=4 -- -q  -f run mmap-over-code
+
 Work remains:
  - Implement page.c and page.h
  - MMAP.
