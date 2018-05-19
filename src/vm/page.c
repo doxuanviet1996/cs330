@@ -1,9 +1,10 @@
 #include <hash.h>
 
-#include "vm/page.h"
-#include "threads/vaddr.h"
-#include "userprog/process.h"
 #include "threads/palloc.h"
+#include "threads/vaddr.h"
+#include "userprog/pagedir.h"
+#include "userprog/process.h"
+#include "vm/page.h"
 
 unsigned hash_func (const struct hash_elem *e, void *aux)
 {
@@ -21,7 +22,12 @@ bool less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
 void destroy_func (struct hash_elem *e, void *aux)
 {
 	struct sup_page_table_entry *spte = hash_entry(e, struct sup_page_table_entry, elem);
-
+	if(spte->is_loaded)
+	{
+		void *frame = pagedir_get_page(&thread_current()->pagedir, spte->uaddr);
+		frame_free(frame);
+		pagedir_clear_page(&thread_current()->pagedir, spte->uaddr);
+	}
 	free(spte);
 }
 
@@ -29,6 +35,7 @@ void spt_init(struct hash *spt)
 {
 	hash_init(spt, hash_func, less_func, NULL);
 }
+
 void spt_destroy(struct hash *spt)
 {
 	hash_destroy(spt, destroy_func);
@@ -39,34 +46,33 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 	// Simulate a spte with same uaddr to find in hash table.
 	struct sup_page_table_entry tmp;
 	tmp.uaddr = pg_round_down(uaddr);
+	
 	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
-	// printf("HASH FIND %x\n", tmp.uaddr);
-	if(!e)
-	{
-		// printf("HASH FIND NOT FOUND\n");
-		return NULL;
-	}
+	if(!e) return NULL;
+
 	return hash_entry(e, struct sup_page_table_entry, elem);
 }
 
 bool spt_load_swap(struct sup_page_table_entry *spte)
 {
-	// printf("Load swap\n");
 	void *frame = frame_alloc(spte, PAL_USER);
 	if(!frame) return false;
+
 	if(!install_page(spte->uaddr, frame, spte->writable))
 	{
 		frame_free(frame);
 		return false;
 	}
+
 	swap_in(spte->swap_index, frame);
+
 	spte->is_loaded = true;
+	spte->is_locked = false;
 	return true;
 }
 
 bool spt_load_file(struct sup_page_table_entry *spte)
 {
-	// printf("Load file: %d %d %d %d\n",spte->uaddr, spte->ofs, spte->read_bytes, spte->zero_bytes);
 	void *frame = frame_alloc(spte, PAL_USER | PAL_ZERO);
 	if(!frame) return false;
 
@@ -86,6 +92,7 @@ bool spt_load_file(struct sup_page_table_entry *spte)
 		return false;
 	}
 	spte->is_loaded = true;
+	spte->is_locked = false;
 	return true;
 }
 
@@ -119,19 +126,19 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 	spte->ofs = ofs;
 	spte->read_bytes = read_bytes;
 	spte->zero_bytes = zero_bytes;
-	// printf("%d %d %d %d\n",spte->uaddr, ofs, read_bytes, zero_bytes);
 
-	// printf("HASH INSERT %x\n",spte->uaddr);
-	if(hash_insert(&thread_current()->spt, &spte->elem) == NULL) return spte;
+	if(!hash_insert(&thread_current()->spt, &spte->elem)) return NULL;
+
+	return spte;
 }
 
 struct sup_page_table_entry *stack_grow(void *uaddr)
 {
 	if(PHYS_BASE - uaddr > STACK_LIMIT) return NULL;
+
 	struct sup_page_table_entry *spte = malloc(sizeof(struct sup_page_table_entry));
 	if(!spte) return NULL;
 
-	// printf("CHECKPOINT 1\n");
 	spte->uaddr = pg_round_down(uaddr);
 	spte->type = SWAP;
 	spte->is_loaded = true;
@@ -145,14 +152,15 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		return NULL;
 	}
 
-	// printf("CHECKPOINT 2\n");
 	if(!install_page(spte->uaddr, frame, true))
 	{
 		free(spte);
 		frame_free(frame);
 		return NULL;
 	}
-	// printf("CHECKPOINT 3\n");
-	// printf("Stack grow %x\n",spte->uaddr);
-	if(hash_insert(&thread_current()->spt, &spte->elem) == NULL) return spte;
+
+	if(!hash_insert(&thread_current()->spt, &spte->elem)) return NULL;
+
+	spte->is_locked = false;
+	return spte;
 }

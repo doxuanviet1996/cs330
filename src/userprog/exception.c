@@ -154,19 +154,11 @@ page_fault (struct intr_frame *f)
   if(not_present && is_user_vaddr(fault_addr) && fault_addr >= 0x08048000)
   {
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
-    if(spte)
-    {
-      // printf("Found yaaa\n");
-      if(spt_load(spte))
-      {
-        spte->is_locked = false;
-        return;
-      }
-    }
+    // Load spte if found.
+    if(spte && spt_load(spte)) return;
+
     // Stack growth - allow to fault 32 bytes below esp.
-    // printf("PAGE FAULT %p %p %d\n", fault_addr, f->esp, f->esp - fault_addr);
-    if(f->esp <= fault_addr + 32 && stack_grow(fault_addr)) return;
-    if(f->esp > fault_addr + 32) exit(-1);
+    if(!spte && f->esp <= fault_addr + 32 && stack_grow(fault_addr)) return;
   }
 
   if(user) exit(-1);

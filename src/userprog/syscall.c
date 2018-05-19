@@ -31,19 +31,12 @@ syscall_init (void)
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
-void exit_debug(int err_code)
-{
-  printf("Exitting with %d\n",err_code);
-  exit(-1);
-}
-
 bool check_valid(void *ptr, void *esp)
 {
-  // printf("validate %p %p\n", ptr, esp);
   if(!is_user_vaddr(ptr) || ptr < 0x08048000) exit(-1);
 
   struct sup_page_table_entry *spte = spt_lookup(ptr);
-  // Not presented error -> try load spte.
+  // Load spte if found.
   if(spte)
   {
     spt_load(spte);
@@ -59,17 +52,14 @@ bool check_valid(void *ptr, void *esp)
 
 void check_valid_str(char *ptr, void *esp)
 {
-  // printf("Validating string\n");
   check_valid(ptr, esp);
   while(*ptr != '\0')
     check_valid(++ptr, esp);
-  // printf("DOne\n");
 }
 
 void check_valid_buffer(char *ptr, int size, void *esp, bool writable)
 {
-  // printf("Validating buffer %s\n", writable ? "Writable" : "not writable");
-  while(size--) // check_valid(uaddr++, esp);
+  while(size--)
     if(check_valid(ptr++, esp) != writable && writable == true) exit(-1);
 }
 

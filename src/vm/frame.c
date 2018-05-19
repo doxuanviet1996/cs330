@@ -29,26 +29,30 @@ void *frame_evict(enum palloc_flags flags)
 			struct thread *owner = fte->owner;
 			if(pagedir_is_accessed(owner->pagedir, spte->uaddr))
 				pagedir_set_accessed(owner->pagedir, spte->uaddr, false);
-			else // Found one.
+			else // Found one to evict.
 			{
+				// Swap out if it is SWAP, or FILE.
 				if(spte->type == SWAP || spte->type == FILE)
 				{
 					spte->type = SWAP;
 					spte->swap_index = swap_out(fte->frame);
 				}
+				// Write to file if it is MMAP.
 				else if(pagedir_is_dirty(owner->pagedir, spte->uaddr))
 				{
 					lock_acquire(&filesys_lock);
-					int write_bytes = file_write_at(spte->file, fte->frame, spte->read_bytes, spte->ofs);
+					file_write_at(spte->file, fte->frame, spte->read_bytes, spte->ofs);
 					lock_release(&filesys_lock);
 				}
-				fte->spte->is_loaded = false;
+
 				list_remove(e);
-				pagedir_clear_page(owner->pagedir, fte->spte->uaddr);
+				fte->spte->is_loaded = false;
 				palloc_free_page(fte->frame);
+
+				pagedir_clear_page(owner->pagedir, fte->spte->uaddr);
+
 				free(fte);
 				lock_release(&frame_lock);
-				// printf("Evict successful\n");
 				return palloc_get_page(flags);
 			}
 		}
@@ -68,14 +72,14 @@ void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags)
 {
 	if(!(flags & PAL_USER)) return NULL;
 
-	void *addr = palloc_get_page(flags);
-	if(addr == NULL) addr = frame_evict(flags);
-	if(addr == NULL)
-		PANIC("Frame allocation failed.\n");
+	void *frame = palloc_get_page(flags);
+	if(frame == NULL) frame = frame_evict(flags);
+
+	if(frame == NULL) PANIC("Frame allocation failed.\n");
 
 	// add to frame table
 	struct frame_table_entry *fte = malloc(sizeof(struct frame_table_entry));
-	fte->frame = addr;
+	fte->frame = frame;
 	fte->spte = spte;
 	fte->owner = thread_current();
 
@@ -83,7 +87,7 @@ void *frame_alloc(struct sup_page_table_entry *spte, enum palloc_flags flags)
 	list_push_back(&frame_table, &fte->elem);
 	lock_release(&frame_lock);
 
-	return addr;
+	return frame;
 }
 
 void frame_free(void *frame)
@@ -100,6 +104,7 @@ void frame_free(void *frame)
 			list_remove(e);
 			free(fte);
 			palloc_free_page(frame);
+			lock_release(&frame_lock);
 			return;
 		}
 	}

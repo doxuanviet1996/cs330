@@ -16,7 +16,7 @@ void swap_in(int swap_index, void *addr)
 {
 	lock_acquire(&swap_lock);
 
-	if(bitmap_test(swap_used_map, swap_index) == false)
+	if(!bitmap_test(swap_used_map, swap_index))
 		PANIC("Swapping in a free page.\n");
 	bitmap_flip(swap_used_map, swap_index);
 
@@ -40,12 +40,10 @@ int swap_out(void *addr)
 
 	lock_acquire(&swap_lock);
 	int swap_index = bitmap_scan_and_flip(swap_used_map, 0, 1, false);
-
 	if(swap_index == BITMAP_ERROR)
 		PANIC("SWAP partition full.\n");
 
 	/* Copy block sectors starting from addr to swap_index*SECTOR_PER_PAGE */
-
 	int i;
 	for(i=0; i<SECTOR_PER_PAGE; i++)
 	{
@@ -53,7 +51,7 @@ int swap_out(void *addr)
 		int cur_sector = swap_index*SECTOR_PER_PAGE + i;
 		block_write(swap_block, cur_sector, cur_addr);
 	}
+	
 	lock_release(&swap_lock);
-
 	return swap_index;
 }
