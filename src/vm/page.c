@@ -50,16 +50,16 @@ struct sup_page_table_entry *spt_lookup(void *uaddr)
 	// Simulate a spte with same uaddr to find in hash table.
 	struct sup_page_table_entry tmp;
 	tmp.uaddr = pg_round_down(uaddr);
-	printf("Looking up %p\n", tmp.uaddr);
+	// printf("Looking up %p\n", tmp.uaddr);
 	struct hash_elem *e = hash_find(&thread_current()->spt, &tmp.elem);
-	printf("Done looking up\n");
+	// printf("Done looking up\n");
 	if(!e)
 		{
-			printf("Return NULL\n");
+			// printf("Return NULL\n");
 			return NULL;
 		}
 
-	printf("Look up found\n");
+	// printf("Look up found\n");
 
 	return hash_entry(e, struct sup_page_table_entry, elem);
 }
@@ -143,7 +143,7 @@ struct sup_page_table_entry *spt_add_file(void *uaddr, struct file *file, int of
 		free(spte);
 		return NULL;
 	}
-	printf("Hash insert %p\n", spte->uaddr);
+	// printf("Hash insert %p\n", spte->uaddr);
 	return spte;
 }
 
@@ -179,7 +179,7 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 		return NULL;
 	}
 
-	printf("Hash insert %p\n", spte->uaddr);
+	// printf("Hash insert %p\n", spte->uaddr);
 	return spte;
 }
 
@@ -216,7 +216,7 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		frame_free(frame);
 		return NULL;
 	}
-	printf("Hash insert %p\n", spte->uaddr);
+	// printf("Hash insert %p\n", spte->uaddr);
 	spte->is_locked = false;
 	return spte;
 }

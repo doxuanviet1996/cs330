@@ -343,7 +343,7 @@ int mmap(int fd, void *addr)
 }
 void munmap(int mmap_id)
 {
-  printf("Called to munmap %d\n", mmap_id);
+  // printf("Called to munmap %d\n", mmap_id);
   struct list_elem *e;
   struct thread *cur = thread_current();
   struct file *to_close = NULL;
@@ -352,7 +352,7 @@ void munmap(int mmap_id)
     // printf("Checking one..\n");
     struct mmap_descriptor *mmap_desc = list_entry(e, struct mmap_descriptor, elem);
     struct sup_page_table_entry *spte = mmap_desc->spte;
-    printf("Munmap match: %d %d\n", mmap_desc->mmap_id, mmap_id);
+    // printf("Munmap match: %d %d\n", mmap_desc->mmap_id, mmap_id);
     if(mmap_desc->mmap_id == mmap_id)
     {
       // printf("Found!!\n");
@@ -373,7 +373,7 @@ void munmap(int mmap_id)
         }
         pagedir_clear_page(thread_current()->pagedir, spte->uaddr);
       }
-      printf("Hash delete %p\n", spte->uaddr);
+      // printf("Hash delete %p\n", spte->uaddr);
       hash_delete(&cur->spt, &spte->elem);
       free(spte);
       free(mmap_desc);
@@ -387,5 +387,5 @@ void munmap(int mmap_id)
     file_close(to_close);
     lock_release(&filesys_lock);
   }
-  printf("Done unmmapping %d\n", mmap_id);
+  // printf("Done unmmapping %d\n", mmap_id);
 }

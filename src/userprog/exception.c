@@ -149,28 +149,28 @@ page_fault (struct intr_frame *f)
   write = (f->error_code & PF_W) != 0;
   user = (f->error_code & PF_U) != 0;
 
-  printf("Checkpoint page_fault %p %p\n", fault_addr, f->esp);
+  // printf("Checkpoint page_fault %p %p\n", fault_addr, f->esp);
   // Check if the page fault can be resolved.
   if(not_present && is_user_vaddr(fault_addr) && fault_addr >= 0x08048000)
   {
-    printf("YES\n");
+    // printf("YES\n");
     struct sup_page_table_entry *spte = spt_lookup(fault_addr);
     // Load spte if found.
     if(spte && spt_load(spte))
     {
-      printf("Loaded: %p\n",spte->uaddr);
+      // printf("Loaded: %p\n",spte->uaddr);
       return;
     }
 
     // Stack growth - allow to fault 32 bytes below esp.
     if(!spte && f->esp <= fault_addr + 32 && stack_grow(fault_addr))
     {
-      printf("Stack grow at: %p\n",fault_addr);
+      // printf("Stack grow at: %p\n",fault_addr);
       return;
     }
   }
-  printf("Can't resolved %p\n", fault_addr);
-  if(user) printf("Will exit -1\n");
+  // printf("Can't resolved %p\n", fault_addr);
+  // if(user) printf("Will exit -1\n");
   if(user) exit(-1);
 
   /* To implement virtual memory, delete the rest of the function
