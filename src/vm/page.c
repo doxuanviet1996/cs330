@@ -25,8 +25,7 @@ void destroy_func (struct hash_elem *e, void *aux)
 	if(spte->is_loaded)
 	{
 		void *frame = pagedir_get_page(&thread_current()->pagedir, spte->uaddr);
-		if(!frame) printf("WTFFFF\n");
-		frame_free(frame);
+		if(frame) frame_free(frame);
 		// pagedir_clear_page(&thread_current()->pagedir, spte->uaddr);
 	}
 	free(spte);
