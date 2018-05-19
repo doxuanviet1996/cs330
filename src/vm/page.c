@@ -22,7 +22,9 @@ bool less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
 void destroy_func (struct hash_elem *e, void *aux)
 {
 	struct sup_page_table_entry *spte = hash_entry(e, struct sup_page_table_entry, elem);
-	if(!spte->is_loaded && spte->type == SWAP) spt_load(spte);
+
+	printf("Destroying spte: %p %d", spte->uaddr, spte->type);
+	// if(!spte->is_loaded && spte->type == SWAP) spt_load(spte);
 
 	if(spte->is_loaded)
 	{
