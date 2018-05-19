@@ -164,7 +164,7 @@ page_fault (struct intr_frame *f)
     // Stack growth - allow to fault 32 bytes below esp.
     if(!spte && f->esp <= fault_addr + 32 && stack_grow(fault_addr)) return;
   }
-
+  printf("Can't resolved %p\n", fault_addr);
   if(user) exit(-1);
 
   /* To implement virtual memory, delete the rest of the function
