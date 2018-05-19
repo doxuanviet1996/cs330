@@ -102,6 +102,7 @@ void frame_free(void *frame)
 		if(fte->frame == frame)
 		{
 			list_remove(e);
+			fte->spte->is_loaded = false;
 			free(fte);
 			palloc_free_page(frame);
 			lock_release(&frame_lock);

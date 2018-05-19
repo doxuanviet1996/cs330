@@ -22,14 +22,17 @@ bool less_func (const struct hash_elem *a, const struct hash_elem *b, void *aux)
 void destroy_func (struct hash_elem *e, void *aux)
 {
 	struct sup_page_table_entry *spte = hash_entry(e, struct sup_page_table_entry, elem);
-	if(!spte->is_loaded) spt_load(spte);
+	if(!spte->is_loaded && spte->type == SWAP) spt_load(spte);
 
-	printf("Start checkpoint\n");
-	void *frame = pagedir_get_page(&thread_current()->pagedir, spte->uaddr);
-	printf("End checkpoint\n");
-	if(frame) frame_free(frame);
-	pagedir_clear_page(&thread_current()->pagedir, spte->uaddr);
-	
+	if(spte->is_loaded)
+	{
+		printf("Start checkpoint\n");
+		void *frame = pagedir_get_page(&thread_current()->pagedir, spte->uaddr);
+		printf("End checkpoint\n");
+		if(frame) frame_free(frame);
+		pagedir_clear_page(&thread_current()->pagedir, spte->uaddr);
+	}
+
 	free(spte);
 }
 
