@@ -332,7 +332,7 @@ int mmap(int fd, void *addr)
       munmap(thread_current()->mmap_id);
       return -1;
     }
-    
+    printf("MMAP checkpoint 1\n");
     /* Advance. */
     read_bytes -= page_read_bytes;
     addr += PGSIZE;
