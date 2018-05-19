@@ -1,5 +1,4 @@
 #include "vm/swap.h"
-#include "threads/vaddr.h"
 
 void swap_init()
 {
