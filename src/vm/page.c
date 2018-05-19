@@ -23,16 +23,16 @@ void destroy_func (struct hash_elem *e, void *aux)
 {
 	struct sup_page_table_entry *spte = hash_entry(e, struct sup_page_table_entry, elem);
 
-	printf("Destroying spte: %p %d\n", spte->uaddr, spte->type);
-	// if(!spte->is_loaded && spte->type == SWAP) spt_load(spte);
+	// printf("Destroying spte: %p %d\n", spte->uaddr, spte->type);
+	if(!spte->is_loaded && spte->type == SWAP) spt_load(spte);
 
 	if(spte->is_loaded)
 	{
-		printf("Start checkpoint %s\n",thread_current()->name);
-		printf("Thread %d, %s with pagedir %p\n", thread_current()->tid, thread_current()->name, thread_current()->pagedir);
+		// printf("Start checkpoint %s\n",thread_current()->name);
+		// printf("Thread %d, %s with pagedir %p\n", thread_current()->tid, thread_current()->name, thread_current()->pagedir);
 		void *frame = pagedir_get_page(thread_current()->pagedir, spte->uaddr);
-		printf("End checkpoint\n");
-		// if(frame) frame_free(frame);
+		// printf("End checkpoint\n");
+		if(frame) frame_free(frame);
 		// pagedir_clear_page(&thread_current()->pagedir, spte->uaddr);
 	}
 
@@ -46,9 +46,9 @@ void spt_init(struct hash *spt)
 
 void spt_destroy(struct hash *spt)
 {
-	printf("Start spt destroy\n");
+	// printf("Start spt destroy\n");
 	hash_destroy(spt, destroy_func);
-	printf("Finish spt destroy\n");
+	// printf("Finish spt destroy\n");
 }
 
 struct sup_page_table_entry *spt_lookup(void *uaddr)
@@ -179,7 +179,7 @@ struct sup_page_table_entry *stack_grow(void *uaddr)
 		frame_free(frame);
 		return NULL;
 	}
-	printf("%s: Stack growed at %p\n", thread_current()->name, spte->uaddr);
+	// printf("%s: Stack growed at %p\n", thread_current()->name, spte->uaddr);
 	spte->is_locked = false;
 	return spte;
 }
