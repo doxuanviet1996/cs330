@@ -306,7 +306,7 @@ void close (int fd )
 int mmap(int fd, void *addr)
 {
   if(!is_user_vaddr(addr) || addr < 0x08048000) return -1;
-  if((int)addr % PGSIZE == 0) return -1;
+  if((int)addr % PGSIZE != 0) return -1;
 
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
