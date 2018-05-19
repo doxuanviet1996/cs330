@@ -28,7 +28,7 @@ struct file_descriptor
 struct mmap_descriptor
 {
 	struct sup_page_table_entry *spte;
-	int map_id;
+	int mmap_id;
 	struct list_elem elem;
 };
 

@@ -305,7 +305,7 @@ void close (int fd )
 int mmap(int fd, void *addr)
 {
   if(!is_user_vaddr(addr) || addr < 0x08048000) return -1;
-  if(addr % PGSIZE) return -1;
+  if(addr % PGSIZE == 0) return -1;
 
   struct file_descriptor *file_desc = process_get_fd(fd);
   if(!file_desc) return -1;
@@ -326,7 +326,7 @@ int mmap(int fd, void *addr)
     struct sup_page_table_entry *spte = spt_add_mmap(addr, f, ofs, page_read_bytes, page_zero_bytes);
     if(!spte)
     {
-      munmap(thread_current()->map_id);
+      munmap(thread_current()->mmap_id);
       return -1;
     }
     
@@ -338,7 +338,7 @@ int mmap(int fd, void *addr)
 
   return thread_current()->mmap_id++;
 }
-void munmap(int map_id)
+void munmap(int mmap_id)
 {
   struct list_elem *e;
   struct thread *cur = thread_current();
@@ -347,7 +347,7 @@ void munmap(int map_id)
   {
     struct mmap_descriptor *mmap_desc = list_entry(e, struct mmap_descriptor, elem);
     struct sup_page_table_entry *spte = mmap_desc->spte;
-    if(mmap_desc->map_id == map_id)
+    if(mmap_desc->mmap_id == mmap_id)
     {
       e = list_remove(e);
       to_close = spte->file;
