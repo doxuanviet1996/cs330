@@ -108,4 +108,5 @@ void frame_free(void *frame)
 			return;
 		}
 	}
+	lock_release(&frame_lock);
 }
