@@ -179,7 +179,7 @@ struct sup_page_table_entry *spt_add_mmap(void *uaddr, struct file *file, int of
 		return NULL;
 	}
 
-	// printf("Hash insert %p\n", spte->uaddr);
+	printf("Hash insert %p\n", spte->uaddr);
 	return spte;
 }
 
